@@ -1229,8 +1229,7 @@
                 const inStockCount = items.filter(i => i.availableQty > 0).length;
                 const opt = document.createElement('option');
                 opt.value = po.poNo;
-                // Pure PO identification - supplier is maintained in its own dedicated field
-                opt.textContent = `${po.poNo} [${po.company || 'GRPL'}] (${po.department}) [${inStockCount} In Stock]`;
+                opt.textContent = po.poNo;
                 select.appendChild(opt);
             });
 
