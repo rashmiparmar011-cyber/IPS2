@@ -512,6 +512,13 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label for="filterSupplierSelect">Supplier</label>
+                            <select id="filterSupplierSelect" onchange="onSupplierSelectChange()">
+                                <option value="All">All Suppliers</option>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="filterSearch">Item Name</label>
                             <input type="text" id="filterSearch" placeholder="Search Item, Code, Rack..."
                                 oninput="applyInventoryFilters()">
@@ -1154,25 +1161,67 @@
     <script>
         let currentInvTab = 'All'; // 'All', 'In Stock', 'Low Stock', 'Ledger'
         let currentSelectedPo = 'All';
+        let currentSelectedSupplier = 'All';
         let currentCompany = 'All';
         let currentEditingItem = null;
 
         document.addEventListener('DOMContentLoaded', () => {
+            initSupplierDropdown();
             initPoDropdown();
             renderInventoryDashboard();
         });
 
-        // Initialize PO Selector Dropdown filtered by currentCompany
+        // Initialize Supplier Selector Dropdown filtered by currentCompany
+        function initSupplierDropdown() {
+            const select = document.getElementById('filterSupplierSelect');
+            if (!select) return;
+
+            const previousVal = currentSelectedSupplier;
+            select.innerHTML = '<option value="All">All Suppliers</option>';
+
+            const allPOs = window.PurchaseData.getAllPOs();
+            const filteredPOs = (currentCompany === 'All')
+                ? allPOs
+                : allPOs.filter(p => (p.company || 'GRPL').toUpperCase() === currentCompany.toUpperCase());
+
+            const supplierSet = new Set();
+            filteredPOs.forEach(p => {
+                if (p.supplierName && p.supplierName.trim()) {
+                    supplierSet.add(p.supplierName.trim());
+                }
+            });
+
+            Array.from(supplierSet).sort().forEach(sup => {
+                const opt = document.createElement('option');
+                opt.value = sup;
+                opt.textContent = sup;
+                select.appendChild(opt);
+            });
+
+            if (supplierSet.has(previousVal)) {
+                select.value = previousVal;
+                currentSelectedSupplier = previousVal;
+            } else {
+                select.value = 'All';
+                currentSelectedSupplier = 'All';
+            }
+        }
+
+        // Initialize PO Selector Dropdown filtered by currentCompany and currentSelectedSupplier
         function initPoDropdown() {
             const select = document.getElementById('filterPoSelect');
             if (!select) return;
 
-            const allPOs = window.PurchaseData.getAllPOs();
+            const previousVal = currentSelectedPo;
             select.innerHTML = '<option value="All">All Purchase Orders</option>';
 
-            const filteredPOs = (currentCompany === 'All')
-                ? allPOs
-                : allPOs.filter(p => (p.company || 'GRPL').toUpperCase() === currentCompany.toUpperCase());
+            let filteredPOs = (currentCompany === 'All')
+                ? window.PurchaseData.getAllPOs()
+                : window.PurchaseData.getAllPOs().filter(p => (p.company || 'GRPL').toUpperCase() === currentCompany.toUpperCase());
+
+            if (currentSelectedSupplier && currentSelectedSupplier !== 'All') {
+                filteredPOs = filteredPOs.filter(p => (p.supplierName || '').trim().toLowerCase() === currentSelectedSupplier.trim().toLowerCase());
+            }
 
             filteredPOs.forEach(po => {
                 // Count available items in this PO
@@ -1180,9 +1229,19 @@
                 const inStockCount = items.filter(i => i.availableQty > 0).length;
                 const opt = document.createElement('option');
                 opt.value = po.poNo;
-                opt.textContent = `${po.poNo} — ${po.supplierName} [${po.company || 'GRPL'}] (${po.department}) [${inStockCount} In Stock]`;
+                // Pure PO identification - supplier is maintained in its own dedicated field
+                opt.textContent = `${po.poNo} [${po.company || 'GRPL'}] (${po.department}) [${inStockCount} In Stock]`;
                 select.appendChild(opt);
             });
+
+            const hasPrev = filteredPOs.some(p => p.poNo === previousVal);
+            if (hasPrev) {
+                select.value = previousVal;
+                currentSelectedPo = previousVal;
+            } else {
+                select.value = 'All';
+                currentSelectedPo = 'All';
+            }
         }
 
         // When Company dropdown changes (GRPL, GHPL, LSPL, All)
@@ -1190,6 +1249,7 @@
             const select = document.getElementById('filterCompanySelect');
             currentCompany = select ? select.value : 'All';
 
+            initSupplierDropdown();
             initPoDropdown();
 
             // If active PO doesn't match new company, reset to All
@@ -1205,9 +1265,41 @@
             renderInventoryDashboard();
         }
 
+        // When Supplier dropdown changes
+        function onSupplierSelectChange() {
+            const select = document.getElementById('filterSupplierSelect');
+            currentSelectedSupplier = select ? select.value : 'All';
+
+            // If currently selected PO belongs to another supplier, reset PO selection
+            if (currentSelectedPo !== 'All') {
+                const po = window.PurchaseData.getPO(currentSelectedPo);
+                if (po && currentSelectedSupplier !== 'All' && (po.supplierName || '').trim().toLowerCase() !== currentSelectedSupplier.trim().toLowerCase()) {
+                    currentSelectedPo = 'All';
+                }
+            }
+
+            initPoDropdown();
+            updatePoBanner();
+            renderInventoryDashboard();
+        }
+
         // When PO dropdown changes
         function onPoSelectChange() {
-            currentSelectedPo = document.getElementById('filterPoSelect').value || 'All';
+            const select = document.getElementById('filterPoSelect');
+            currentSelectedPo = select ? select.value : 'All';
+
+            // If a specific PO is selected, auto-sync Supplier filter
+            if (currentSelectedPo !== 'All') {
+                const po = window.PurchaseData.getPO(currentSelectedPo);
+                if (po && po.supplierName) {
+                    const supSelect = document.getElementById('filterSupplierSelect');
+                    if (supSelect) {
+                        supSelect.value = po.supplierName;
+                        currentSelectedSupplier = po.supplierName;
+                    }
+                }
+            }
+
             updatePoBanner();
             renderInventoryDashboard();
         }
@@ -1236,7 +1328,7 @@
                 return;
             }
 
-            const items = window.PurchaseData.getInventoryItems({ poNo: po.poNo, company: currentCompany, availableOnly: false });
+            const items = window.PurchaseData.getInventoryItems({ poNo: po.poNo, supplier: currentSelectedSupplier, company: currentCompany, availableOnly: false });
             const inStockItems = items.filter(i => i.availableQty > 0);
             const totalAvailUnits = inStockItems.reduce((sum, i) => sum + i.availableQty, 0);
 
@@ -1286,9 +1378,12 @@
         function resetInventoryFilters() {
             document.getElementById('filterCompanySelect').value = 'All';
             currentCompany = 'All';
-            initPoDropdown();
-            document.getElementById('filterPoSelect').value = 'All';
+            currentSelectedSupplier = 'All';
             currentSelectedPo = 'All';
+            initSupplierDropdown();
+            initPoDropdown();
+            document.getElementById('filterSupplierSelect').value = 'All';
+            document.getElementById('filterPoSelect').value = 'All';
             document.getElementById('filterSearch').value = '';
             document.getElementById('filterStockStatus').value = 'available';
             document.getElementById('filterDept').value = 'All';
@@ -1310,9 +1405,10 @@
                 statusParam = 'Low Stock';
             }
 
-            // Fetch filtered inventory items (filtered by selected Company and PO)
+            // Fetch filtered inventory items (filtered by selected Company, Supplier, and PO)
             const items = window.PurchaseData.getInventoryItems({
                 poNo: currentSelectedPo,
+                supplier: currentSelectedSupplier,
                 company: currentCompany,
                 availableOnly: availableOnly,
                 search: search,
@@ -1323,6 +1419,7 @@
             // Update Tab Badges
             const allItemsUnfiltered = window.PurchaseData.getInventoryItems({
                 poNo: currentSelectedPo,
+                supplier: currentSelectedSupplier,
                 company: currentCompany,
                 availableOnly: availableOnly
             });
@@ -1335,6 +1432,9 @@
             let pos = currentSelectedPo === 'All' ? window.PurchaseData.getAllPOs() : [window.PurchaseData.getPO(currentSelectedPo)].filter(Boolean);
             if (currentCompany !== 'All') {
                 pos = pos.filter(p => (p.company || 'GRPL').toUpperCase() === currentCompany.toUpperCase());
+            }
+            if (currentSelectedSupplier !== 'All') {
+                pos = pos.filter(p => (p.supplierName || '').trim().toLowerCase() === currentSelectedSupplier.trim().toLowerCase());
             }
             pos.forEach(p => p.lineItems.forEach(li => totalMovements += (li.stockMovements || []).length));
             document.getElementById('badgeTabLedger').textContent = totalMovements;
@@ -1442,6 +1542,9 @@
             let pos = currentSelectedPo === 'All' ? window.PurchaseData.getAllPOs() : [window.PurchaseData.getPO(currentSelectedPo)].filter(Boolean);
             if (currentCompany !== 'All') {
                 pos = pos.filter(p => (p.company || 'GRPL').toUpperCase() === currentCompany.toUpperCase());
+            }
+            if (currentSelectedSupplier !== 'All') {
+                pos = pos.filter(p => (p.supplierName || '').trim().toLowerCase() === currentSelectedSupplier.trim().toLowerCase());
             }
 
             pos.forEach(po => {
@@ -1595,6 +1698,7 @@
             if (res.success) {
                 closeIssueModal();
                 showToast(`Successfully issued ${qty} units to ${recipient}!`, "success");
+                initSupplierDropdown();
                 initPoDropdown();
                 updatePoBanner();
                 renderInventoryDashboard();
@@ -1807,6 +1911,7 @@
             if (res.success) {
                 closeReturnModal();
                 showToast(res.message || `Successfully returned ${qty} units!`, "success");
+                initSupplierDropdown();
                 initPoDropdown();
                 updatePoBanner();
                 renderInventoryDashboard();
@@ -1882,6 +1987,7 @@
             if (res.success) {
                 closeAdjustModal();
                 showToast(`Stock adjustment of ${qty} units recorded successfully!`, "success");
+                initSupplierDropdown();
                 initPoDropdown();
                 updatePoBanner();
                 renderInventoryDashboard();
@@ -2134,6 +2240,7 @@
 
             const items = window.PurchaseData.getInventoryItems({
                 poNo: currentSelectedPo,
+                supplier: currentSelectedSupplier,
                 company: currentCompany,
                 availableOnly: availableOnly,
                 search: search,

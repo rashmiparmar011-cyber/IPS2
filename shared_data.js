@@ -850,6 +850,7 @@ class PurchaseDataManager {
     getInventoryItems(options = {}) {
         const {
             poNo = 'All',
+            supplier = 'All',
             company = 'All',
             availableOnly = true,
             search = '',
@@ -861,6 +862,10 @@ class PurchaseDataManager {
 
         this.data.forEach(po => {
             if (company && company !== 'All' && (po.company || 'GRPL').toUpperCase() !== company.toUpperCase()) {
+                return;
+            }
+
+            if (supplier && supplier !== 'All' && (po.supplierName || '').trim().toLowerCase() !== supplier.trim().toLowerCase()) {
                 return;
             }
 

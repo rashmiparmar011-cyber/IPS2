@@ -1350,10 +1350,16 @@ body {
 .filter-grid,
 .filter-grid-goods,
 .filter-grid-acceptance,
-.filter-grid-finance,
-.filter-grid-inventory {
+.filter-grid-finance {
     display: grid;
     grid-template-columns: repeat(4, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-grid-inventory {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr) auto;
     gap: 10px;
     align-items: center;
 }
