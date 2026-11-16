@@ -1,0 +1,2219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Purchase System - Inventory Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* PO Details Banner */
+        .po-detail-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
+            border-left: 4px solid #0284c7;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .po-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .po-badge-title {
+            background: #0284c7;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .po-detail-info {
+            font-size: 13px;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .po-detail-grid {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .po-detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .po-detail-item .lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: #0369a1;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .po-detail-item .val {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        /* Stock Status Badges */
+        .stock-badge-large {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .stock-badge-large.in-stock {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .stock-badge-large.low-stock {
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
+        .stock-badge-large.out-of-stock {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+        }
+
+        .stock-badge-large.rejected {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+
+        .stock-badge-large.pending {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fef08a;
+        }
+
+        /* Storage Location Pill */
+        .loc-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .loc-pill:hover {
+            background: #e2e8f0;
+            border-color: #94a3b8;
+            color: #0f172a;
+        }
+
+        /* Action Buttons in Table */
+        .inv-action-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action-inv {
+            padding: 4px 9px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-action-inv.issue {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #0369a1;
+        }
+
+        .btn-action-inv.issue:hover {
+            background: #0369a1;
+        }
+
+        .btn-action-inv.return {
+            background: #f8fafc;
+            color: #0f172a;
+            border-color: #cbd5e1;
+        }
+
+        .btn-action-inv.return:hover {
+            background: #e2e8f0;
+            border-color: #94a3b8;
+        }
+
+        .btn-action-inv.ledger {
+            background: #f1f5f9;
+            color: #475569;
+            border-color: #cbd5e1;
+        }
+
+        .btn-action-inv.ledger:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .btn-action-inv.adjust {
+            background: #f8fafc;
+            color: #64748b;
+            border-color: #cbd5e1;
+        }
+
+        .btn-action-inv.adjust:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .btn-action-inv.slip {
+            background: #f0fdf4;
+            color: #15803d;
+            border-color: #86efac;
+        }
+
+        .btn-action-inv.slip:hover {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .btn-action-inv:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Toast Notification */
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #0f172a;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 99999;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast-msg.success {
+            border-left: 5px solid #22c55e;
+        }
+
+        .toast-msg.error {
+            border-left: 5px solid #ef4444;
+        }
+
+        /* Printable Slip Styling */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableGatePassModal, #printableGatePassModal * {
+                visibility: visible;
+            }
+            #printableGatePassModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: #fff;
+                padding: 0;
+            }
+            .modal-overlay {
+                background: transparent !important;
+                position: static !important;
+            }
+            .modal-box {
+                box-shadow: none !important;
+                border: none !important;
+                max-width: 100% !important;
+            }
+            .modal-header, .modal-footer, .no-print {
+                display: none !important;
+            }
+        }
+
+        /* Modal Form Vertical Layout & Clean Inputs (Fixing squished/truncated labels) */
+        .modal-box .form-group,
+        .modal-box .form-group-vertical,
+        .modal-body .form-group,
+        .modal-body .form-group-vertical {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            height: auto !important;
+            min-height: 0 !important;
+            border: none !important;
+            background: transparent !important;
+            overflow: visible !important;
+            margin: 0 0 14px 0 !important;
+            box-shadow: none !important;
+            box-sizing: border-box !important;
+        }
+
+        .modal-box .form-group label,
+        .modal-box .form-group-vertical label,
+        .modal-body .form-group label,
+        .modal-body .form-group-vertical label {
+            background-color: transparent !important;
+            color: #334155 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            max-width: none !important;
+            min-width: 0 !important;
+            border: none !important;
+            font-size: 11.5px !important;
+            font-weight: 700 !important;
+            margin-bottom: 6px !important;
+            display: block !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.3px !important;
+            white-space: normal !important;
+            line-height: 1.3 !important;
+            height: auto !important;
+            text-overflow: clip !important;
+        }
+
+        .modal-box .form-group input:not([type="checkbox"]):not([type="radio"]),
+        .modal-box .form-group select,
+        .modal-box .form-group-vertical input:not([type="checkbox"]):not([type="radio"]),
+        .modal-box .form-group-vertical select,
+        .modal-body .form-group input:not([type="checkbox"]):not([type="radio"]),
+        .modal-body .form-group select,
+        .modal-body .form-group-vertical input:not([type="checkbox"]):not([type="radio"]),
+        .modal-body .form-group-vertical select {
+            width: 100% !important;
+            padding: 8px 12px !important;
+            font-size: 12.5px !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 4px !important;
+            background-color: #ffffff !important;
+            color: #1e293b !important;
+            height: 36px !important;
+            box-sizing: border-box !important;
+            outline: none !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+        }
+
+        .modal-box .form-group textarea,
+        .modal-box .form-group-vertical textarea,
+        .modal-body .form-group textarea,
+        .modal-body .form-group-vertical textarea {
+            width: 100% !important;
+            padding: 8px 12px !important;
+            font-size: 12.5px !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 4px !important;
+            background-color: #ffffff !important;
+            color: #1e293b !important;
+            box-sizing: border-box !important;
+            outline: none !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+            resize: vertical !important;
+            min-height: 65px !important;
+            font-family: inherit !important;
+            line-height: 1.4 !important;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+        }
+
+        .modal-box .form-group input:focus,
+        .modal-box .form-group select:focus,
+        .modal-box .form-group textarea:focus,
+        .modal-box .form-group-vertical input:focus,
+        .modal-box .form-group-vertical select:focus,
+        .modal-box .form-group-vertical textarea:focus,
+        .modal-body .form-group input:focus,
+        .modal-body .form-group select:focus,
+        .modal-body .form-group textarea:focus,
+        .modal-body .form-group-vertical input:focus,
+        .modal-body .form-group-vertical select:focus,
+        .modal-body .form-group-vertical textarea:focus {
+            border-color: #0284c7 !important;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18) !important;
+        }
+
+        .modal-box .form-group small,
+        .modal-box .form-group-vertical small,
+        .modal-body .form-group small,
+        .modal-body .form-group-vertical small {
+            display: block !important;
+            font-size: 11px !important;
+            color: #64748b !important;
+            margin-top: 4px !important;
+            line-height: 1.4 !important;
+            font-weight: 500 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo-custom">
+                    <div class="logo-pill">
+                        <div class="pill-left">B</div>
+                        <div class="pill-right">&amp; S</div>
+                    </div>
+                    <div class="logo-text">
+                        <div class="logo-group-text">GROUP</div>
+                        <div class="logo-tagline-text">"Believe in us"</div>
+                    </div>
+                </div>
+            </div>
+            <div class="title-section">
+                <h1>India Purchase System</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-info">
+                    <span class="welcome-text">Welcome,</span>
+                    <span class="username">ANISH <i class="fas fa-caret-down"></i></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-wrapper">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-list"></i> Purchase Masters <i class="fas fa-chevron-down arrow"></i>
+                            </a>
+                            <ul class="sub-nav-list">
+                                <li><a href="#" class="sub-nav-link">Item Master</a></li>
+                                <li><a href="#" class="sub-nav-link">Supplier Master</a></li>
+                                <li><a href="index.html" class="sub-nav-link">Project Master</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-exchange-alt"></i> Purchase Transactions <i
+                                    class="fas fa-chevron-down arrow"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-file-invoice"></i> Purchase Reports <i
+                                    class="fas fa-chevron-down arrow"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="stock_management.html" class="nav-link">
+                                <i class="fas fa-cubes"></i> Goods-In
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="acceptance_material.html" class="nav-link">
+                                <i class="fas fa-clipboard-check"></i> User Acceptance Material
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="finance_management.html" class="nav-link">
+                                <i class="fas fa-coins"></i> Finance Approval
+                            </a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="inventory_management.html" class="nav-link active">
+                                <i class="fas fa-boxes"></i> Inventory
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="sidebar-collapse">
+                    <i class="fas fa-angle-double-left"></i>
+                </div>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="content">
+                <!-- Top Breadcrumb & Company Selector Row (Directly matching User Request) -->
+                <div class="breadcrumb-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <div class="breadcrumb" style="margin-bottom: 0;">
+                        <i class="fas fa-home"></i> Inventory <i class="fas fa-chevron-right"></i>
+                        <span class="current">Stock &amp; PO Inventory Management</span>
+                    </div>
+                    <div class="header-company-selector">
+                        <div class="form-group" style="display: flex; align-items: center; height: 32px; margin: 0; min-width: 250px; border: 1px solid var(--border-color); border-radius: 2px; overflow: hidden; background: #ffffff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);">
+                            <label for="filterCompanySelect" style="background-color: var(--label-bg); color: #ffffff; padding: 0 12px; font-size: 12px; font-weight: 700; height: 100%; display: flex; align-items: center; white-space: nowrap; border-right: 1px solid var(--border-color); letter-spacing: 0.3px;">Company</label>
+                            <select id="filterCompanySelect" onchange="onCompanySelectChange()" style="flex: 1; height: 100%; border: none; padding: 0 10px; font-size: 12px; font-weight: 700; color: #0f172a; outline: none; background: transparent; cursor: pointer;">
+                                <option value="All">All Companies</option>
+                                <option value="GRPL">GRPL</option>
+                                <option value="GHPL">GHPL</option>
+                                <option value="LSPL">LSPL</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters Section (Consistent with Goods-In, Acceptance, and Finance Approval) -->
+                <div class="filter-card">
+                    <div class="filter-grid filter-grid-inventory">
+                        <div class="form-group">
+                            <label for="filterPoSelect">PO No.</label>
+                            <select id="filterPoSelect" onchange="onPoSelectChange()">
+                                <option value="All">All Purchase Orders</option>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filterSearch">Item Name</label>
+                            <input type="text" id="filterSearch" placeholder="Search Item, Code, Rack..."
+                                oninput="applyInventoryFilters()">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterStockStatus">Stock View</label>
+                            <select id="filterStockStatus" onchange="applyInventoryFilters()">
+                                <option value="available" selected>Available Stock Only</option>
+                                <option value="all">All Items (Inc. Zero Stock)</option>
+                                <option value="low">Low Stock (&le; 2 Units)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filterDept">Department</label>
+                            <select id="filterDept" onchange="applyInventoryFilters()">
+                                <option value="All">All Departments</option>
+                                <option value="Information Technology">Information Technology</option>
+                                <option value="Network & Infrastructure">Network &amp; Infrastructure</option>
+                                <option value="Operations & Safety">Operations &amp; Safety</option>
+                                <option value="Administration">Administration</option>
+                                <option value="IT Infrastructure">IT Infrastructure</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="button" class="btn btn-primary" onclick="applyInventoryFilters()"><i
+                                    class="fas fa-search"></i> Apply</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetInventoryFilters()"><i
+                                    class="fas fa-undo"></i> Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Selected PO Summary Banner (Visible when a PO is selected) -->
+                <div id="selectedPoBanner" class="po-detail-card" style="display: none;">
+                    <div class="po-detail-header">
+                        <div class="po-badge-title">
+                            <i class="fas fa-receipt"></i> <span id="bannerPoNo">PO01</span>
+                        </div>
+                        <div class="po-detail-info">
+                            <span id="bannerSupplier">Vimal Enterprises</span> &bull;
+                            <span id="bannerDept" style="color: #0369a1;">Information Technology</span>
+                        </div>
+                    </div>
+                    <div class="po-detail-grid">
+                        <div class="po-detail-item">
+                            <span class="lbl">PO Date</span>
+                            <span class="val" id="bannerDate">2026-09-11</span>
+                        </div>
+                        <div class="po-detail-item">
+                            <span class="lbl">Project</span>
+                            <span class="val" id="bannerProject">Enterprise Upgrade</span>
+                        </div>
+                        <div class="po-detail-item">
+                            <span class="lbl">PO Total Cost</span>
+                            <span class="val" id="bannerCost">₹ 30,000</span>
+                        </div>
+                        <div class="po-detail-item">
+                            <span class="lbl">PO Status</span>
+                            <span class="val" id="bannerStatus">Partial</span>
+                        </div>
+                        <div class="po-detail-item">
+                            <span class="lbl">Available SKUs in PO</span>
+                            <span class="val" id="bannerSkus" style="color: #16a34a;">1 Item</span>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;"
+                            onclick="clearPoSelection()">
+                            <i class="fas fa-times"></i> View All POs
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status Tabs & Export Toolbar -->
+                <div class="status-tabs-container">
+                    <div class="status-tabs-group" role="tablist">
+                        <button type="button" class="status-tab tab-all active" data-tab="All"
+                            onclick="switchInventoryTab('All')">
+                            <i class="fas fa-layer-group"></i> All Inventory Items <span class="tab-badge"
+                                id="badgeTabAll">0</span>
+                        </button>
+                        <button type="button" class="status-tab tab-complete" data-tab="In Stock"
+                            onclick="switchInventoryTab('In Stock')">
+                            <i class="fas fa-check-circle"></i> In Stock <span class="tab-badge"
+                                id="badgeTabInStock">0</span>
+                        </button>
+                        <button type="button" class="status-tab tab-partial" data-tab="Low Stock"
+                            onclick="switchInventoryTab('Low Stock')">
+                            <i class="fas fa-exclamation-triangle"></i> Low Stock (&le; 2) <span class="tab-badge"
+                                id="badgeTabLowStock">0</span>
+                        </button>
+                        <button type="button" class="status-tab tab-new" data-tab="Ledger"
+                            onclick="switchInventoryTab('Ledger')">
+                            <i class="fas fa-history"></i> Recent Stock Ledger <span class="tab-badge"
+                                id="badgeTabLedger">0</span>
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-export" onclick="exportInventoryToCSV()"><i
+                                class="fas fa-file-csv"></i> Export CSV</button>
+                    </div>
+                </div>
+
+                <!-- Main Inventory Grid Table View -->
+                <div id="inventoryTableView" class="table-container">
+                    <table class="data-table" id="inventoryTable">
+                        <thead>
+                            <tr>
+                                <th>PO NO.</th>
+                                <th>PO DATE</th>
+                                <th>SUPPLIER</th>
+                                <th>ITEM KEY</th>
+                                <th>ITEM NAME</th>
+                                <th>PROJECT</th>
+                                <th>STORAGE LOCATION</th>
+                                <th>BATCH DETAILS</th>
+                                <th style="text-align: right;">REC QTY</th>
+                                <th style="text-align: right;">ACCEPTED</th>
+                                <th style="text-align: right;">ISSUED</th>
+                                <th style="text-align: right; background-color: #2c729c;">AVAILABLE STOCK</th>
+                                <th>UOM</th>
+                                <th style="text-align: right;">UNIT COST (₹)</th>
+                                <th style="text-align: right;">AVAILABLE VALUE (₹)</th>
+                                <th style="text-align: center; min-width: 170px;">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Global Recent Stock Movement Ledger View (Tab) -->
+                <div id="inventoryLedgerView" class="table-container" style="display: none;">
+                    <table class="data-table" id="globalLedgerTable">
+                        <thead>
+                            <tr>
+                                <th>TRANSACTION ID</th>
+                                <th>DATE &amp; TIME</th>
+                                <th>TYPE</th>
+                                <th>PO NO.</th>
+                                <th>ITEM NAME</th>
+                                <th style="text-align: right;">INWARD (+)</th>
+                                <th style="text-align: right;">OUTWARD (-)</th>
+                                <th style="text-align: right;">BALANCE AFTER</th>
+                                <th>RECIPIENT / DEPT</th>
+                                <th>REFERENCE / SLIP NO</th>
+                                <th>LOCATION</th>
+                                <th>REMARKS / PURPOSE</th>
+                                <th style="text-align: center;">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="globalLedgerTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Bar -->
+                <div class="pagination-bar"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 12px; color: #64748b;">
+                    <div id="invPaginationInfo">Showing 1 to 0 of 0 records</div>
+                    <div class="pagination-controls" id="invPaginationControls"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 1. ISSUE STOCK MODAL (Outward Dispatch)                   -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="issueStockModal">
+        <div class="modal-box" style="max-width: 680px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-dolly"></i> Issue Stock from Inventory</h3>
+                <button class="modal-close-btn" onclick="closeIssueModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Item Summary Card -->
+                <div class="summary-card" style="margin-bottom: 16px;">
+                    <div class="summary-card-title"><i class="fas fa-box"></i> Item &amp; Available Stock Details</div>
+                    <div class="summary-grid-4">
+                        <div class="summary-item">
+                            <span class="label">PO Number</span>
+                            <span class="value" id="issuePoNo">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Item Key &amp; Name</span>
+                            <span class="value" id="issueItemName" style="color: #0284c7; font-weight: 700;">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Current Location</span>
+                            <span class="value" id="issueLocation">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Available In Stock</span>
+                            <span class="value" id="issueAvailBadge"
+                                style="color: #15803d; font-size: 16px; font-weight: 800;">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Issue Form -->
+                <form id="issueStockForm" onsubmit="handleIssueStockSubmit(event)">
+                    <input type="hidden" id="issueHiddenPoNo">
+                    <input type="hidden" id="issueHiddenItemKey">
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div class="form-group-vertical">
+                            <label for="issueQty">Quantity to Issue *</label>
+                            <input type="number" id="issueQty" min="1" step="1" required
+                                placeholder="Enter issue quantity...">
+                            <small id="issueQtyHelp">Max allowable: 0 units</small>
+                        </div>
+                        <div class="form-group-vertical">
+                            <label for="issueSlipNo">Issue Voucher / Slip No</label>
+                            <input type="text" id="issueSlipNo" placeholder="Auto-generated...">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div class="form-group-vertical">
+                            <label for="issueRecipient">Issued To (Employee / Person) *</label>
+                            <input type="text" id="issueRecipient" required
+                                placeholder="e.g. Amit Trivedi (Sr. Developer)">
+                        </div>
+                        <div class="form-group-vertical">
+                            <label for="issueDept">Department *</label>
+                            <select id="issueDept" required>
+                                <option value="Information Technology">Information Technology</option>
+                                <option value="Network & Infrastructure">Network &amp; Infrastructure</option>
+                                <option value="Operations & Safety">Operations &amp; Safety</option>
+                                <option value="Administration">Administration</option>
+                                <option value="IT Infrastructure">IT Infrastructure</option>
+                                <option value="Finance & Accounts">Finance &amp; Accounts</option>
+                                <option value="Human Resources">Human Resources</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div class="form-group-vertical">
+                            <label for="issueDate">Issue Date *</label>
+                            <input type="date" id="issueDate" required>
+                        </div>
+                        <div class="form-group-vertical">
+                            <label for="issueProject">Project Allocation</label>
+                            <input type="text" id="issueProject" placeholder="e.g. PRJ-001 Enterprise Upgrade">
+                        </div>
+                    </div>
+
+                    <div class="form-group-vertical" style="margin-bottom: 14px;">
+                        <label for="issueRemarks">Purpose / Justification *</label>
+                        <textarea id="issueRemarks" rows="2" required
+                            placeholder="State reason for issuing (e.g. Employee onboarding workstation allocation, DC core switch upgrade)..."></textarea>
+                    </div>
+
+                    <div class="modal-footer" style="padding: 12px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0;">
+                        <button type="button" class="btn btn-secondary" onclick="closeIssueModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="btnSubmitIssue">
+                            <i class="fas fa-check-circle"></i> Confirm &amp; Issue Stock
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 2. RETURN STOCK MODAL (Inward Return)                     -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="returnStockModal">
+        <div class="modal-box" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-undo-alt"></i> Return Stock to Inventory</h3>
+                <button class="modal-close-btn" onclick="closeReturnModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="summary-card" style="margin-bottom: 16px;">
+                    <div class="summary-card-title"><i class="fas fa-info-circle"></i> Issued Stock Information</div>
+                    <div class="summary-grid-4">
+                        <div class="summary-item">
+                            <span class="label">PO Number</span>
+                            <span class="value" id="returnPoNo">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Item Name</span>
+                            <span class="value" id="returnItemName">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Issued Qty</span>
+                            <span class="value" id="returnMaxQtyBadge"
+                                style="color: #ea580c; font-weight: 700;">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Current Available</span>
+                            <span class="value" id="returnAvailBadge"
+                                style="color: #16a34a; font-weight: 700;">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="returnStockForm" onsubmit="handleReturnStockSubmit(event)">
+                    <input type="hidden" id="returnHiddenPoNo">
+                    <input type="hidden" id="returnHiddenItemKey">
+
+                    <div class="form-group-vertical" style="margin-bottom: 14px;">
+                        <label for="returnTypeSelect">Return Destination / Mode *</label>
+                        <select id="returnTypeSelect" onchange="onReturnTypeChange()">
+                            <option value="STORE">Return Unused Issued Stock back to Inventory Store</option>
+                            <option value="VENDOR">Return Available Stock to Supplier / Vendor (RTV)</option>
+                        </select>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div class="form-group-vertical">
+                            <label for="returnQty">Return Quantity *</label>
+                            <input type="number" id="returnQty" min="1" step="1" required
+                                placeholder="Qty to return...">
+                            <small id="returnQtyHelp">Max: 0 units</small>
+                        </div>
+                        <div class="form-group-vertical">
+                            <label for="returnRefNo">Return Slip / Reference No</label>
+                            <input type="text" id="returnRefNo" placeholder="Auto-generated...">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div class="form-group-vertical">
+                            <label for="returnBy" id="lblReturnBy">Returned By (Person / Dept) *</label>
+                            <input type="text" id="returnBy" required placeholder="Name of person returning...">
+                        </div>
+                        <div class="form-group-vertical">
+                            <label for="returnDate">Return Date *</label>
+                            <input type="date" id="returnDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group-vertical" style="margin-bottom: 14px;">
+                        <label for="returnRemarks">Reason for Return *</label>
+                        <textarea id="returnRemarks" rows="2" required
+                            placeholder="e.g. Project concluded earlier, excess units returned, employee role change, damaged goods..."></textarea>
+                    </div>
+
+                    <div class="modal-footer" style="padding: 12px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0;">
+                        <button type="button" class="btn btn-secondary" onclick="closeReturnModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="btnSubmitReturn">
+                            <i class="fas fa-undo-alt"></i> Confirm Return to Stock
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 3. STOCK ADJUSTMENT MODAL (Audit / Scrap)                 -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="adjustStockModal">
+        <div class="modal-box" style="max-width: 580px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-sliders-h"></i> Stock Count Adjustment</h3>
+                <button class="modal-close-btn" onclick="closeAdjustModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="summary-card" style="margin-bottom: 16px;">
+                    <div class="summary-card-title"><i class="fas fa-info-circle"></i> Item Stock Status</div>
+                    <div class="summary-grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <div class="summary-item">
+                            <span class="label">PO Number</span>
+                            <span class="value" id="adjustPoNo">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Item Code &amp; Name</span>
+                            <span class="value" id="adjustItemName">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Current Available</span>
+                            <span class="value" id="adjustAvailBadge" style="color: #15803d; font-weight: 700;">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="adjustStockForm" onsubmit="handleAdjustStockSubmit(event)">
+                    <input type="hidden" id="adjustHiddenPoNo">
+                    <input type="hidden" id="adjustHiddenItemKey">
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div class="form-group-vertical">
+                            <label for="adjustType">Adjustment Action *</label>
+                            <select id="adjustType" onchange="onAdjustTypeChange()">
+                                <option value="DEDUCT">Reduce Stock (Damaged / Scrap / Lost)</option>
+                                <option value="ADD">Add Stock (Surplus / Physical Audit)</option>
+                            </select>
+                        </div>
+                        <div class="form-group-vertical">
+                            <label for="adjustQty">Adjustment Units *</label>
+                            <input type="number" id="adjustQty" min="1" step="1" required
+                                placeholder="Units to adjust...">
+                            <small id="adjustQtyHelp">Max deduction: 0 units</small>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div class="form-group-vertical">
+                            <label for="adjustAuthBy">Authorized By *</label>
+                            <input type="text" id="adjustAuthBy" value="ANISH" required>
+                        </div>
+                        <div class="form-group-vertical">
+                            <label for="adjustDate">Adjustment Date *</label>
+                            <input type="date" id="adjustDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group-vertical" style="margin-bottom: 14px;">
+                        <label for="adjustRemarks">Justification &amp; Audit Notes *</label>
+                        <textarea id="adjustRemarks" rows="2" required
+                            placeholder="Mandatory explanation for audit trail (e.g. Cycle count verification, transit damage write-off)..."></textarea>
+                    </div>
+
+                    <div class="modal-footer" style="padding: 12px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAdjustModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="btnSubmitAdjust">
+                            <i class="fas fa-check-circle"></i> Apply Stock Adjustment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 4. STOCK MOVEMENT LEDGER MODAL ("Stock Card")             -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="stockLedgerModal">
+        <div class="modal-box" style="max-width: 980px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-history"></i> Stock Movement Ledger &amp; Audit Trail — <span id="ledgerHeaderItem"></span></h3>
+                <button class="modal-close-btn" onclick="closeLedgerModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Summary Card -->
+                <div class="summary-card" style="margin-bottom: 16px;">
+                    <div class="summary-card-title"><i class="fas fa-clipboard-list"></i> Stock Ledger Summary</div>
+                    <div class="summary-grid-5">
+                        <div class="summary-item">
+                            <span class="label">PO Number</span>
+                            <span class="value" id="ledgerPoNo">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Item Name</span>
+                            <span class="value" id="ledgerItemName" style="color: #0284c7; font-weight: 700;">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Inward Qty</span>
+                            <span class="value" id="ledgerTotalInward" style="color: #16a34a;">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Issued Qty</span>
+                            <span class="value" id="ledgerTotalIssued" style="color: #ea580c;">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Current Available Balance</span>
+                            <span class="value" id="ledgerCurrentBalance"
+                                style="color: #15803d; font-size: 15px; font-weight: 800;">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ledger Table -->
+                <div class="table-container" style="max-height: 420px; overflow-y: auto;">
+                    <table class="data-table" id="itemLedgerTable">
+                        <thead>
+                            <tr>
+                                <th>DATE &amp; TIME</th>
+                                <th>TRANSACTION TYPE</th>
+                                <th>REF / VOUCHER NO</th>
+                                <th style="text-align: right;">INWARD (+)</th>
+                                <th style="text-align: right;">OUTWARD (-)</th>
+                                <th style="text-align: right; background-color: #2c729c;">BALANCE AFTER</th>
+                                <th>RECIPIENT / DEPT</th>
+                                <th>STORAGE LOCATION</th>
+                                <th>REMARKS / PURPOSE</th>
+                                <th>HANDLED BY</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemLedgerTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-export" onclick="exportItemLedgerCSV()"><i
+                        class="fas fa-file-csv"></i> Export Ledger</button>
+                <button type="button" class="btn btn-secondary" onclick="closeLedgerModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 5. EDIT STORAGE LOCATION MODAL                            -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="editLocationModal">
+        <div class="modal-box" style="max-width: 440px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-map-marker-alt"></i> Update Storage Location</h3>
+                <button class="modal-close-btn" onclick="closeLocationModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editLocationForm" onsubmit="handleLocationSubmit(event)">
+                    <input type="hidden" id="locHiddenPoNo">
+                    <input type="hidden" id="locHiddenItemKey">
+
+                    <p style="font-size: 12px; color: #475569; margin-bottom: 12px;">
+                        Assign or relocate <strong id="locItemNameLabel">Item</strong> in the warehouse storage bins.
+                    </p>
+
+                    <div class="form-group-vertical" style="margin-bottom: 14px;">
+                        <label for="newLocationInput">Storage Bin / Rack Location *</label>
+                        <input type="text" id="newLocationInput" list="locationDatalist" required
+                            placeholder="e.g. IT Store - Rack A-01, Bay 4...">
+                        <datalist id="locationDatalist">
+                            <option value="IT Store - Rack A-01">
+                            <option value="IT Store - Rack A-02">
+                            <option value="Data Center - Bay 04">
+                            <option value="Data Center - Floor 1">
+                            <option value="Network Lab - Rack N-03">
+                            <option value="Receiving Bay 2">
+                            <option value="General Store - Bin C-12">
+                            <option value="General Store - Bin C-14">
+                            <option value="Quarantine Area - Defect Bay">
+                        </datalist>
+                    </div>
+
+                    <div class="modal-footer" style="padding: 10px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0;">
+                        <button type="button" class="btn btn-secondary" onclick="closeLocationModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Location</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 6. PRINT MATERIAL ISSUE SLIP & GATE PASS MODAL            -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="printableGatePassModal">
+        <div class="modal-box" style="max-width: 720px; background: #ffffff;">
+            <div class="modal-header no-print">
+                <h3><i class="fas fa-print"></i> Material Issue Slip &amp; Gate Pass</h3>
+                <button class="modal-close-btn" onclick="closeGatePassModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="gatePassPrintArea" style="padding: 24px; font-family: 'Segoe UI', Tahoma, sans-serif;">
+                <!-- Slip Header with Company Pill -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #2c729c; padding-bottom: 14px; margin-bottom: 16px;">
+                    <div>
+                        <div class="logo-pill" style="height: 32px; display: inline-flex;">
+                            <div class="pill-left" style="font-size: 18px;">B</div>
+                            <div class="pill-right" style="font-size: 18px;">&amp; S</div>
+                        </div>
+                        <div style="font-size: 16px; font-weight: 900; color: #217fc0; margin-top: 4px;">B &amp; S GROUP OF COMPANIES</div>
+                        <div style="font-size: 11px; color: #64748b;">India Purchase &amp; Warehouse Inventory System</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <h2 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0; text-transform: uppercase;">
+                            MATERIAL ISSUE SLIP
+                        </h2>
+                        <div style="font-size: 12px; color: #64748b; font-weight: 700; margin-top: 2px;" id="slipVoucherNo">
+                            VOUCHER NO: ISS-2026-001
+                        </div>
+                        <div style="font-size: 11px; color: #64748b;" id="slipDate">Date: 2026-09-17</div>
+                    </div>
+                </div>
+
+                <!-- Slip Info Details Grid -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; font-size: 12px;">
+                    <div><strong>PO Reference:</strong> <span id="slipPoRef">PO01</span></div>
+                    <div><strong>Recipient Name:</strong> <span id="slipRecipientName">Amit Trivedi</span></div>
+                    <div><strong>Department:</strong> <span id="slipDept">Information Technology</span></div>
+                    <div><strong>Project Allocation:</strong> <span id="slipProject">PRJ-001 Upgrade</span></div>
+                    <div><strong>Storage Location:</strong> <span id="slipLocation">IT Store - Rack A-01</span></div>
+                    <div><strong>Gate Pass Issued By:</strong> <span id="slipIssuedBy">ANISH</span></div>
+                </div>
+
+                <!-- Slip Line Items Table -->
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px;">
+                    <thead>
+                        <tr style="background: #2c729c; color: #fff;">
+                            <th style="padding: 8px 10px; text-align: left; border: 1px solid #cbd5e1;">ITEM CODE</th>
+                            <th style="padding: 8px 10px; text-align: left; border: 1px solid #cbd5e1;">ITEM DESCRIPTION</th>
+                            <th style="padding: 8px 10px; text-align: right; border: 1px solid #cbd5e1;">QTY ISSUED</th>
+                            <th style="padding: 8px 10px; text-align: left; border: 1px solid #cbd5e1;">UOM</th>
+                            <th style="padding: 8px 10px; text-align: right; border: 1px solid #cbd5e1;">APPROX VALUE (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="slipItemsTableBody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+
+                <div style="background: #fffbeb; border: 1px solid #fef08a; padding: 10px 12px; border-radius: 4px; font-size: 11px; color: #854d0e; margin-bottom: 30px;">
+                    <strong>Purpose / Remarks:</strong> <span id="slipRemarks">Issued for project sprint deployment</span>
+                </div>
+
+                <!-- Signatures -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center; font-size: 11px; margin-top: 40px; padding-top: 10px;">
+                    <div>
+                        <div style="border-top: 1px dashed #94a3b8; padding-top: 6px; font-weight: 700;">STOREKEEPER / ISSUED BY</div>
+                        <div style="color: #64748b;">(Sign &amp; Date)</div>
+                    </div>
+                    <div>
+                        <div style="border-top: 1px dashed #94a3b8; padding-top: 6px; font-weight: 700;">RECEIVED BY (RECIPIENT)</div>
+                        <div style="color: #64748b;">(Sign &amp; Date)</div>
+                    </div>
+                    <div>
+                        <div style="border-top: 1px dashed #94a3b8; padding-top: 6px; font-weight: 700;">AUTHORIZED SIGNATORY</div>
+                        <div style="color: #64748b;">(HOD / Manager)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer no-print">
+                <button type="button" class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i>
+                    Print Slip / Gate Pass</button>
+                <button type="button" class="btn btn-secondary" onclick="closeGatePassModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Toast Notification -->
+    <div id="toastNotification" class="toast-msg">
+        <i id="toastIcon" class="fas fa-check-circle" style="font-size: 18px; color: #22c55e;"></i>
+        <span id="toastText">Action completed successfully</span>
+    </div>
+
+    <!-- Shared Data Layer Script -->
+    <script src="shared_data.js"></script>
+
+    <!-- Inventory Controller Script -->
+    <script>
+        let currentInvTab = 'All'; // 'All', 'In Stock', 'Low Stock', 'Ledger'
+        let currentSelectedPo = 'All';
+        let currentCompany = 'All';
+        let currentEditingItem = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initPoDropdown();
+            renderInventoryDashboard();
+        });
+
+        // Initialize PO Selector Dropdown filtered by currentCompany
+        function initPoDropdown() {
+            const select = document.getElementById('filterPoSelect');
+            if (!select) return;
+
+            const allPOs = window.PurchaseData.getAllPOs();
+            select.innerHTML = '<option value="All">All Purchase Orders</option>';
+
+            const filteredPOs = (currentCompany === 'All')
+                ? allPOs
+                : allPOs.filter(p => (p.company || 'GRPL').toUpperCase() === currentCompany.toUpperCase());
+
+            filteredPOs.forEach(po => {
+                // Count available items in this PO
+                const items = window.PurchaseData.getInventoryItems({ poNo: po.poNo, company: currentCompany, availableOnly: false });
+                const inStockCount = items.filter(i => i.availableQty > 0).length;
+                const opt = document.createElement('option');
+                opt.value = po.poNo;
+                opt.textContent = `${po.poNo} — ${po.supplierName} [${po.company || 'GRPL'}] (${po.department}) [${inStockCount} In Stock]`;
+                select.appendChild(opt);
+            });
+        }
+
+        // When Company dropdown changes (GRPL, GHPL, LSPL, All)
+        function onCompanySelectChange() {
+            const select = document.getElementById('filterCompanySelect');
+            currentCompany = select ? select.value : 'All';
+
+            initPoDropdown();
+
+            // If active PO doesn't match new company, reset to All
+            if (currentSelectedPo !== 'All') {
+                const po = window.PurchaseData.getPO(currentSelectedPo);
+                if (po && currentCompany !== 'All' && (po.company || 'GRPL').toUpperCase() !== currentCompany.toUpperCase()) {
+                    currentSelectedPo = 'All';
+                    document.getElementById('filterPoSelect').value = 'All';
+                }
+            }
+
+            updatePoBanner();
+            renderInventoryDashboard();
+        }
+
+        // When PO dropdown changes
+        function onPoSelectChange() {
+            currentSelectedPo = document.getElementById('filterPoSelect').value || 'All';
+            updatePoBanner();
+            renderInventoryDashboard();
+        }
+
+        // Clear PO selection back to All
+        function clearPoSelection() {
+            document.getElementById('filterPoSelect').value = 'All';
+            currentSelectedPo = 'All';
+            updatePoBanner();
+            renderInventoryDashboard();
+        }
+
+        // Update Selected PO Summary Banner
+        function updatePoBanner() {
+            const banner = document.getElementById('selectedPoBanner');
+            if (!banner) return;
+
+            if (currentSelectedPo === 'All') {
+                banner.style.display = 'none';
+                return;
+            }
+
+            const po = window.PurchaseData.getPO(currentSelectedPo);
+            if (!po) {
+                banner.style.display = 'none';
+                return;
+            }
+
+            const items = window.PurchaseData.getInventoryItems({ poNo: po.poNo, company: currentCompany, availableOnly: false });
+            const inStockItems = items.filter(i => i.availableQty > 0);
+            const totalAvailUnits = inStockItems.reduce((sum, i) => sum + i.availableQty, 0);
+
+            document.getElementById('bannerPoNo').textContent = `${po.poNo} [${po.company || 'GRPL'}]`;
+            document.getElementById('bannerSupplier').textContent = po.supplierName;
+            document.getElementById('bannerDept').textContent = `${po.company || 'GRPL'} • ${po.department}`;
+            document.getElementById('bannerDate').textContent = po.poDate;
+            document.getElementById('bannerProject').textContent = po.projectName;
+            document.getElementById('bannerCost').textContent = `₹ ${Number(po.totalCost || 0).toLocaleString('en-IN')}`;
+            document.getElementById('bannerStatus').textContent = po.status;
+            document.getElementById('bannerSkus').textContent = `${inStockItems.length} SKU (${totalAvailUnits} Units)`;
+
+            banner.style.display = 'flex';
+        }
+
+        // Switch main status tabs (All, In Stock, Low Stock, Ledger)
+        function switchInventoryTab(tabName) {
+            currentInvTab = tabName;
+            document.querySelectorAll('.status-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tabName);
+            });
+
+            const tableView = document.getElementById('inventoryTableView');
+            const ledgerView = document.getElementById('inventoryLedgerView');
+
+            if (tabName === 'Ledger') {
+                tableView.style.display = 'none';
+                ledgerView.style.display = 'block';
+                renderGlobalLedger();
+            } else {
+                tableView.style.display = 'block';
+                ledgerView.style.display = 'none';
+                renderInventoryDashboard();
+            }
+        }
+
+        // Apply filters handler
+        function applyInventoryFilters() {
+            if (currentInvTab === 'Ledger') {
+                renderGlobalLedger();
+            } else {
+                renderInventoryDashboard();
+            }
+        }
+
+        // Reset all filters
+        function resetInventoryFilters() {
+            document.getElementById('filterCompanySelect').value = 'All';
+            currentCompany = 'All';
+            initPoDropdown();
+            document.getElementById('filterPoSelect').value = 'All';
+            currentSelectedPo = 'All';
+            document.getElementById('filterSearch').value = '';
+            document.getElementById('filterStockStatus').value = 'available';
+            document.getElementById('filterDept').value = 'All';
+            updatePoBanner();
+            switchInventoryTab('All');
+        }
+
+        // Render main dashboard and table
+        function renderInventoryDashboard() {
+            const stockFilter = document.getElementById('filterStockStatus') ? document.getElementById('filterStockStatus').value : 'available';
+            const availableOnly = (stockFilter === 'available');
+            const search = document.getElementById('filterSearch').value;
+            const dept = document.getElementById('filterDept').value;
+
+            let statusParam = 'All';
+            if (currentInvTab !== 'All') {
+                statusParam = currentInvTab;
+            } else if (stockFilter === 'low') {
+                statusParam = 'Low Stock';
+            }
+
+            // Fetch filtered inventory items (filtered by selected Company and PO)
+            const items = window.PurchaseData.getInventoryItems({
+                poNo: currentSelectedPo,
+                company: currentCompany,
+                availableOnly: availableOnly,
+                search: search,
+                department: dept,
+                status: statusParam
+            });
+
+            // Update Tab Badges
+            const allItemsUnfiltered = window.PurchaseData.getInventoryItems({
+                poNo: currentSelectedPo,
+                company: currentCompany,
+                availableOnly: availableOnly
+            });
+            document.getElementById('badgeTabAll').textContent = allItemsUnfiltered.length;
+            document.getElementById('badgeTabInStock').textContent = allItemsUnfiltered.filter(i => i.availableQty > 2).length;
+            document.getElementById('badgeTabLowStock').textContent = allItemsUnfiltered.filter(i => i.availableQty > 0 && i.availableQty <= 2).length;
+
+            // Recent ledger count
+            let totalMovements = 0;
+            let pos = currentSelectedPo === 'All' ? window.PurchaseData.getAllPOs() : [window.PurchaseData.getPO(currentSelectedPo)].filter(Boolean);
+            if (currentCompany !== 'All') {
+                pos = pos.filter(p => (p.company || 'GRPL').toUpperCase() === currentCompany.toUpperCase());
+            }
+            pos.forEach(p => p.lineItems.forEach(li => totalMovements += (li.stockMovements || []).length));
+            document.getElementById('badgeTabLedger').textContent = totalMovements;
+
+            // Render Table Body
+            const tbody = document.getElementById('inventoryTableBody');
+            tbody.innerHTML = '';
+
+            if (items.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="16" style="text-align: center; padding: 36px 20px; color: #64748b;">
+                            <i class="fas fa-boxes" style="font-size: 32px; color: #cbd5e1; margin-bottom: 10px; display: block;"></i>
+                            <div style="font-size: 14px; font-weight: 700; color: #1e293b;">No inventory items found matching your filters</div>
+                            <div style="font-size: 12px; margin-top: 4px;">Try changing Company to "All Companies" or resetting the search filters.</div>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('invPaginationInfo').textContent = `Showing 0 to 0 of 0 items`;
+                return;
+            }
+
+            items.forEach(item => {
+                const tr = document.createElement('tr');
+
+                // Available badge styling
+                let availBadgeClass = 'in-stock';
+                if (item.stockStatus === 'Low Stock') {
+                    availBadgeClass = 'low-stock';
+                } else if (item.stockStatus === 'Fully Dispatched') {
+                    availBadgeClass = 'out-of-stock';
+                } else if (item.stockStatus === 'Rejected / Defective') {
+                    availBadgeClass = 'rejected';
+                } else if (item.stockStatus === 'Pending Acceptance') {
+                    availBadgeClass = 'pending';
+                } else if (item.stockStatus === 'Awaiting Delivery') {
+                    availBadgeClass = 'out-of-stock';
+                }
+
+                // Batch Badges
+                let batchBadgesHtml = '<span style="color: #94a3b8; font-style: italic;">No Batches</span>';
+                if (item.batches && item.batches.length > 0) {
+                    batchBadgesHtml = item.batches.map(b =>
+                        `<span class="badge open" style="font-size: 10px; margin: 1px;" title="Rec Date: ${b.recDate} | Qty: ${b.recQty} | Inv: ${b.invoiceNo}">${b.batchNo} (${b.recQty})</span>`
+                    ).join(' ');
+                }
+
+                tr.innerHTML = `
+                    <td style="font-weight: 800; color: #0284c7; white-space: nowrap;">
+                        ${item.poNo}
+                        <span class="badge" style="background: #e0f2fe; color: #0369a1; font-size: 10px; margin-left: 4px; padding: 2px 5px; border-radius: 3px; font-weight: 700;" title="Company: ${item.company || 'GRPL'}">${item.company || 'GRPL'}</span>
+                    </td>
+                    <td style="white-space: nowrap; color: #475569; font-size: 11px;">${item.poDate}</td>
+                    <td style="font-weight: 600; color: #334155; white-space: nowrap;">${item.supplierName}</td>
+                    <td><span class="badge open" style="font-weight: 700; font-size: 11px;">${item.itemKey}</span></td>
+                    <td style="font-weight: 700; color: #0f172a; white-space: nowrap;">${item.itemName}</td>
+                    <td style="font-size: 11px; color: #475569; white-space: nowrap;">${item.projectName || item.projectCode || '-'}</td>
+                    <td>
+                        <span class="loc-pill" onclick="openLocationModal('${item.poNo}', '${item.itemKey}', '${item.location}')" title="Click to update storage location">
+                            <i class="fas fa-map-marker-alt" style="color: #0284c7;"></i>
+                            <span>${item.location}</span>
+                            <i class="fas fa-pencil-alt" style="font-size: 9px; color: #94a3b8; margin-left: 2px;"></i>
+                        </span>
+                    </td>
+                    <td>${batchBadgesHtml}</td>
+                    <td style="text-align: right; font-weight: 600;">${item.recQty}</td>
+                    <td style="text-align: right; font-weight: 700; color: #166534;">${item.userAcceptedQty}</td>
+                    <td style="text-align: right; font-weight: 700; color: #c2410c;">${item.issuedQty}</td>
+                    <td style="text-align: right;">
+                        <span class="stock-badge-large ${availBadgeClass}">
+                            ${item.availableQty} ${item.uom}
+                        </span>
+                    </td>
+                    <td style="font-weight: 600; color: #475569;">${item.uom}</td>
+                    <td style="text-align: right; color: #475569;">₹ ${item.unitCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td style="text-align: right; font-weight: 700; color: #0f172a;">₹ ${item.availableValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td style="text-align: center; white-space: nowrap;">
+                        <div class="action-btn-group" style="justify-content: center; gap: 6px;">
+                            <button type="button" class="action-btn action-btn-return"
+                                onclick="openReturnModal('${item.poNo}', '${item.itemKey}')"
+                                title="Return Stock (Issued Return or Return to Vendor)">
+                                <i class="fas fa-undo-alt"></i> Return
+                            </button>
+                            <button type="button" class="action-btn action-btn-actions"
+                                onclick="toggleActionMenu(event, '${item.poNo}', '${item.itemKey}')"
+                                title="More Actions">
+                                <i class="fas fa-cog"></i> Actions <i class="fas fa-chevron-down" style="font-size: 8px; margin-left: 3px;"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('invPaginationInfo').textContent = `Showing 1 to ${items.length} of ${items.length} inventory records`;
+        }
+
+        // Render Global Recent Stock Movements (Ledger Tab)
+        function renderGlobalLedger() {
+            const tbody = document.getElementById('globalLedgerTableBody');
+            tbody.innerHTML = '';
+
+            const movements = [];
+            let pos = currentSelectedPo === 'All' ? window.PurchaseData.getAllPOs() : [window.PurchaseData.getPO(currentSelectedPo)].filter(Boolean);
+            if (currentCompany !== 'All') {
+                pos = pos.filter(p => (p.company || 'GRPL').toUpperCase() === currentCompany.toUpperCase());
+            }
+
+            pos.forEach(po => {
+                po.lineItems.forEach(li => {
+                    if (li.stockMovements && Array.isArray(li.stockMovements)) {
+                        li.stockMovements.forEach(m => {
+                            movements.push({
+                                ...m,
+                                poNo: po.poNo,
+                                itemKey: li.itemKey,
+                                itemName: li.itemName,
+                                uom: li.uom || 'Piece'
+                            });
+                        });
+                    }
+                });
+            });
+
+            // Sort newest first
+            movements.sort((a, b) => new Date(b.date + ' ' + (b.time || '00:00')) - new Date(a.date + ' ' + (a.time || '00:00')));
+
+            if (movements.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="13" style="text-align: center; padding: 30px; color: #64748b;">
+                            <i class="fas fa-history" style="font-size: 28px; color: #cbd5e1; margin-bottom: 8px; display: block;"></i>
+                            No stock movement transactions recorded yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            movements.forEach(m => {
+                const tr = document.createElement('tr');
+
+                let typeBadge = '';
+                let inwardQty = '-';
+                let outwardQty = '-';
+
+                if (m.type === 'INWARD' || m.type === 'INWARD_ACCEPT') {
+                    typeBadge = '<span class="badge full"><i class="fas fa-arrow-down"></i> INWARD</span>';
+                    inwardQty = `<strong style="color: #15803d;">+${m.qty} ${m.uom}</strong>`;
+                } else if (m.type === 'ISSUE') {
+                    typeBadge = '<span class="badge partial"><i class="fas fa-arrow-up"></i> ISSUE</span>';
+                    outwardQty = `<strong style="color: #c2410c;">-${m.qty} ${m.uom}</strong>`;
+                } else if (m.type === 'RETURN') {
+                    typeBadge = '<span class="badge open"><i class="fas fa-undo"></i> RETURN</span>';
+                    inwardQty = `<strong style="color: #0284c7;">+${m.qty} ${m.uom}</strong>`;
+                } else if (m.type === 'ADJUSTMENT') {
+                    typeBadge = '<span class="badge closed"><i class="fas fa-sliders-h"></i> ADJUST</span>';
+                    if (m.qty > 0) inwardQty = `<strong>+${m.qty}</strong>`;
+                    else outwardQty = `<strong style="color: #dc2626;">${m.qty}</strong>`;
+                } else if (m.type === 'REJECTION') {
+                    typeBadge = '<span class="badge rejected"><i class="fas fa-ban"></i> REJECTED</span>';
+                }
+
+                tr.innerHTML = `
+                    <td style="font-weight: 700; color: #475569;">${m.id}</td>
+                    <td>
+                        <div style="font-weight: 600; color: #0f172a;">${m.date}</div>
+                        <div style="font-size: 10px; color: #64748b;">${m.time || ''}</div>
+                    </td>
+                    <td>${typeBadge}</td>
+                    <td style="font-weight: 700; color: #0284c7;">${m.poNo}</td>
+                    <td>
+                        <div style="font-weight: 700; color: #0f172a;">${m.itemName}</div>
+                        <div style="font-size: 11px; color: #64748b;">Key: ${m.itemKey}</div>
+                    </td>
+                    <td style="text-align: right;">${inwardQty}</td>
+                    <td style="text-align: right;">${outwardQty}</td>
+                    <td style="text-align: right; font-weight: 800; color: #15803d;">${m.balanceAfter} ${m.uom}</td>
+                    <td>
+                        <div style="font-weight: 600;">${m.recipient || '-'}</div>
+                        <div style="font-size: 10px; color: #64748b;">${m.department || ''}</div>
+                    </td>
+                    <td><span class="badge open" style="font-size: 10px;">${m.referenceNo || '-'}</span></td>
+                    <td style="font-size: 11px; color: #475569;">${m.location || '-'}</td>
+                    <td style="font-size: 11px; max-width: 220px;">${m.remarks || '-'}</td>
+                    <td style="text-align: center;">
+                        <button class="btn-action-inv slip" onclick="openGatePassFromMovement('${m.poNo}', '${m.itemKey}', '${m.id}')" title="Print Gate Pass for this issue">
+                            <i class="fas fa-print"></i>
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        // =========================================================
+        // ISSUE STOCK MODAL LOGIC
+        // =========================================================
+        function openIssueModal(poNo, itemKey) {
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+            if (!item) {
+                showToast("Item details not found", "error");
+                return;
+            }
+
+            document.getElementById('issueHiddenPoNo').value = poNo;
+            document.getElementById('issueHiddenItemKey').value = itemKey;
+            document.getElementById('issuePoNo').textContent = `${poNo} (${item.supplierName})`;
+            document.getElementById('issueItemName').textContent = `${item.itemName} (${item.itemKey})`;
+            document.getElementById('issueLocation').textContent = item.location;
+            document.getElementById('issueAvailBadge').textContent = `${item.availableQty} ${item.uom}`;
+
+            const qtyInput = document.getElementById('issueQty');
+            qtyInput.value = '1';
+            qtyInput.max = item.availableQty;
+            document.getElementById('issueQtyHelp').textContent = `Maximum allowable issue: ${item.availableQty} ${item.uom}`;
+
+            document.getElementById('issueSlipNo').value = `ISS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+            document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('issueDept').value = item.department || 'Information Technology';
+            document.getElementById('issueProject').value = item.projectName || item.projectCode || '';
+            document.getElementById('issueRecipient').value = '';
+            document.getElementById('issueRemarks').value = '';
+
+            document.getElementById('issueStockModal').classList.add('active');
+        }
+
+        function closeIssueModal() {
+            document.getElementById('issueStockModal').classList.remove('active');
+        }
+
+        function handleIssueStockSubmit(e) {
+            e.preventDefault();
+            const poNo = document.getElementById('issueHiddenPoNo').value;
+            const itemKey = document.getElementById('issueHiddenItemKey').value;
+            const qty = Number(document.getElementById('issueQty').value);
+            const recipient = document.getElementById('issueRecipient').value.trim();
+            const dept = document.getElementById('issueDept').value;
+            const project = document.getElementById('issueProject').value.trim();
+            const slipNo = document.getElementById('issueSlipNo').value.trim();
+            const date = document.getElementById('issueDate').value;
+            const remarks = document.getElementById('issueRemarks').value.trim();
+
+            const res = window.PurchaseData.issueStock(poNo, itemKey, {
+                qty,
+                recipient,
+                department: dept,
+                project,
+                referenceNo: slipNo,
+                date,
+                remarks,
+                issuedBy: 'ANISH'
+            });
+
+            if (res.success) {
+                closeIssueModal();
+                showToast(`Successfully issued ${qty} units to ${recipient}!`, "success");
+                initPoDropdown();
+                updatePoBanner();
+                renderInventoryDashboard();
+            } else {
+                alert(res.message);
+            }
+        }
+
+        // =========================================================
+        // FLOATING ACTIONS DROPDOWN MENU
+        // =========================================================
+        let activeActionMenu = null;
+
+        function toggleActionMenu(event, poNo, itemKey) {
+            event.stopPropagation();
+
+            const existing = document.getElementById('globalActionDropdownMenu');
+            if (existing && existing.dataset.itemKey === itemKey && existing.dataset.poNo === poNo) {
+                closeActionMenu();
+                return;
+            }
+            closeActionMenu();
+
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+            if (!item) return;
+
+            const btn = event.currentTarget;
+            const rect = btn.getBoundingClientRect();
+
+            const menu = document.createElement('div');
+            menu.id = 'globalActionDropdownMenu';
+            menu.className = 'action-floating-menu';
+            menu.dataset.poNo = poNo;
+            menu.dataset.itemKey = itemKey;
+
+            const canIssue = item.availableQty > 0;
+            const hasStock = item.availableQty > 0 || item.issuedQty > 0;
+
+            menu.innerHTML = `
+                <a href="javascript:void(0)" class="action-menu-item ${canIssue ? '' : 'disabled'}" onclick="onMenuAction(event, 'issue', '${poNo}', '${itemKey}')">
+                    <i class="fas fa-dolly" style="color: #0284c7;"></i> Issue Stock
+                </a>
+                <a href="javascript:void(0)" class="action-menu-item ${hasStock ? '' : 'disabled'}" onclick="onMenuAction(event, 'return', '${poNo}', '${itemKey}')">
+                    <i class="fas fa-undo-alt" style="color: #ea580c;"></i> Return Stock
+                </a>
+                <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'ledger', '${poNo}', '${itemKey}')">
+                    <i class="fas fa-history" style="color: #64748b;"></i> Stock Ledger
+                </a>
+                <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'adjust', '${poNo}', '${itemKey}')">
+                    <i class="fas fa-sliders-h" style="color: #0284c7;"></i> Audit / Adjust Stock
+                </a>
+                <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'slip', '${poNo}', '${itemKey}')">
+                    <i class="fas fa-print" style="color: #16a34a;"></i> Print Gate Pass / Slip
+                </a>
+                <div style="height: 1px; background: #e2e8f0; margin: 4px 0;"></div>
+                <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'location', '${poNo}', '${itemKey}')">
+                    <i class="fas fa-map-marker-alt" style="color: #0369a1;"></i> Change Location
+                </a>
+            `;
+
+            document.body.appendChild(menu);
+
+            const menuWidth = 200;
+            let left = rect.right - menuWidth;
+            if (left < 10) left = rect.left;
+            let top = rect.bottom + 4;
+
+            if (top + 240 > window.innerHeight) {
+                top = rect.top - 240;
+            }
+
+            menu.style.position = 'fixed';
+            menu.style.top = `${top}px`;
+            menu.style.left = `${left}px`;
+            menu.style.zIndex = '999999';
+
+            activeActionMenu = menu;
+        }
+
+        function onMenuAction(event, action, poNo, itemKey) {
+            event.stopPropagation();
+            closeActionMenu();
+            if (action === 'issue') openIssueModal(poNo, itemKey);
+            else if (action === 'return') openReturnModal(poNo, itemKey);
+            else if (action === 'ledger') openLedgerModal(poNo, itemKey);
+            else if (action === 'adjust') openAdjustModal(poNo, itemKey);
+            else if (action === 'slip') openGatePassModal(poNo, itemKey);
+            else if (action === 'location') {
+                const item = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false }).find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+                openLocationModal(poNo, itemKey, item ? item.location : '');
+            }
+        }
+
+        function closeActionMenu() {
+            const existing = document.getElementById('globalActionDropdownMenu');
+            if (existing) {
+                existing.remove();
+                activeActionMenu = null;
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#globalActionDropdownMenu') && !e.target.closest('.action-btn-actions')) {
+                closeActionMenu();
+            }
+        });
+        window.addEventListener('resize', closeActionMenu);
+        window.addEventListener('scroll', closeActionMenu, true);
+
+        // =========================================================
+        // RETURN STOCK MODAL LOGIC (Supports Store & Vendor Return)
+        // =========================================================
+        let currentReturnItem = null;
+
+        function openReturnModal(poNo, itemKey) {
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+            if (!item) return;
+
+            const hasIssued = item.issuedQty > 0;
+            const hasAvail = item.availableQty > 0;
+
+            if (!hasIssued && !hasAvail) {
+                showToast("No stock units (issued or available) to return", "error");
+                return;
+            }
+
+            currentReturnItem = item;
+
+            document.getElementById('returnHiddenPoNo').value = poNo;
+            document.getElementById('returnHiddenItemKey').value = itemKey;
+            document.getElementById('returnPoNo').textContent = poNo;
+            document.getElementById('returnItemName').textContent = `${item.itemName} (${item.itemKey})`;
+            document.getElementById('returnMaxQtyBadge').textContent = `${item.issuedQty} ${item.uom}`;
+            document.getElementById('returnAvailBadge').textContent = `${item.availableQty} ${item.uom}`;
+
+            const typeSelect = document.getElementById('returnTypeSelect');
+            if (typeSelect) {
+                if (hasIssued) {
+                    typeSelect.value = 'STORE';
+                } else {
+                    typeSelect.value = 'VENDOR';
+                }
+            }
+
+            onReturnTypeChange();
+
+            document.getElementById('returnRefNo').value = `RET-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+            document.getElementById('returnDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('returnBy').value = '';
+            document.getElementById('returnRemarks').value = '';
+
+            document.getElementById('returnStockModal').classList.add('active');
+        }
+
+        function onReturnTypeChange() {
+            if (!currentReturnItem) return;
+            const typeSelect = document.getElementById('returnTypeSelect');
+            const returnType = typeSelect ? typeSelect.value : 'STORE';
+            const qtyInput = document.getElementById('returnQty');
+            const help = document.getElementById('returnQtyHelp');
+            const byLabel = document.getElementById('lblReturnBy');
+            const btnSubmit = document.getElementById('btnSubmitReturn');
+
+            if (returnType === 'VENDOR') {
+                const max = currentReturnItem.availableQty;
+                qtyInput.max = max;
+                qtyInput.value = max > 0 ? 1 : 0;
+                help.textContent = `Maximum available units eligible to return to vendor: ${max} ${currentReturnItem.uom}`;
+                if (byLabel) byLabel.textContent = 'Returned To (Vendor Rep / Courier) *';
+                if (btnSubmit) btnSubmit.innerHTML = '<i class="fas fa-truck-loading"></i> Confirm Return to Vendor';
+            } else {
+                const max = currentReturnItem.issuedQty;
+                qtyInput.max = max;
+                qtyInput.value = max > 0 ? 1 : 0;
+                help.textContent = `Maximum issued units eligible to return back to store: ${max} ${currentReturnItem.uom}`;
+                if (byLabel) byLabel.textContent = 'Returned By (Person / Dept) *';
+                if (btnSubmit) btnSubmit.innerHTML = '<i class="fas fa-undo-alt"></i> Confirm Return to Stock';
+            }
+        }
+
+        function closeReturnModal() {
+            document.getElementById('returnStockModal').classList.remove('active');
+            currentReturnItem = null;
+        }
+
+        function handleReturnStockSubmit(e) {
+            e.preventDefault();
+            const poNo = document.getElementById('returnHiddenPoNo').value;
+            const itemKey = document.getElementById('returnHiddenItemKey').value;
+            const qty = Number(document.getElementById('returnQty').value);
+            const returnedBy = document.getElementById('returnBy').value.trim();
+            const slipNo = document.getElementById('returnRefNo').value.trim();
+            const date = document.getElementById('returnDate').value;
+            const remarks = document.getElementById('returnRemarks').value.trim();
+            const typeSelect = document.getElementById('returnTypeSelect');
+            const returnType = typeSelect ? typeSelect.value : 'STORE';
+
+            const res = window.PurchaseData.returnStock(poNo, itemKey, {
+                qty,
+                type: returnType,
+                returnedBy,
+                referenceNo: slipNo,
+                date,
+                remarks,
+                receivedBy: 'ANISH'
+            });
+
+            if (res.success) {
+                closeReturnModal();
+                showToast(res.message || `Successfully returned ${qty} units!`, "success");
+                initPoDropdown();
+                updatePoBanner();
+                renderInventoryDashboard();
+            } else {
+                alert(res.message);
+            }
+        }
+
+        // =========================================================
+        // STOCK ADJUSTMENT MODAL LOGIC
+        // =========================================================
+        function openAdjustModal(poNo, itemKey) {
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+            if (!item) return;
+
+            document.getElementById('adjustHiddenPoNo').value = poNo;
+            document.getElementById('adjustHiddenItemKey').value = itemKey;
+            document.getElementById('adjustPoNo').textContent = poNo;
+            document.getElementById('adjustItemName').textContent = `${item.itemName} (${item.itemKey})`;
+            document.getElementById('adjustAvailBadge').textContent = `${item.availableQty} ${item.uom}`;
+
+            const qtyInput = document.getElementById('adjustQty');
+            qtyInput.value = '1';
+            document.getElementById('adjustType').value = 'DEDUCT';
+            document.getElementById('adjustQtyHelp').textContent = `Max allowable deduction: ${item.availableQty} ${item.uom}`;
+
+            document.getElementById('adjustAuthBy').value = 'ANISH';
+            document.getElementById('adjustDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('adjustRemarks').value = '';
+
+            document.getElementById('adjustStockModal').classList.add('active');
+        }
+
+        function onAdjustTypeChange() {
+            const type = document.getElementById('adjustType').value;
+            const poNo = document.getElementById('adjustHiddenPoNo').value;
+            const itemKey = document.getElementById('adjustHiddenItemKey').value;
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+
+            if (type === 'DEDUCT' && item) {
+                document.getElementById('adjustQtyHelp').textContent = `Max allowable deduction: ${item.availableQty} ${item.uom}`;
+                document.getElementById('adjustQty').max = item.availableQty;
+            } else {
+                document.getElementById('adjustQtyHelp').textContent = `Surplus units will be credited into available inventory.`;
+                document.getElementById('adjustQty').removeAttribute('max');
+            }
+        }
+
+        function closeAdjustModal() {
+            document.getElementById('adjustStockModal').classList.remove('active');
+        }
+
+        function handleAdjustStockSubmit(e) {
+            e.preventDefault();
+            const poNo = document.getElementById('adjustHiddenPoNo').value;
+            const itemKey = document.getElementById('adjustHiddenItemKey').value;
+            const type = document.getElementById('adjustType').value;
+            const qty = Number(document.getElementById('adjustQty').value);
+            const authBy = document.getElementById('adjustAuthBy').value.trim();
+            const date = document.getElementById('adjustDate').value;
+            const remarks = document.getElementById('adjustRemarks').value.trim();
+
+            const res = window.PurchaseData.adjustStock(poNo, itemKey, {
+                type,
+                qty,
+                adjustedBy: authBy,
+                date,
+                remarks
+            });
+
+            if (res.success) {
+                closeAdjustModal();
+                showToast(`Stock adjustment of ${qty} units recorded successfully!`, "success");
+                initPoDropdown();
+                updatePoBanner();
+                renderInventoryDashboard();
+            } else {
+                alert(res.message);
+            }
+        }
+
+        // =========================================================
+        // STOCK MOVEMENT LEDGER MODAL ("Stock Card")
+        // =========================================================
+        function openLedgerModal(poNo, itemKey) {
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+            if (!item) return;
+
+            currentEditingItem = item;
+
+            document.getElementById('ledgerHeaderItem').textContent = `${item.itemName} [${item.itemKey}]`;
+            document.getElementById('ledgerPoNo').textContent = `${poNo} (${item.supplierName})`;
+            document.getElementById('ledgerItemName').textContent = item.itemName;
+            document.getElementById('ledgerCurrentBalance').textContent = `${item.availableQty} ${item.uom}`;
+
+            const movements = item.stockMovements || [];
+            let totalInward = 0;
+            let totalIssued = item.issuedQty || 0;
+
+            movements.forEach(m => {
+                if (m.type === 'INWARD' || m.type === 'INWARD_ACCEPT' || (m.type === 'RETURN')) {
+                    totalInward += Number(m.qty) || 0;
+                }
+            });
+
+            document.getElementById('ledgerTotalInward').textContent = `${totalInward} ${item.uom}`;
+            document.getElementById('ledgerTotalIssued').textContent = `${totalIssued} ${item.uom}`;
+
+            const tbody = document.getElementById('itemLedgerTableBody');
+            tbody.innerHTML = '';
+
+            if (movements.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 20px; color: #64748b;">
+                            No stock movement transactions recorded yet for this item.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                // Display movements in chronological order
+                movements.forEach(m => {
+                    const tr = document.createElement('tr');
+                    let typeBadge = '';
+                    let inwardVal = '-';
+                    let outwardVal = '-';
+
+                    if (m.type === 'INWARD' || m.type === 'INWARD_ACCEPT') {
+                        typeBadge = '<span class="badge full"><i class="fas fa-arrow-down"></i> INWARD</span>';
+                        inwardVal = `<strong style="color: #15803d;">+${m.qty}</strong>`;
+                    } else if (m.type === 'ISSUE') {
+                        typeBadge = '<span class="badge partial"><i class="fas fa-arrow-up"></i> ISSUE</span>';
+                        outwardVal = `<strong style="color: #c2410c;">-${m.qty}</strong>`;
+                    } else if (m.type === 'RETURN') {
+                        typeBadge = '<span class="badge open"><i class="fas fa-undo"></i> RETURN</span>';
+                        inwardVal = `<strong style="color: #0284c7;">+${m.qty}</strong>`;
+                    } else if (m.type === 'ADJUSTMENT') {
+                        typeBadge = '<span class="badge closed"><i class="fas fa-sliders-h"></i> ADJUST</span>';
+                        if (m.qty > 0) inwardVal = `<strong>+${m.qty}</strong>`;
+                        else outwardVal = `<strong style="color: #dc2626;">${m.qty}</strong>`;
+                    } else if (m.type === 'REJECTION') {
+                        typeBadge = '<span class="badge rejected"><i class="fas fa-ban"></i> REJECTED</span>';
+                    }
+
+                    tr.innerHTML = `
+                        <td>${m.date} ${m.time || ''}</td>
+                        <td>${typeBadge}</td>
+                        <td><span class="badge open" style="font-size: 10px;">${m.referenceNo || '-'}</span></td>
+                        <td style="text-align: right;">${inwardVal}</td>
+                        <td style="text-align: right;">${outwardVal}</td>
+                        <td style="text-align: right; font-weight: 800; color: #15803d;">${m.balanceAfter} ${item.uom}</td>
+                        <td>${m.recipient || '-'} <small style="color: #64748b;">(${m.department || ''})</small></td>
+                        <td style="font-size: 11px;">${m.location || item.location}</td>
+                        <td style="font-size: 11px; max-width: 220px;">${m.remarks || '-'}</td>
+                        <td>${m.issuedBy || m.adjustedBy || m.receivedBy || 'System'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.getElementById('stockLedgerModal').classList.add('active');
+        }
+
+        function closeLedgerModal() {
+            document.getElementById('stockLedgerModal').classList.remove('active');
+            currentEditingItem = null;
+        }
+
+        function exportItemLedgerCSV() {
+            if (!currentEditingItem || !currentEditingItem.stockMovements) return;
+            const rows = [
+                ["Transaction ID", "Date", "Time", "Type", "Ref / Slip No", "Inward Qty", "Outward Qty", "Balance After", "Recipient", "Department", "Remarks"]
+            ];
+
+            currentEditingItem.stockMovements.forEach(m => {
+                rows.push([
+                    m.id,
+                    m.date,
+                    m.time || '',
+                    m.type,
+                    m.referenceNo || '',
+                    (m.type === 'INWARD' || m.type === 'INWARD_ACCEPT' || m.type === 'RETURN') ? m.qty : 0,
+                    (m.type === 'ISSUE') ? m.qty : 0,
+                    m.balanceAfter,
+                    m.recipient || '',
+                    m.department || '',
+                    `"${(m.remarks || '').replace(/"/g, '""')}"`
+                ]);
+            });
+
+            downloadCSV(rows, `Stock_Ledger_${currentEditingItem.poNo}_${currentEditingItem.itemKey}.csv`);
+        }
+
+        // =========================================================
+        // EDIT LOCATION MODAL
+        // =========================================================
+        function openLocationModal(poNo, itemKey, currentLocation) {
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+            if (!item) return;
+
+            document.getElementById('locHiddenPoNo').value = poNo;
+            document.getElementById('locHiddenItemKey').value = itemKey;
+            document.getElementById('locItemNameLabel').textContent = `${item.itemName} (${item.itemKey})`;
+            document.getElementById('newLocationInput').value = currentLocation || item.location || '';
+
+            document.getElementById('editLocationModal').classList.add('active');
+        }
+
+        function closeLocationModal() {
+            document.getElementById('editLocationModal').classList.remove('active');
+        }
+
+        function handleLocationSubmit(e) {
+            e.preventDefault();
+            const poNo = document.getElementById('locHiddenPoNo').value;
+            const itemKey = document.getElementById('locHiddenItemKey').value;
+            const newLoc = document.getElementById('newLocationInput').value.trim();
+
+            const res = window.PurchaseData.updateItemLocation(poNo, itemKey, newLoc);
+            if (res.success) {
+                closeLocationModal();
+                showToast(`Storage location updated to "${newLoc}"`, "success");
+                renderInventoryDashboard();
+            } else {
+                alert(res.message);
+            }
+        }
+
+        // =========================================================
+        // PRINT GATE PASS / MATERIAL ISSUE SLIP
+        // =========================================================
+        function openGatePassModal(poNo, itemKey) {
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+            if (!item) return;
+
+            // Find last issue movement if any
+            const lastIssue = (item.stockMovements || []).slice().reverse().find(m => m.type === 'ISSUE');
+
+            document.getElementById('slipVoucherNo').textContent = `VOUCHER NO: ${lastIssue ? lastIssue.referenceNo : 'ISS-' + Date.now().toString().slice(-4)}`;
+            document.getElementById('slipDate').textContent = `Date: ${lastIssue ? lastIssue.date : new Date().toISOString().split('T')[0]}`;
+            document.getElementById('slipPoRef').textContent = `${poNo} (${item.supplierName})`;
+            document.getElementById('slipRecipientName').textContent = lastIssue ? lastIssue.recipient : 'Authorized Personnel';
+            document.getElementById('slipDept').textContent = lastIssue ? lastIssue.department : item.department;
+            document.getElementById('slipProject').textContent = lastIssue ? lastIssue.project : (item.projectName || item.projectCode);
+            document.getElementById('slipLocation').textContent = item.location;
+            document.getElementById('slipIssuedBy').textContent = lastIssue ? (lastIssue.issuedBy || 'ANISH') : 'ANISH';
+            document.getElementById('slipRemarks').textContent = lastIssue ? lastIssue.remarks : 'Materials issued from inventory stores';
+
+            const qtyIssued = lastIssue ? lastIssue.qty : 1;
+            const approxVal = qtyIssued * item.unitCost;
+
+            const tbody = document.getElementById('slipItemsTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: 700;">${item.itemKey}</td>
+                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1;">${item.itemName}</td>
+                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: right; font-weight: 700;">${qtyIssued}</td>
+                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1;">${item.uom}</td>
+                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: right;">₹ ${approxVal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                </tr>
+            `;
+
+            document.getElementById('printableGatePassModal').classList.add('active');
+        }
+
+        function openGatePassFromMovement(poNo, itemKey, movementId) {
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+            if (!item) return;
+
+            const mov = (item.stockMovements || []).find(m => m.id === movementId);
+            if (!mov) return;
+
+            document.getElementById('slipVoucherNo').textContent = `VOUCHER NO: ${mov.referenceNo || mov.id}`;
+            document.getElementById('slipDate').textContent = `Date: ${mov.date}`;
+            document.getElementById('slipPoRef').textContent = `${poNo} (${item.supplierName})`;
+            document.getElementById('slipRecipientName').textContent = mov.recipient || 'N/A';
+            document.getElementById('slipDept').textContent = mov.department || item.department;
+            document.getElementById('slipProject').textContent = mov.project || (item.projectName || item.projectCode);
+            document.getElementById('slipLocation').textContent = mov.location || item.location;
+            document.getElementById('slipIssuedBy').textContent = mov.issuedBy || 'ANISH';
+            document.getElementById('slipRemarks').textContent = mov.remarks || 'Stock movement record';
+
+            const qtyVal = Math.abs(mov.qty);
+            const approxVal = qtyVal * item.unitCost;
+
+            const tbody = document.getElementById('slipItemsTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: 700;">${item.itemKey}</td>
+                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1;">${item.itemName}</td>
+                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: right; font-weight: 700;">${qtyVal}</td>
+                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1;">${item.uom}</td>
+                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: right;">₹ ${approxVal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                </tr>
+            `;
+
+            document.getElementById('printableGatePassModal').classList.add('active');
+        }
+
+        function closeGatePassModal() {
+            document.getElementById('printableGatePassModal').classList.remove('active');
+        }
+
+        // =========================================================
+        // EXPORT TO CSV
+        // =========================================================
+        function exportInventoryToCSV() {
+            const stockFilter = document.getElementById('filterStockStatus') ? document.getElementById('filterStockStatus').value : 'available';
+            const availableOnly = (stockFilter === 'available');
+            const search = document.getElementById('filterSearch').value;
+            const dept = document.getElementById('filterDept').value;
+
+            let statusParam = 'All';
+            if (currentInvTab !== 'All') {
+                statusParam = currentInvTab;
+            } else if (stockFilter === 'low') {
+                statusParam = 'Low Stock';
+            }
+
+            const items = window.PurchaseData.getInventoryItems({
+                poNo: currentSelectedPo,
+                company: currentCompany,
+                availableOnly: availableOnly,
+                search: search,
+                department: dept,
+                status: statusParam
+            });
+
+            if (items.length === 0) {
+                alert("No items to export.");
+                return;
+            }
+
+            const rows = [
+                [
+                    "PO No", "Company", "PO Date", "Supplier", "Department", "Project",
+                    "Item Key", "Item Name", "Location", "Received Qty", "Accepted Qty",
+                    "Issued Qty", "Available Stock", "UOM", "Unit Cost (INR)", "Available Value (INR)", "Status"
+                ]
+            ];
+
+            items.forEach(i => {
+                rows.push([
+                    i.poNo,
+                    `"${i.company || 'GRPL'}"`,
+                    i.poDate,
+                    `"${i.supplierName}"`,
+                    `"${i.department}"`,
+                    `"${i.projectName || i.projectCode}"`,
+                    i.itemKey,
+                    `"${i.itemName}"`,
+                    `"${i.location}"`,
+                    i.recQty,
+                    i.userAcceptedQty,
+                    i.issuedQty,
+                    i.availableQty,
+                    i.uom,
+                    i.unitCost,
+                    i.availableValue,
+                    i.stockStatus
+                ]);
+            });
+
+            downloadCSV(rows, `Inventory_Stock_Report_${new Date().toISOString().split('T')[0]}.csv`);
+        }
+
+        function downloadCSV(rows, filename) {
+            const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // =========================================================
+        // TOAST NOTIFICATIONS
+        // =========================================================
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toastNotification');
+            const icon = document.getElementById('toastIcon');
+            const text = document.getElementById('toastText');
+
+            text.textContent = message;
+            toast.className = `toast-msg show ${type}`;
+
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+                icon.style.color = '#22c55e';
+            } else {
+                icon.className = 'fas fa-exclamation-circle';
+                icon.style.color = '#ef4444';
+            }
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3200);
+        }
+    </script>
+</body>
+
+</html>

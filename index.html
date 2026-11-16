@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Purchase System - Project Master</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo-custom">
+                    <div class="logo-pill">
+                        <div class="pill-left">B</div>
+                        <div class="pill-right">&amp; S</div>
+                    </div>
+                    <div class="logo-text">
+                        <div class="logo-group-text">GROUP</div>
+                        <div class="logo-tagline-text">"Believe in us"</div>
+                    </div>
+                </div>
+            </div>
+            <div class="title-section">
+                <h1>India Purchase System</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-info">
+                    <span class="welcome-text">Welcome,</span>
+                    <span class="username">ANISH <i class="fas fa-caret-down"></i></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-wrapper">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active">
+                                <i class="fas fa-list"></i> Purchase Masters <i class="fas fa-chevron-down arrow"></i>
+                            </a>
+                            <ul class="sub-nav-list">
+                                <li><a href="#" id="nav-item-master" class="sub-nav-link"
+                                        onclick="switchView('item-master-view'); return false;">Item Master</a></li>
+                                <li><a href="#" class="sub-nav-link">Supplier Master</a></li>
+                                <li><a href="#" id="nav-project-master" class="sub-nav-link active"
+                                        style="color: var(--primary-blue); font-weight: bold; background-color: #f5f9fc;"
+                                        onclick="switchView('project-master-view'); return false;">
+                                        Project Master
+                                    </a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-exchange-alt"></i> Purchase Transactions <i
+                                    class="fas fa-chevron-down arrow"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-file-invoice"></i> Purchase Reports <i
+                                    class="fas fa-chevron-down arrow"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="stock_management.html" class="nav-link">
+                                <i class="fas fa-cubes"></i> Goods-In
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="acceptance_material.html" class="nav-link">
+                                <i class="fas fa-clipboard-check"></i> User Acceptance Material
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="finance_management.html" class="nav-link">
+                                <i class="fas fa-coins"></i> Finance Approval
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="inventory_management.html" class="nav-link">
+                                <i class="fas fa-boxes"></i> Inventory
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="sidebar-collapse">
+                    <i class="fas fa-angle-double-left"></i>
+                </div>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="content">
+                <div id='project-master-view'>
+                    <div class="breadcrumb">
+                        <i class="fas fa-home"></i> Project Master <i class="fas fa-chevron-right"></i> <span
+                            class="current">Project Entry</span>
+                    </div>
+
+                    <!-- Form -->
+                    <div class="form-container">
+                        <form id="projectForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="projectCode">Project Code</label>
+                                    <input type="text" id="projectCode" name="projectCode"
+                                        placeholder="Enter Project Code">
+                                </div>
+                                <div class="form-group">
+                                    <label for="projectName">Project Name</label>
+                                    <input type="text" id="projectName" name="projectName"
+                                        placeholder="Enter Project Name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="budgetYear">Budget Year</label>
+                                    <select id="budgetYear" name="budgetYear">
+                                        <option value="">Select Budget Year</option>
+                                        <option value="2021-2022">2021-2022</option>
+                                        <option value="2022-2023">2022-2023</option>
+                                        <option value="2023-2024">2023-2024</option>
+                                        <option value="2024-2025">2024-2025</option>
+                                        <option value="2025-2026">2025-2026</option>
+                                        <option value="2026-2027">2026-2027</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="projectManager">Project Manager</label>
+                                    <select id="projectManager" name="projectManager">
+                                        <option value="">Select Manager</option>
+                                        <option value="John Doe">John Doe</option>
+                                        <option value="Jane Smith">Jane Smith</option>
+                                        <option value="Alice Johnson">Alice Johnson</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="startDate">Budget Start Date</label>
+                                    <input type="date" id="startDate" name="startDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="endDate">Budget End Date</label>
+                                    <input type="date" id="endDate" name="endDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="budget">Annual Budget</label>
+                                    <input type="number" id="budget" name="budget" placeholder="0.00" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="budgetExtension">Budget Extension</label>
+                                    <input type="number" id="budgetExtension" name="budgetExtension" placeholder="0.00"
+                                        step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="utilized">Utilized Budget</label>
+                                    <input type="number" id="utilized" name="utilized" placeholder="0.00" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="available">Available Budget</label>
+                                    <input type="number" id="available" name="available" placeholder="0.00" readonly
+                                        class="readonly-field">
+                                </div>
+                                <div class="form-group has-textarea" style="grid-column: span 2;">
+                                    <label for="comment">Comment</label>
+                                    <textarea id="comment" name="comment" rows="2"
+                                        placeholder="Enter comment..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="form-actions">
+                                <button type="button" id="btnSave" class="btn btn-save" onclick="saveProject()"><i
+                                        class="fas fa-save"></i> Save</button>
+                                <button type="button" id="btnUpdate" class="btn btn-update" disabled
+                                    onclick="updateProject()"><i class="fas fa-file-alt"></i>
+                                    Update</button>
+                                <button type="button" id="btnCancel" class="btn btn-reset"
+                                    style="display:none; background-color:#6c757d; border-color:#5a6268;"
+                                    onclick="cancelEdit()"><i class="fas fa-times"></i> Cancel</button>
+                                <button type="reset" class="btn btn-reset" onclick="cancelEdit()"><i
+                                        class="fas fa-sync-alt"></i> Reset</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div class="table-container">
+                        <table class="data-table" id="projectTable">
+                            <thead>
+                                <tr>
+                                    <th>Project Code</th>
+                                    <th>Project Name</th>
+                                    <th>Budget Year</th>
+                                    <th>Project Manager</th>
+                                    <th>Budget Start Date</th>
+                                    <th>Budget End Date</th>
+                                    <th>Annual Budget</th>
+                                    <th>Budget Extension</th>
+                                    <th>Utilized Budget</th>
+                                    <th>Available Budget</th>
+                                    <th>Comment</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data rows will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Item Master View (Matching user's reference screenshot) -->
+                <div id="item-master-view" style="display: none;">
+                    <div class="item-master-header">
+                        <div class="breadcrumb" style="margin-bottom: 0;">
+                            <i class="fas fa-home"></i> Purchase Masters <i class="fas fa-chevron-right"></i> <span
+                                class="current">Item Master</span>
+                        </div>
+                        <button type="button" class="btn-search"
+                            onclick="alert('Item Search: Opening Search modal...')">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+
+                    <div class="item-master-container">
+                        <form id="itemMasterForm">
+                            <div class="item-master-grid">
+                                <!-- Column 1 -->
+                                <div class="item-col">
+                                    <div class="form-group">
+                                        <label for="itemMasterId">ItemID</label>
+                                        <input type="text" id="itemMasterId" value="LAB737" readonly
+                                            class="readonly-field">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="itemMasterCategory">Category</label>
+                                        <select id="itemMasterCategory">
+                                            <option value="Lab Equipments">Lab Equipments</option>
+                                            <option value="Office Supplies">Office Supplies</option>
+                                            <option value="IT Hardware">IT Hardware</option>
+                                            <option value="Networking">Networking</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="itemMasterStdPrice">Standard Price</label>
+                                        <input type="number" id="itemMasterStdPrice" placeholder="0.00" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="itemMasterTaxable">Taxable</label>
+                                        <input type="checkbox" id="itemMasterTaxable" checked>
+                                    </div>
+                                </div>
+
+                                <!-- Column 2 -->
+                                <div class="item-col">
+                                    <div class="form-group">
+                                        <label for="itemMasterName">Item Name</label>
+                                        <input type="text" id="itemMasterName" placeholder="Enter Item Name...">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="itemMasterUOM">UOM</label>
+                                        <select id="itemMasterUOM">
+                                            <option value="500 GM">500 GM</option>
+                                            <option value="1 KG">1 KG</option>
+                                            <option value="Each">Each</option>
+                                            <option value="Box">Box</option>
+                                            <option value="Pkt">Pkt</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="itemMasterCostPrice">Cost Price</label>
+                                        <input type="number" id="itemMasterCostPrice" placeholder="0.00" step="0.01">
+                                    </div>
+                                </div>
+
+                                <!-- Column 3 -->
+                                <div class="item-col">
+                                    <div class="form-group">
+                                        <label for="itemMasterType">Type</label>
+                                        <select id="itemMasterType">
+                                            <option value="Goods">Goods</option>
+                                            <option value="Service">Service</option>
+                                            <option value="Asset">Asset</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="itemMasterMinStock">Min Stock Level</label>
+                                        <input type="number" id="itemMasterMinStock" placeholder="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="itemMasterSalesPrice">Sales Price</label>
+                                        <input type="number" id="itemMasterSalesPrice" placeholder="0.00" step="0.01">
+                                    </div>
+                                </div>
+
+                                <!-- Column 4 -->
+                                <div class="item-col">
+                                    <div class="form-group">
+                                        <label for="itemMasterSite">Site</label>
+                                        <select id="itemMasterSite">
+                                            <option value="Vadodara India">Vadodara India</option>
+                                            <option value="Mumbai India">Mumbai India</option>
+                                            <option value="Delhi India">Delhi India</option>
+                                            <option value="Bangalore India">Bangalore India</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="itemMasterAttributes">Attributes</label>
+                                        <input type="text" id="itemMasterAttributes" placeholder="Attributes...">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="itemMasterValuation">Include In Valuation</label>
+                                        <input type="checkbox" id="itemMasterValuation">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Item Master Actions matching screenshot -->
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-save" onclick="alert('Item Saved successfully!')">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <button type="button" class="btn btn-update" disabled>
+                                    <i class="fas fa-file-alt"></i> Update
+                                </button>
+                                <button type="reset" class="btn btn-reset">
+                                    <i class="fas fa-sync-alt"></i> Reset
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const budgetInput = document.getElementById('budget');
+            const budgetExtensionInput = document.getElementById('budgetExtension');
+            const utilizedInput = document.getElementById('utilized');
+            const availableInput = document.getElementById('available');
+
+            function calculateAvailable() {
+                const budget = parseFloat(budgetInput.value) || 0;
+                const extension = parseFloat(budgetExtensionInput ? budgetExtensionInput.value : 0) || 0;
+                const utilized = parseFloat(utilizedInput.value) || 0;
+                const available = (budget + extension) - utilized;
+                availableInput.value = available.toFixed(2);
+            }
+
+            if (budgetInput) budgetInput.addEventListener('input', calculateAvailable);
+            if (budgetExtensionInput) budgetExtensionInput.addEventListener('input', calculateAvailable);
+            if (utilizedInput) utilizedInput.addEventListener('input', calculateAvailable);
+
+            // Initial dummy data for the table
+            const dummyData = [
+                {
+                    code: 'PRJ-001', name: 'ERP Implementation',
+                    budgetYear: '2023-2024',
+                    manager: 'John Doe', start: '2023-01-10', end: '2023-12-31',
+                    budget: '50000.00', extension: '0.00', utilized: '20000.00', available: '30000.00', comment: ''
+                },
+                {
+                    code: 'PRJ-002', name: 'Office Renovation',
+                    budgetYear: '2023-2024',
+                    manager: 'Jane Smith', start: '2023-05-01', end: '2023-08-15',
+                    budget: '15000.00', extension: '0.00', utilized: '15000.00', available: '0.00', comment: ''
+                }
+            ];
+
+            dummyData.forEach(addProjectToTable);
+        });
+
+        function addProjectToTable(proj) {
+            const tbody = document.querySelector('#projectTable tbody');
+            const row = document.createElement('tr');
+            row.setAttribute('data-code', proj.code);
+            row.innerHTML = `
+        <td>${proj.code}</td>
+        <td>${proj.name}</td>
+        <td>${proj.budgetYear || '-'}</td>
+        <td>${proj.manager}</td>
+        <td>${proj.start}</td>
+        <td>${proj.end}</td>
+        <td>${proj.budget}</td>
+        <td>${proj.extension !== undefined ? proj.extension : '0.00'}</td>
+        <td>${proj.utilized}</td>
+        <td>${proj.available}</td>
+        <td>${proj.comment || '-'}</td>
+        <td>
+            <div class="action-icons">
+                <i class="fas fa-edit icon-edit" title="Edit" onclick="editProject(this)"></i>
+            </div>
+        </td>
+    `;
+            tbody.appendChild(row);
+        }
+
+        function saveProject() {
+            const form = document.getElementById('projectForm');
+
+            // Simple validation
+            if (!form.projectCode.value || !form.projectName.value) {
+                alert("Project Code and Name are required!");
+                return;
+            }
+
+            const proj = {
+                code: form.projectCode.value,
+                name: form.projectName.value,
+                budgetYear: form.budgetYear ? form.budgetYear.value : '',
+                manager: form.projectManager.value,
+                start: form.startDate.value,
+                end: form.endDate.value,
+                budget: parseFloat(form.budget.value || 0).toFixed(2),
+                extension: parseFloat(form.budgetExtension ? form.budgetExtension.value : 0).toFixed(2),
+                utilized: parseFloat(form.utilized.value || 0).toFixed(2),
+                available: parseFloat(form.available.value || 0).toFixed(2),
+                comment: form.comment.value.trim()
+            };
+
+            addProjectToTable(proj);
+            form.reset();
+            document.getElementById('available').value = '';
+            alert("Project saved successfully!");
+        }
+
+        let editingRow = null;
+
+        function editProject(iconEl) {
+            const row = iconEl.closest('tr');
+            const cells = row.querySelectorAll('td');
+            editingRow = row;
+
+            const form = document.getElementById('projectForm');
+            form.projectCode.value = cells[0].textContent.trim();
+            form.projectName.value = cells[1].textContent.trim();
+
+            const bYear = cells[2].textContent.trim();
+            if (form.budgetYear) {
+                const optExists = Array.from(form.budgetYear.options).some(o => o.value === bYear);
+                if (!optExists && bYear && bYear !== '-') {
+                    form.budgetYear.add(new Option(bYear, bYear));
+                }
+                form.budgetYear.value = bYear === '-' ? '' : bYear;
+            }
+
+            form.projectManager.value = cells[3].textContent.trim();
+            form.startDate.value = cells[4].textContent.trim();
+            form.endDate.value = cells[5].textContent.trim();
+            form.budget.value = cells[6].textContent.trim();
+            if (form.budgetExtension) {
+                form.budgetExtension.value = cells[7].textContent.trim();
+            }
+            form.utilized.value = cells[8].textContent.trim();
+            document.getElementById('available').value = cells[9].textContent.trim();
+            form.comment.value = cells[10].textContent.trim() === '-' ? '' : cells[10].textContent.trim();
+
+            // Switch to edit mode
+            document.getElementById('btnSave').style.display = 'none';
+            document.getElementById('btnUpdate').disabled = false;
+            document.getElementById('btnUpdate').style.backgroundColor = '#f0ad4e';
+            document.getElementById('btnUpdate').style.borderColor = '#eea236';
+            document.getElementById('btnUpdate').style.cursor = 'pointer';
+            document.getElementById('btnCancel').style.display = 'inline-flex';
+
+            // Scroll to form
+            document.getElementById('projectForm').scrollIntoView({ behavior: 'smooth' });
+
+            // Highlight the row being edited
+            document.querySelectorAll('#projectTable tbody tr').forEach(r => r.style.backgroundColor = '');
+            row.style.backgroundColor = '#fff8e1';
+        }
+
+        function updateProject() {
+            if (!editingRow) return;
+
+            const form = document.getElementById('projectForm');
+            if (!form.projectCode.value || !form.projectName.value) {
+                alert('Project Code and Name are required!');
+                return;
+            }
+
+            editingRow.innerHTML = `
+        <td>${form.projectCode.value}</td>
+        <td>${form.projectName.value}</td>
+        <td>${form.budgetYear.value || '-'}</td>
+        <td>${form.projectManager.value}</td>
+        <td>${form.startDate.value}</td>
+        <td>${form.endDate.value}</td>
+        <td>${parseFloat(form.budget.value || 0).toFixed(2)}</td>
+        <td>${parseFloat(form.budgetExtension ? form.budgetExtension.value : 0).toFixed(2)}</td>
+        <td>${parseFloat(form.utilized.value || 0).toFixed(2)}</td>
+        <td>${parseFloat(form.available.value || 0).toFixed(2)}</td>
+        <td>${form.comment.value.trim() || '-'}</td>
+        <td>
+            <div class="action-icons">
+                <i class="fas fa-edit icon-edit" title="Edit" onclick="editProject(this)"></i>
+            </div>
+        </td>
+    `;
+            editingRow.setAttribute('data-code', form.projectCode.value);
+            editingRow.style.backgroundColor = '';
+
+            alert('Project updated successfully!');
+            cancelEdit();
+        }
+
+        function cancelEdit() {
+            editingRow = null;
+            const form = document.getElementById('projectForm');
+            form.reset();
+            document.getElementById('available').value = '';
+
+            // Switch back to save mode
+            document.getElementById('btnSave').style.display = 'inline-flex';
+            document.getElementById('btnUpdate').disabled = true;
+            document.getElementById('btnUpdate').style.backgroundColor = '#92a9c3';
+            document.getElementById('btnUpdate').style.borderColor = '#7b91a9';
+            document.getElementById('btnUpdate').style.cursor = 'not-allowed';
+            document.getElementById('btnCancel').style.display = 'none';
+
+            // Remove row highlight
+            document.querySelectorAll('#projectTable tbody tr').forEach(r => r.style.backgroundColor = '');
+        }
+
+        function switchView(viewId) {
+            const projectView = document.getElementById('project-master-view');
+            const itemView = document.getElementById('item-master-view');
+            const navProject = document.getElementById('nav-project-master');
+            const navItem = document.getElementById('nav-item-master');
+
+            if (projectView) projectView.style.display = 'none';
+            if (itemView) itemView.style.display = 'none';
+
+            const targetView = document.getElementById(viewId);
+            if (targetView) targetView.style.display = 'block';
+
+            if (navProject) {
+                navProject.classList.remove('active');
+                navProject.style.color = '';
+                navProject.style.fontWeight = '';
+                navProject.style.backgroundColor = '';
+            }
+            if (navItem) {
+                navItem.classList.remove('active');
+                navItem.style.color = '';
+                navItem.style.fontWeight = '';
+                navItem.style.backgroundColor = '';
+            }
+
+            if (viewId === 'project-master-view' && navProject) {
+                navProject.classList.add('active');
+                navProject.style.color = 'var(--primary-blue)';
+                navProject.style.fontWeight = 'bold';
+                navProject.style.backgroundColor = '#f5f9fc';
+            } else if (viewId === 'item-master-view' && navItem) {
+                navItem.classList.add('active');
+                navItem.style.color = 'var(--primary-blue)';
+                navItem.style.fontWeight = 'bold';
+                navItem.style.backgroundColor = '#f5f9fc';
+            }
+        }
+    </script>
+</body>
+
+</html>

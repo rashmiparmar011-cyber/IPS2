@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Purchase System - User Acceptance Material</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .filter-grid-acceptance {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr) auto;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .confirm-modal-box {
+            background: #fff;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+        }
+
+        .confirm-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .confirm-modal-header.accept {
+            color: #16a34a;
+        }
+
+        .confirm-modal-header.reject {
+            color: #dc2626;
+        }
+
+        .timeline-container {
+            border-left: 2px solid #cbd5e1;
+            padding-left: 14px;
+            margin-top: 10px;
+        }
+
+        .timeline-step {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .timeline-step::before {
+            content: '';
+            position: absolute;
+            left: -19px;
+            top: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #0284c7;
+        }
+
+        .timeline-date {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .timeline-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .timeline-desc {
+            font-size: 11px;
+            color: #475569;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo-custom">
+                    <div class="logo-pill">
+                        <div class="pill-left">B</div>
+                        <div class="pill-right">&amp; S</div>
+                    </div>
+                    <div class="logo-text">
+                        <div class="logo-group-text">GROUP</div>
+                        <div class="logo-tagline-text">"Believe in us"</div>
+                    </div>
+                </div>
+            </div>
+            <div class="title-section">
+                <h1>India Purchase System</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-info">
+                    <span class="welcome-text">Welcome,</span>
+                    <span class="username">ANISH <i class="fas fa-caret-down"></i></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-wrapper">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-list"></i> Purchase Masters <i class="fas fa-chevron-down arrow"></i>
+                            </a>
+                            <ul class="sub-nav-list">
+                                <li><a href="#" class="sub-nav-link">Item Master</a></li>
+                                <li><a href="#" class="sub-nav-link">Supplier Master</a></li>
+                                <li><a href="index.html" class="sub-nav-link">Project Master</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-exchange-alt"></i> Purchase Transactions <i
+                                    class="fas fa-chevron-down arrow"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-file-invoice"></i> Purchase Reports <i
+                                    class="fas fa-chevron-down arrow"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="stock_management.html" class="nav-link">
+                                <i class="fas fa-cubes"></i> Goods-In
+                            </a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="acceptance_material.html" class="nav-link active">
+                                <i class="fas fa-clipboard-check"></i> User Acceptance Material
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="finance_management.html" class="nav-link">
+                                <i class="fas fa-coins"></i> Finance Approval
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="inventory_management.html" class="nav-link">
+                                <i class="fas fa-boxes"></i> Inventory
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="sidebar-collapse">
+                    <i class="fas fa-angle-double-left"></i>
+                </div>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="content">
+                <div class="breadcrumb">
+                    <i class="fas fa-home"></i> User Acceptance Material <i class="fas fa-chevron-right"></i>
+                    <span class="current">Desk User Verification</span>
+                </div>
+
+                <!-- Filters Card (Prioritized for Requesters per BA Vimal) -->
+                <div class="filter-card">
+                    <div class="filter-grid filter-grid-acceptance">
+                        <div class="form-group">
+                            <label for="filterAccPrNo">PR No.</label>
+                            <input type="text" id="filterAccPrNo" placeholder="Search PR No (e.g. PR-501)..."
+                                oninput="applyAcceptanceFilters()">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterAccItem">Item Name</label>
+                            <input type="text" id="filterAccItem" placeholder="Search Item (e.g. MacBook)..."
+                                oninput="applyAcceptanceFilters()">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterAccPoNo">PO No.</label>
+                            <input type="text" id="filterAccPoNo" placeholder="Search PO No..."
+                                oninput="applyAcceptanceFilters()">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterAccStatus">Status</label>
+                            <select id="filterAccStatus" onchange="onAccStatusDropdownChange()">
+                                <option value="">All Statuses</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Accepted">Accepted</option>
+                                <option value="Rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="button" class="btn btn-primary" onclick="applyAcceptanceFilters()"><i
+                                    class="fas fa-search"></i> Apply</button>
+                            <button type="button" class="btn btn-secondary" onclick="clearAcceptanceFilters()"><i
+                                    class="fas fa-undo"></i> Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Tabs Bar -->
+                <div class="status-tabs-container">
+                    <div class="status-tabs-group" role="tablist">
+                        <button type="button" class="status-tab tab-all active" data-status="All"
+                            onclick="switchAcceptanceTab('All')">
+                            <i class="fas fa-layer-group"></i> All Items <span class="tab-badge"
+                                id="accBadgeAll">0</span>
+                        </button>
+                        <button type="button" class="status-tab tab-pending" data-status="Pending"
+                            onclick="switchAcceptanceTab('Pending')">
+                            <i class="fas fa-clock"></i> Pending <span class="tab-badge" id="accBadgePending">0</span>
+                        </button>
+                        <button type="button" class="status-tab tab-accepted" data-status="Accepted"
+                            onclick="switchAcceptanceTab('Accepted')">
+                            <i class="fas fa-check-circle"></i> Accepted <span class="tab-badge"
+                                id="accBadgeAccepted">0</span>
+                        </button>
+                        <button type="button" class="status-tab tab-rejected" data-status="Rejected"
+                            onclick="switchAcceptanceTab('Rejected')">
+                            <i class="fas fa-times-circle"></i> Rejected <span class="tab-badge"
+                                id="accBadgeRejected">0</span>
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-export" onclick="exportAcceptanceData()"><i
+                                class="fas fa-file-export"></i> Export</button>
+                    </div>
+                </div>
+
+                <!-- Main Line Item Level Table (End-User Clean View per BA Vimal) -->
+                <div class="table-container">
+                    <table class="data-table" id="acceptanceTable">
+                        <thead>
+                            <tr>
+                                <th>PR NUMBER</th>
+                                <th>PO NUMBER</th>
+                                <th>ITEM KEY</th>
+                                <th>ITEM NAME</th>
+                                <th style="text-align: right;">REQ QTY</th>
+                                <th style="text-align: right;">REC AT DOCK</th>
+                                <th style="text-align: right;">USER ACCEPTED</th>
+                                <th>UOM</th>
+                                <th>SUPPLIER/VENDOR</th>
+                                <th style="text-align: center;">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="acceptanceTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Bar -->
+                <div class="pagination-bar"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 12px; color: #64748b;">
+                    <div id="accPaginationInfo">Showing 1 to 0 of 0 records</div>
+                    <div class="pagination-controls" id="accPaginationControls"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- VIEW MORE MODAL (Full GRN, Batches, PO & Audit Info)     -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="viewMoreModal">
+        <div class="modal-box" style="max-width: 860px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> Item Details &amp; Goods-In History — <span
+                        id="vmHeaderTitle"></span></h3>
+                <button class="modal-close-btn" onclick="closeViewMoreModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Summary -->
+                <div class="summary-card">
+                    <div class="summary-card-title"><i class="fas fa-file-invoice"></i> Tracking &amp; Requisition
+                        Details</div>
+                    <div class="summary-grid-5">
+                        <div class="summary-item">
+                            <span class="label">PR Number</span>
+                            <span class="value highlight" id="vmPrNo">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">PO Number</span>
+                            <span class="value" id="vmPoNo">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Requested By</span>
+                            <span class="value" id="vmRequester">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Supplier Name</span>
+                            <span class="value" id="vmSupplier">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Current Status</span>
+                            <span class="value" id="vmStatusBadge">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Received Batches & Goods-In Dock Receipts -->
+                <div class="summary-card" style="background: #ffffff; padding: 12px;">
+                    <div class="summary-card-title" style="color: #0369a1;">
+                        <i class="fas fa-warehouse"></i> Goods-In Dock Receipts &amp; Batches
+                    </div>
+                    <div class="table-container" style="margin: 0;">
+                        <table class="data-table" id="vmBatchesTable">
+                            <thead>
+                                <tr>
+                                    <th>RCVD DATE</th>
+                                    <th style="text-align: right;">QTY</th>
+                                    <th>BATCH NO</th>
+                                    <th>EXPIRY DATE</th>
+                                    <th>INVOICE NO</th>
+                                    <th>ATTACHMENT</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vmBatchesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Verification Remarks / Audit Timeline -->
+                <div class="summary-card" style="background: #ffffff; padding: 12px; margin-bottom: 0;">
+                    <div class="summary-card-title" style="color: #0f172a;">
+                        <i class="fas fa-history"></i> User Verification Remarks &amp; Audit Log
+                    </div>
+                    <div class="timeline-container" id="vmAuditTimeline">
+                        <!-- Dynamic timeline events -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeViewMoreModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- ACTION CONFIRMATION MODAL (Accept / Reject with Remarks)   -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="confirmActionModal">
+        <div class="confirm-modal-box">
+            <div class="confirm-modal-header" id="confirmModalHeader">
+                <i class="fas fa-question-circle"></i> <span id="confirmModalTitle">Confirm Action</span>
+            </div>
+            <p id="confirmModalText" style="font-size: 13px; color: #334155; margin-bottom: 12px;"></p>
+
+            <div id="rejectReasonSection" style="display: none; margin-bottom: 12px;">
+                <label
+                    style="font-size: 11px; font-weight: 700; color: #b91c1c; display: block; margin-bottom: 4px;">REJECTION
+                    REASON</label>
+                <select id="confirmRejectReason"
+                    style="width: 100%; padding: 7px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 8px;">
+                    <option value="Damaged during transit / transit defect">Damaged during transit / transit defect
+                    </option>
+                    <option value="Specification mismatch with PO">Specification mismatch with PO</option>
+                    <option value="Missing accessory / incomplete unit">Missing accessory / incomplete unit</option>
+                    <option value="Quality defect / failed on testing">Quality defect / failed on testing</option>
+                    <option value="Incorrect item model delivered">Incorrect item model delivered</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label
+                    style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">VERIFICATION
+                    REMARKS</label>
+                <textarea id="confirmRemarks" rows="2"
+                    style="width: 100%; padding: 8px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px;"
+                    placeholder="Optional remarks..."></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+                <button type="button" id="confirmSubmitBtn" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="shared_data.js"></script>
+    <script>
+        let currentAccTab = 'All';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAcceptanceTable();
+        });
+
+        function switchAcceptanceTab(status) {
+            currentAccTab = status;
+            document.querySelectorAll('.status-tab').forEach(t => {
+                const isActive = t.dataset.status === status;
+                t.classList.toggle('active', isActive);
+            });
+            const statusDropdown = document.getElementById('filterAccStatus');
+            if (statusDropdown) {
+                statusDropdown.value = (status === 'All') ? '' : status;
+            }
+            renderAcceptanceTable();
+        }
+
+        function onAccStatusDropdownChange() {
+            const val = document.getElementById('filterAccStatus').value || 'All';
+            switchAcceptanceTab(val);
+        }
+
+        function applyAcceptanceFilters() {
+            renderAcceptanceTable();
+        }
+
+        function clearAcceptanceFilters() {
+            document.getElementById('filterAccPrNo').value = '';
+            document.getElementById('filterAccItem').value = '';
+            document.getElementById('filterAccPoNo').value = '';
+            document.getElementById('filterAccStatus').value = '';
+            switchAcceptanceTab('All');
+        }
+
+        function renderAcceptanceTable() {
+            const tbody = document.getElementById('acceptanceTableBody');
+            tbody.innerHTML = '';
+
+            const items = window.PurchaseData.getUserAcceptanceItems();
+
+            // Counts
+            const countAll = items.length;
+            const countPending = items.filter(i => i.userAcceptanceStatus === 'Pending').length;
+            const countAccepted = items.filter(i => i.userAcceptanceStatus === 'Accepted').length;
+            const countRejected = items.filter(i => i.userAcceptanceStatus === 'Rejected').length;
+
+            document.getElementById('accBadgeAll').textContent = countAll;
+            document.getElementById('accBadgePending').textContent = countPending;
+            document.getElementById('accBadgeAccepted').textContent = countAccepted;
+            document.getElementById('accBadgeRejected').textContent = countRejected;
+
+            // Filter
+            const fPr = document.getElementById('filterAccPrNo').value.trim().toLowerCase();
+            const fItem = document.getElementById('filterAccItem').value.trim().toLowerCase();
+            const fPo = document.getElementById('filterAccPoNo').value.trim().toLowerCase();
+            const fStatus = currentAccTab !== 'All' ? currentAccTab : document.getElementById('filterAccStatus').value;
+
+            const filtered = items.filter(item => {
+                if (fPr && !item.prNo.toLowerCase().includes(fPr)) return false;
+                if (fItem && !item.itemName.toLowerCase().includes(fItem) && !item.itemKey.toLowerCase().includes(fItem)) return false;
+                if (fPo && !item.poNo.toLowerCase().includes(fPo)) return false;
+                if (fStatus && item.userAcceptanceStatus.toLowerCase() !== fStatus.toLowerCase()) return false;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 30px; color: #64748b;">
+                    <i class="fas fa-inbox" style="font-size: 28px; color: #cbd5e1; display: block; margin-bottom: 6px;"></i>
+                    No requisition items found matching the filter criteria.
+                </td></tr>`;
+                document.getElementById('accPaginationInfo').textContent = 'Showing 0 to 0 of 0 records';
+                return;
+            }
+
+            filtered.forEach(item => {
+                const tr = document.createElement('tr');
+                const statusClass = item.userAcceptanceStatus.toLowerCase();
+
+                // Buttons logic:
+                // On Accepted tab only: Accept button omitted
+                // On Rejected tab only: Reject button omitted
+                // On All and Pending tabs: Both buttons available!
+                const showAcceptBtn = (currentAccTab !== 'Accepted');
+                const showRejectBtn = (currentAccTab !== 'Rejected');
+
+                let actionsHtml = `
+                    <div class="action-btn-group" style="justify-content: center;">
+                        ${showAcceptBtn ? `
+                            <button class="action-btn action-btn-accept" onclick="openConfirmModal('${item.poNo}', '${item.itemKey}', 'Accept')" title="Accept Material at Desk">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        ` : ''}
+                        ${showRejectBtn ? `
+                            <button class="action-btn action-btn-reject" onclick="openConfirmModal('${item.poNo}', '${item.itemKey}', 'Reject')" title="Reject Material">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        ` : ''}
+                        <button class="action-btn action-btn-view" onclick="openViewMoreModal('${item.poNo}', '${item.itemKey}')" title="View More Details & Goods-In History">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                `;
+
+                tr.innerHTML = `
+                    <td><strong>${item.prNo}</strong></td>
+                    <td>${item.poNo}</td>
+                    <td><span class="badge open" style="font-size: 10px;">${item.itemKey}</span></td>
+                    <td><strong>${item.itemName}</strong></td>
+                    <td style="text-align: right; font-weight: 600;">${item.reqQty}</td>
+                    <td style="text-align: right; color: #0284c7; font-weight: 600;">${item.recQty}</td>
+                    <td style="text-align: right; color: #16a34a; font-weight: 700;">${item.userAcceptedQty}</td>
+                    <td>${item.uom}</td>
+                    <td>${item.supplierName}</td>
+                    <td style="text-align: center;">${actionsHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('accPaginationInfo').textContent = `Showing 1 to ${filtered.length} of ${filtered.length} records`;
+        }
+
+        // =========================================================
+        // CONFIRM ACCEPT / REJECT MODAL
+        // =========================================================
+        function openConfirmModal(poNo, itemKey, actionType) {
+            const po = window.PurchaseData.getPO(poNo);
+            if (!po) return;
+            const li = po.lineItems.find(i => i.itemKey === itemKey);
+            if (!li) return;
+
+            const modalHeader = document.getElementById('confirmModalHeader');
+            const modalTitle = document.getElementById('confirmModalTitle');
+            const modalText = document.getElementById('confirmModalText');
+            const submitBtn = document.getElementById('confirmSubmitBtn');
+            const rejectSection = document.getElementById('rejectReasonSection');
+            const remarksInput = document.getElementById('confirmRemarks');
+
+            remarksInput.value = '';
+
+            if (actionType === 'Accept') {
+                modalHeader.className = 'confirm-modal-header accept';
+                modalHeader.innerHTML = '<i class="fas fa-check-circle"></i> <span>Accept Material at Desk</span>';
+                modalText.innerHTML = `Are you sure you want to accept all <strong>${li.recQty} ${li.uom}</strong> of <strong>${li.itemName}</strong> delivered against ${po.poNo} (${po.prNo})?`;
+                rejectSection.style.display = 'none';
+                submitBtn.className = 'btn btn-primary';
+                submitBtn.textContent = 'Accept Material';
+                submitBtn.onclick = () => {
+                    const remarks = remarksInput.value.trim() || 'Accepted by user at desk.';
+                    window.PurchaseData.updateUserAcceptance(poNo, itemKey, 'Accepted', remarks, li.recQty);
+                    closeConfirmModal();
+                    renderAcceptanceTable();
+                };
+            } else {
+                modalHeader.className = 'confirm-modal-header reject';
+                modalHeader.innerHTML = '<i class="fas fa-times-circle"></i> <span>Reject Delivered Material</span>';
+                modalText.innerHTML = `Are you sure you want to reject <strong>${li.recQty} ${li.uom}</strong> of <strong>${li.itemName}</strong> for ${po.poNo} (${po.prNo})?`;
+                rejectSection.style.display = 'block';
+                submitBtn.className = 'btn btn-danger';
+                submitBtn.style.backgroundColor = '#dc2626';
+                submitBtn.textContent = 'Reject Material';
+                submitBtn.onclick = () => {
+                    const reason = document.getElementById('confirmRejectReason').value;
+                    const remarks = remarksInput.value.trim();
+                    const fullReason = reason + (remarks ? ` — ${remarks}` : '');
+                    window.PurchaseData.updateUserAcceptance(poNo, itemKey, 'Rejected', fullReason, 0);
+                    closeConfirmModal();
+                    renderAcceptanceTable();
+                };
+            }
+
+            document.getElementById('confirmActionModal').classList.add('active');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmActionModal').classList.remove('active');
+        }
+
+        // =========================================================
+        // VIEW MORE MODAL (Full Goods-In Batches & Audit Trail)
+        // =========================================================
+        function openViewMoreModal(poNo, itemKey) {
+            const po = window.PurchaseData.getPO(poNo);
+            if (!po) return;
+            const li = po.lineItems.find(i => i.itemKey === itemKey);
+            if (!li) return;
+
+            document.getElementById('vmHeaderTitle').textContent = `${po.prNo} — ${li.itemName}`;
+            document.getElementById('vmPrNo').textContent = po.prNo;
+            document.getElementById('vmPoNo').textContent = po.poNo;
+            document.getElementById('vmRequester').textContent = po.requestedBy;
+            document.getElementById('vmSupplier').textContent = po.supplierName;
+            document.getElementById('vmStatusBadge').innerHTML = `<span class="badge ${li.userAcceptanceStatus.toLowerCase()}">${li.userAcceptanceStatus}</span>`;
+
+            // Batches Table
+            const tbody = document.getElementById('vmBatchesBody');
+            tbody.innerHTML = '';
+            if (!li.batches || li.batches.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 12px;">No warehouse dock receipts logged yet.</td></tr>`;
+            } else {
+                li.batches.forEach(b => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${b.recDate}</td>
+                        <td style="text-align: right; font-weight: 600; color: #0284c7;">${b.recQty}</td>
+                        <td><span class="table-value-pill">${b.batchNo}</span></td>
+                        <td>${b.expiryDate || 'N/A'}</td>
+                        <td><span class="table-value-pill">${b.invoiceNo}</span></td>
+                        <td><span class="table-value-pill"><i class="fas fa-paperclip"></i> ${b.attachment}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Timeline
+            const timeline = document.getElementById('vmAuditTimeline');
+            timeline.innerHTML = `
+                <div class="timeline-step">
+                    <div class="timeline-date">${po.poDate}</div>
+                    <div class="timeline-title">Purchase Order Raised</div>
+                    <div class="timeline-desc">PO ${po.poNo} released to ${po.supplierName} for ${li.reqQty} ${li.uom} of ${li.itemName}.</div>
+                </div>
+                ${li.batches && li.batches.length > 0 ? `
+                    <div class="timeline-step">
+                        <div class="timeline-date">${li.batches[0].recDate}</div>
+                        <div class="timeline-title">Goods Received at Dock</div>
+                        <div class="timeline-desc">${li.recQty} ${li.uom} received and logged under batch ${li.batches.map(b => b.batchNo).join(', ')}.</div>
+                    </div>
+                ` : ''}
+                <div class="timeline-step">
+                    <div class="timeline-date">Current Status</div>
+                    <div class="timeline-title">User Acceptance: ${li.userAcceptanceStatus}</div>
+                    <div class="timeline-desc">${li.acceptanceRemarks || 'Awaiting final verification by desk user.'}</div>
+                </div>
+            `;
+
+            document.getElementById('viewMoreModal').classList.add('active');
+        }
+
+        function closeViewMoreModal() {
+            document.getElementById('viewMoreModal').classList.remove('active');
+        }
+
+        function exportAcceptanceData() {
+            const items = window.PurchaseData.getUserAcceptanceItems();
+            const headers = ["PR Number", "PO Number", "Item Key", "Item Name", "Req Qty", "Rec At Dock", "User Accepted Qty", "UOM", "Supplier", "Status"];
+            const rows = items.map(i => [
+                i.prNo, i.poNo, i.itemKey, `"${i.itemName}"`, i.reqQty, i.recQty, i.userAcceptedQty, i.uom, `"${i.supplierName}"`, i.userAcceptanceStatus
+            ]);
+            let csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `User_Acceptance_Requester_View_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+
+</html>
