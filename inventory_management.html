@@ -254,33 +254,71 @@
             border-left: 5px solid #ef4444;
         }
 
-        /* Printable Slip Styling */
+        /* Printable Slip / Gate Pass Styling */
+        .gate-pass-editable {
+            outline: none;
+            border-radius: 2px;
+            transition: background 0.15s, outline 0.15s;
+        }
+        .gate-pass-editable:hover {
+            background: rgba(59, 130, 246, 0.08);
+            box-shadow: 0 0 0 1px #93c5fd;
+            cursor: text;
+        }
+        .gate-pass-editable:focus {
+            background: #ffffff;
+            box-shadow: 0 0 0 2px #2563eb;
+        }
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm 12mm;
+            }
+            body {
+                background: #fff !important;
+            }
             body * {
-                visibility: hidden;
+                visibility: hidden !important;
             }
             #printableGatePassModal, #printableGatePassModal * {
-                visibility: visible;
+                visibility: visible !important;
             }
             #printableGatePassModal {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                background: #fff;
-                padding: 0;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                background: #fff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
             }
-            .modal-overlay {
+            #printableGatePassModal .modal-overlay {
                 background: transparent !important;
                 position: static !important;
+                padding: 0 !important;
             }
-            .modal-box {
+            #printableGatePassModal .modal-box {
                 box-shadow: none !important;
                 border: none !important;
                 max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
-            .modal-header, .modal-footer, .no-print {
+            #printableGatePassModal .modal-header,
+            #printableGatePassModal .modal-footer,
+            .no-print {
                 display: none !important;
+            }
+            #gatePassPrintArea {
+                padding: 0 !important;
+                width: 100% !important;
+                margin: 0 auto !important;
+            }
+            .gate-pass-editable {
+                background: transparent !important;
+                box-shadow: none !important;
             }
         }
 
@@ -1057,85 +1095,152 @@
     </div>
 
     <!-- ========================================================= -->
-    <!-- 6. PRINT MATERIAL ISSUE SLIP & GATE PASS MODAL            -->
+    <!-- 6. PRINT NON-RETURNABLE GATE PASS MODAL (B&S GROUP)       -->
     <!-- ========================================================= -->
     <div class="modal-overlay" id="printableGatePassModal">
-        <div class="modal-box" style="max-width: 720px; background: #ffffff;">
-            <div class="modal-header no-print">
-                <h3><i class="fas fa-print"></i> Material Issue Slip &amp; Gate Pass</h3>
-                <button class="modal-close-btn" onclick="closeGatePassModal()">&times;</button>
+        <div class="modal-box" style="max-width: 840px; background: #ffffff; padding: 0; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);">
+            <div class="modal-header no-print" style="padding: 12px 20px; background: #0f172a; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-file-invoice" style="color: #10b981;"></i> Non - Returnable Gate Pass
+                </h3>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <span style="font-size: 12px; color: #94a3b8;"><i class="fas fa-edit"></i> You can click on fields to edit before printing</span>
+                    <button class="modal-close-btn" style="color: #cbd5e1; font-size: 20px; background: none; border: none; cursor: pointer;" onclick="closeGatePassModal()">&times;</button>
+                </div>
             </div>
-            <div class="modal-body" id="gatePassPrintArea" style="padding: 24px; font-family: 'Segoe UI', Tahoma, sans-serif;">
-                <!-- Slip Header with Company Pill -->
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #2c729c; padding-bottom: 14px; margin-bottom: 16px;">
+
+            <div class="modal-body" id="gatePassPrintArea" style="padding: 28px 34px; background: #ffffff; color: #000000; font-family: Arial, Helvetica, sans-serif;">
+                
+                <!-- Gate Pass Document Header -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
                     <div>
-                        <div class="logo-pill" style="height: 32px; display: inline-flex;">
-                            <div class="pill-left" style="font-size: 18px;">B</div>
-                            <div class="pill-right" style="font-size: 18px;">&amp; S</div>
+                        <div id="gpHeaderCompany" style="font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-weight: bold; color: #153e75; font-size: 22px; letter-spacing: 0.2px;">
+                            Gowrie Research Private Limited (B&S Group)
                         </div>
-                        <div style="font-size: 16px; font-weight: 900; color: #217fc0; margin-top: 4px;">B &amp; S GROUP OF COMPANIES</div>
-                        <div style="font-size: 11px; color: #64748b;">India Purchase &amp; Warehouse Inventory System</div>
                     </div>
                     <div style="text-align: right;">
-                        <h2 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0; text-transform: uppercase;">
-                            MATERIAL ISSUE SLIP
-                        </h2>
-                        <div style="font-size: 12px; color: #64748b; font-weight: 700; margin-top: 2px;" id="slipVoucherNo">
-                            VOUCHER NO: ISS-2026-001
+                        <div class="logo-pill" style="height: 34px; border-radius: 20px; overflow: hidden; display: inline-flex; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.2);">
+                            <div class="pill-left" style="background: linear-gradient(135deg, #ffffff, #e6e6e6); color: #00abe0; padding: 0 12px 0 16px; display: flex; align-items: center; font-weight: 900; font-size: 20px; font-style: italic;">B</div>
+                            <div class="pill-right" style="background: linear-gradient(135deg, #0093d5, #005691); color: #ffffff; padding: 0 16px 0 10px; display: flex; align-items: center; font-weight: 900; font-size: 20px; font-style: italic;">&amp; S</div>
                         </div>
-                        <div style="font-size: 11px; color: #64748b;" id="slipDate">Date: 2026-09-17</div>
                     </div>
                 </div>
 
-                <!-- Slip Info Details Grid -->
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; font-size: 12px;">
-                    <div><strong>PO Reference:</strong> <span id="slipPoRef">PO01</span></div>
-                    <div><strong>Recipient Name:</strong> <span id="slipRecipientName">Amit Trivedi</span></div>
-                    <div><strong>Department:</strong> <span id="slipDept">Information Technology</span></div>
-                    <div><strong>Project Allocation:</strong> <span id="slipProject">PRJ-001 Upgrade</span></div>
-                    <div><strong>Storage Location:</strong> <span id="slipLocation">IT Store - Rack A-01</span></div>
-                    <div><strong>Gate Pass Issued By:</strong> <span id="slipIssuedBy">ANISH</span></div>
+                <!-- ORIGINAL/DUPLICATE/TRIPLICATE -->
+                <div style="text-align: right; font-weight: 800; font-size: 11px; color: #000000; letter-spacing: 0.5px; margin-bottom: 8px;">
+                    ORIGINAL/DUPLICATE/TRIPLICATE
                 </div>
 
-                <!-- Slip Line Items Table -->
-                <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px;">
-                    <thead>
-                        <tr style="background: #2c729c; color: #fff;">
-                            <th style="padding: 8px 10px; text-align: left; border: 1px solid #cbd5e1;">ITEM CODE</th>
-                            <th style="padding: 8px 10px; text-align: left; border: 1px solid #cbd5e1;">ITEM DESCRIPTION</th>
-                            <th style="padding: 8px 10px; text-align: right; border: 1px solid #cbd5e1;">QTY ISSUED</th>
-                            <th style="padding: 8px 10px; text-align: left; border: 1px solid #cbd5e1;">UOM</th>
-                            <th style="padding: 8px 10px; text-align: right; border: 1px solid #cbd5e1;">APPROX VALUE (₹)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="slipItemsTableBody">
-                        <!-- Populated dynamically -->
-                    </tbody>
-                </table>
+                <!-- Main Form Box with solid 2px black border -->
+                <div style="border: 2px solid #000000; background: #ffffff; font-size: 12px; line-height: 1.4;">
+                    
+                    <!-- Title Bar -->
+                    <div style="background-color: #d1d5db; border-bottom: 2px solid #000000; text-align: center; padding: 7px 10px; font-size: 15px; font-weight: bold; color: #000000;">
+                        Non - Returnable Gate Pass
+                    </div>
 
-                <div style="background: #fffbeb; border: 1px solid #fef08a; padding: 10px 12px; border-radius: 4px; font-size: 11px; color: #854d0e; margin-bottom: 30px;">
-                    <strong>Purpose / Remarks:</strong> <span id="slipRemarks">Issued for project sprint deployment</span>
+                    <!-- 2-Column Section -->
+                    <div style="display: flex; border-bottom: 2px solid #000000;">
+                        <!-- Left Column: Deliver From and Deliver To -->
+                        <div style="width: 54%; border-right: 2px solid #000000; box-sizing: border-box; display: flex; flex-direction: column;">
+                            
+                            <!-- Deliver From Sub-block -->
+                            <div style="padding: 8px 12px; border-bottom: 2px solid #000000;">
+                                <div style="font-weight: bold; text-decoration: underline; margin-bottom: 4px;">Deliver from:</div>
+                                <div style="font-weight: bold; text-decoration: underline; margin-bottom: 4px;" id="gpDeliverFromCompany">Gowrie Research Private Limited</div>
+                                <div id="gpDeliverFromAddress" style="font-size: 11.5px; line-height: 1.35;">
+                                    B&amp;S House,Ground &amp; 1st Floor,Building No 4, Block<br>
+                                    No. 460, Survey No 768, N.H. No. 8, Opp. GSFC University,<br>
+                                    Dashrath, Vadodara, Gujarat – 391740<br>
+                                    Contact Person - Anil Shinde (M) +91 9727776739<br>
+                                    GST No.:- <span style="font-weight: bold;">24AAFCG0358K1ZN</span>
+                                </div>
+                            </div>
+
+                            <!-- Deliver To Sub-block -->
+                            <div style="padding: 8px 12px; flex-grow: 1;">
+                                <div style="font-weight: bold; text-decoration: underline; margin-bottom: 4px;">Deliver to/Place of Supply:</div>
+                                <div style="font-weight: bold; margin-bottom: 3px;" id="gpDeliverToName" class="gate-pass-editable" contenteditable="true">AMBA SALES &amp; SERVICES</div>
+                                <div id="gpDeliverToAddress" class="gate-pass-editable" contenteditable="true" style="font-size: 11.5px; line-height: 1.35;">
+                                    PLOT NO – 26, PANCHRATNA IND. ESTATE,<br>
+                                    NEAR GHODA CIRCLE,<br>
+                                    ODE-VILLAGE, SP RING ROAD,<br>
+                                    AHMEDABAD - 382425<br>
+                                    GSTIN :<span style="font-weight: bold;">24ABEFA9375</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Meta details and Remarks -->
+                        <div style="width: 46%; box-sizing: border-box; display: flex; flex-direction: column;">
+                            <div style="padding: 7px 10px; border-bottom: 2px solid #000000; font-size: 12px;">
+                                <strong>Gate Pass No.: - </strong><span id="gpGatePassNo" class="gate-pass-editable" contenteditable="true" style="font-weight: bold;">002/26-27</span>
+                            </div>
+                            <div style="padding: 7px 10px; border-bottom: 2px solid #000000; font-size: 12px;">
+                                <strong>Date: - </strong><span id="gpDate" class="gate-pass-editable" contenteditable="true" style="font-weight: bold;">03/12/2026</span>
+                            </div>
+                            <div style="padding: 7px 10px; border-bottom: 2px solid #000000; font-size: 12px;">
+                                <strong>Others: - </strong><span id="gpOthers" class="gate-pass-editable" contenteditable="true">N/A</span>
+                            </div>
+                            <div style="padding: 8px 10px; flex-grow: 1; display: flex; flex-direction: column;">
+                                <div style="font-weight: bold; margin-bottom: 4px;">Remarks: -</div>
+                                <div id="gpRemarks" class="gate-pass-editable" contenteditable="true" style="font-weight: bold; text-decoration: underline; line-height: 1.4;">
+                                    These goods have no commercial value, as they are being returned to vendor.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Goods Table -->
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin: 0; border-bottom: 2px solid #000000;">
+                        <thead>
+                            <tr>
+                                <th style="border-right: 2px solid #000000; border-bottom: 2px solid #000000; padding: 7px 6px; text-align: center; width: 10%; font-weight: bold;">Sr. No.</th>
+                                <th style="border-right: 2px solid #000000; border-bottom: 2px solid #000000; padding: 7px 10px; text-align: center; width: 45%; font-weight: bold;">Description of Goods</th>
+                                <th style="border-right: 2px solid #000000; border-bottom: 2px solid #000000; padding: 7px 8px; text-align: center; width: 15%; font-weight: bold;">Quantity</th>
+                                <th style="border-bottom: 2px solid #000000; padding: 7px 10px; text-align: center; width: 30%; font-weight: bold;">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gpTableBody">
+                            <tr>
+                                <td style="border-right: 2px solid #000000; padding: 16px 8px; text-align: center; font-weight: bold; vertical-align: top;">01</td>
+                                <td style="border-right: 2px solid #000000; padding: 16px 10px; font-weight: bold; vertical-align: top;" id="gpItemDesc" class="gate-pass-editable" contenteditable="true">REFURBISHED SEMI-AUTOMATIC DRY SYRUP POWDER FILLING MACHINE</td>
+                                <td style="border-right: 2px solid #000000; padding: 16px 8px; text-align: center; vertical-align: top; font-weight: 500;" id="gpItemQty" class="gate-pass-editable" contenteditable="true">01 Unit</td>
+                                <td style="padding: 16px 10px; vertical-align: top; font-size: 11px; line-height: 1.35;" id="gpItemDetails" class="gate-pass-editable" contenteditable="true">These goods are being returned to the vendor, as the machine was brought to Gowrie Research Pvt Ltd, Vadodara, for trial purposes only. Hence, they have no commercial value. Value is declared only for transport purpose.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Transporter Details Section -->
+                    <div style="padding: 8px 12px 10px 12px; border-bottom: 2px solid #000000; font-size: 12px; line-height: 1.5;">
+                        <div style="margin-bottom: 3px;">
+                            <span style="font-weight: bold; text-decoration: underline;">Transporter Name –</span> <span id="gpTransporterName" class="gate-pass-editable" contenteditable="true">Jay Hind Logistics</span>
+                        </div>
+                        <div style="margin-bottom: 3px;">
+                            <span style="font-weight: bold; text-decoration: underline;">LR Number –</span> <span id="gpLrNo" class="gate-pass-editable" contenteditable="true"></span>
+                        </div>
+                        <div style="margin-bottom: 5px;">
+                            <span style="font-weight: bold; text-decoration: underline;">LR Date -</span> <span id="gpLrDate" class="gate-pass-editable" contenteditable="true"></span>
+                        </div>
+                        <div style="margin-top: 8px; font-size: 12.5px; font-weight: bold; text-decoration: underline;">
+                            NOTE – These goods have no commercial value, as they are being shipped solely for return purposes.
+                        </div>
+                    </div>
+
+                    <!-- Signatory Section -->
+                    <div style="padding: 12px 16px 16px 16px; min-height: 95px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; font-size: 12px;">
+                        <div style="font-weight: bold;" id="gpSignatureCompany">For, Gowrie Research Pvt. Ltd</div>
+                        <div style="font-weight: bold; margin-top: 45px;">Authorized Signatory</div>
+                    </div>
+
                 </div>
 
-                <!-- Signatures -->
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center; font-size: 11px; margin-top: 40px; padding-top: 10px;">
-                    <div>
-                        <div style="border-top: 1px dashed #94a3b8; padding-top: 6px; font-weight: 700;">STOREKEEPER / ISSUED BY</div>
-                        <div style="color: #64748b;">(Sign &amp; Date)</div>
-                    </div>
-                    <div>
-                        <div style="border-top: 1px dashed #94a3b8; padding-top: 6px; font-weight: 700;">RECEIVED BY (RECIPIENT)</div>
-                        <div style="color: #64748b;">(Sign &amp; Date)</div>
-                    </div>
-                    <div>
-                        <div style="border-top: 1px dashed #94a3b8; padding-top: 6px; font-weight: 700;">AUTHORIZED SIGNATORY</div>
-                        <div style="color: #64748b;">(HOD / Manager)</div>
-                    </div>
-                </div>
             </div>
-            <div class="modal-footer no-print">
-                <button type="button" class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i>
-                    Print Slip / Gate Pass</button>
+
+            <div class="modal-footer no-print" style="padding: 12px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-primary" onclick="window.print()" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-print"></i> Print Gate Pass
+                </button>
                 <button type="button" class="btn btn-secondary" onclick="closeGatePassModal()">Close</button>
             </div>
         </div>
@@ -1162,6 +1267,9 @@
             initSupplierDropdown();
             initPoDropdown();
             renderInventoryDashboard();
+            if (window.location.hash === '#gatepass') {
+                setTimeout(() => openGatePassModal('PO01', 'Item001'), 100);
+            }
         });
 
         // Initialize Supplier Selector Dropdown filtered by currentCompany
@@ -1734,14 +1842,14 @@
             menu.dataset.itemKey = itemKey;
 
             menu.innerHTML = `
+                <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'slip', '${poNo}', '${itemKey}')">
+                    <i class="fas fa-file-invoice" style="color: #10b981;"></i> Print Gate Pass
+                </a>
                 <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'ledger', '${poNo}', '${itemKey}')">
                     <i class="fas fa-history" style="color: #64748b;"></i> Stock Ledger
                 </a>
                 <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'adjust', '${poNo}', '${itemKey}')">
                     <i class="fas fa-sliders-h" style="color: #0284c7;"></i> Audit / Adjust Stock
-                </a>
-                <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'slip', '${poNo}', '${itemKey}')">
-                    <i class="fas fa-print" style="color: #16a34a;"></i> Print Gate Pass / Slip
                 </a>
             `;
 
@@ -2102,44 +2210,114 @@
         }
 
         // =========================================================
-        // PRINT GATE PASS / MATERIAL ISSUE SLIP
+        // PRINT NON-RETURNABLE GATE PASS (B&S GROUP)
         // =========================================================
         function openGatePassModal(poNo, itemKey) {
             const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
             if (!item) return;
 
-            // Find last issue movement if any
-            const lastIssue = (item.stockMovements || []).slice().reverse().find(m => m.type === 'ISSUE');
+            // Company Name Resolution
+            const isGHPL = (item.company === 'GHPL' || (item.poNo && item.poNo.includes('GHPL')));
+            const compName = isGHPL ? 'Gowrie Healthcare Private Limited' : 'Gowrie Research Private Limited';
+            const compShort = isGHPL ? 'Gowrie Healthcare Pvt. Ltd' : 'Gowrie Research Pvt. Ltd';
 
-            document.getElementById('slipVoucherNo').textContent = `VOUCHER NO: ${lastIssue ? lastIssue.referenceNo : 'ISS-' + Date.now().toString().slice(-4)}`;
-            document.getElementById('slipDate').textContent = `Date: ${lastIssue ? lastIssue.date : new Date().toISOString().split('T')[0]}`;
-            document.getElementById('slipPoRef').textContent = `${poNo} (${item.supplierName})`;
-            document.getElementById('slipRecipientName').textContent = lastIssue ? lastIssue.recipient : 'Authorized Personnel';
-            document.getElementById('slipDept').textContent = lastIssue ? lastIssue.department : item.department;
-            document.getElementById('slipProject').textContent = lastIssue ? lastIssue.project : (item.projectName || item.projectCode);
-            document.getElementById('slipLocation').textContent = item.location;
-            document.getElementById('slipIssuedBy').textContent = lastIssue ? (lastIssue.issuedBy || 'ANISH') : 'ANISH';
-            document.getElementById('slipRemarks').textContent = lastIssue ? lastIssue.remarks : 'Materials issued from inventory stores';
+            document.getElementById('gpHeaderCompany').textContent = `${compName} (B&S Group)`;
+            document.getElementById('gpDeliverFromCompany').textContent = compName;
+            document.getElementById('gpSignatureCompany').textContent = `For, ${compShort}`;
 
-            const qtyIssued = lastIssue ? lastIssue.qty : 1;
-            const approxVal = qtyIssued * item.unitCost;
+            // Deliver to / Vendor mapping
+            const vendorMap = {
+                'vimal': {
+                    name: 'VIMAL ENTERPRISES',
+                    address: 'PLOT NO. 14-A, GIDC INDUSTRIAL ESTATE,<br>MAKARPURA,<br>VADODARA - 390010<br>GSTIN :<strong>24AAACV1234F1Z8</strong>'
+                },
+                'rashmi': {
+                    name: 'RASHMI TECH CORP',
+                    address: 'UNIT 502, INFINITY IT TOWER, SG HIGHWAY,<br>NEAR GHODA CIRCLE,<br>AHMEDABAD - 380054<br>GSTIN :<strong>24AABCR5678G1ZQ</strong>'
+                },
+                'techno': {
+                    name: 'TECHNOSOURCE PVT LTD',
+                    address: '4TH FLOOR, TECH HUB, PHASE 2, HINJEWADI,<br>PUNE, MAHARASHTRA - 411057<br>GSTIN :<strong>27AABCT9988H1ZW</strong>'
+                },
+                'global': {
+                    name: 'GLOBAL INFOTECH SOLUTIONS',
+                    address: 'PLOT 88, ELECTRONIC CITY PHASE 1,<br>BANGALORE, KARNATAKA - 560100<br>GSTIN :<strong>29AABCG3344J1ZK</strong>'
+                },
+                'apex': {
+                    name: 'APEX HARDWARE SYSTEMS',
+                    address: 'PLOT 105, SECTOR 25, PCNTDA, NIGDI,<br>PUNE, MAHARASHTRA - 411044<br>GSTIN :<strong>27AABCA7766K1ZT</strong>'
+                }
+            };
 
-            const tbody = document.getElementById('slipItemsTableBody');
+            const suppKey = (item.supplierName || '').toLowerCase();
+            let vendorInfo = null;
+            for (const k in vendorMap) {
+                if (suppKey.includes(k)) {
+                    vendorInfo = vendorMap[k];
+                    break;
+                }
+            }
+
+            if (!vendorInfo) {
+                if (suppKey.includes('amba') || !item.supplierName) {
+                    vendorInfo = {
+                        name: 'AMBA SALES & SERVICES',
+                        address: 'PLOT NO – 26, PANCHRATNA IND. ESTATE,<br>NEAR GHODA CIRCLE,<br>ODE-VILLAGE, SP RING ROAD,<br>AHMEDABAD - 382425<br>GSTIN :<strong>24ABEFA9375</strong>'
+                    };
+                } else {
+                    vendorInfo = {
+                        name: item.supplierName.toUpperCase(),
+                        address: 'GIDC INDUSTRIAL ESTATE, PHASE 1,<br>NEAR HIGHWAY CIRCLE,<br>VADODARA / AHMEDABAD - 382425<br>GSTIN :<strong>24AAACG8811K1Z5</strong>'
+                    };
+                }
+            }
+
+            document.getElementById('gpDeliverToName').textContent = vendorInfo.name;
+            document.getElementById('gpDeliverToAddress').innerHTML = vendorInfo.address;
+
+            // Find last movement if any
+            const lastMov = (item.stockMovements || []).slice().reverse().find(m => m.type === 'RETURN' || m.type === 'ISSUE');
+
+            // Gate Pass No
+            const poDigits = (poNo || '').replace(/\D/g, '') || '02';
+            const passNum = poDigits.padStart(3, '0') + '/26-27';
+            document.getElementById('gpGatePassNo').textContent = passNum;
+
+            // Date
+            const today = new Date();
+            const dStr = String(today.getDate()).padStart(2, '0') + '/' + String(today.getMonth() + 1).padStart(2, '0') + '/' + today.getFullYear();
+            document.getElementById('gpDate').textContent = (lastMov && lastMov.date) ? lastMov.date.split('-').reverse().join('/') : dStr;
+
+            // Others
+            document.getElementById('gpOthers').textContent = `PO: ${poNo || 'N/A'}`;
+
+            // Remarks
+            document.getElementById('gpRemarks').textContent = 'These goods have no commercial value, as they are being returned to vendor.';
+
+            // Item row
+            const qtyVal = lastMov ? Math.abs(lastMov.qty) : 1;
+            const formattedQty = String(qtyVal).padStart(2, '0') + ' ' + (item.uom || 'Unit');
+
+            const tbody = document.getElementById('gpTableBody');
             tbody.innerHTML = `
                 <tr>
-                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: 700;">${item.itemKey}</td>
-                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1;">${item.itemName}</td>
-                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: right; font-weight: 700;">${qtyIssued}</td>
-                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1;">${item.uom}</td>
-                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: right;">₹ ${approxVal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td style="border-right: 2px solid #000000; padding: 16px 8px; text-align: center; font-weight: bold; vertical-align: top;">01</td>
+                    <td style="border-right: 2px solid #000000; padding: 16px 10px; font-weight: bold; vertical-align: top;" id="gpItemDesc" class="gate-pass-editable" contenteditable="true">${item.itemName.toUpperCase()}</td>
+                    <td style="border-right: 2px solid #000000; padding: 16px 8px; text-align: center; vertical-align: top; font-weight: 500;" id="gpItemQty" class="gate-pass-editable" contenteditable="true">${formattedQty}</td>
+                    <td style="padding: 16px 10px; vertical-align: top; font-size: 11px; line-height: 1.35;" id="gpItemDetails" class="gate-pass-editable" contenteditable="true">These goods are being returned to the vendor, as the item was brought to ${compShort}, Vadodara, for trial / verification purposes only. Hence, they have no commercial value. Value is declared only for transport purpose.</td>
                 </tr>
             `;
+
+            document.getElementById('gpTransporterName').textContent = (lastMov && lastMov.transporter) ? lastMov.transporter : 'Jay Hind Logistics';
+            document.getElementById('gpLrNo').textContent = (lastMov && lastMov.lrNo) ? lastMov.lrNo : '';
+            document.getElementById('gpLrDate').textContent = (lastMov && lastMov.lrDate) ? lastMov.lrDate : '';
 
             document.getElementById('printableGatePassModal').classList.add('active');
         }
 
         function openGatePassFromMovement(poNo, itemKey, movementId) {
+            openGatePassModal(poNo, itemKey);
             const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
             if (!item) return;
@@ -2147,31 +2325,18 @@
             const mov = (item.stockMovements || []).find(m => m.id === movementId);
             if (!mov) return;
 
-            document.getElementById('slipVoucherNo').textContent = `VOUCHER NO: ${mov.referenceNo || mov.id}`;
-            document.getElementById('slipDate').textContent = `Date: ${mov.date}`;
-            document.getElementById('slipPoRef').textContent = `${poNo} (${item.supplierName})`;
-            document.getElementById('slipRecipientName').textContent = mov.recipient || 'N/A';
-            document.getElementById('slipDept').textContent = mov.department || item.department;
-            document.getElementById('slipProject').textContent = mov.project || (item.projectName || item.projectCode);
-            document.getElementById('slipLocation').textContent = mov.location || item.location;
-            document.getElementById('slipIssuedBy').textContent = mov.issuedBy || 'ANISH';
-            document.getElementById('slipRemarks').textContent = mov.remarks || 'Stock movement record';
-
+            if (mov.date) {
+                document.getElementById('gpDate').textContent = mov.date.split('-').reverse().join('/');
+            }
+            if (mov.referenceNo) {
+                document.getElementById('gpOthers').textContent = `Ref: ${mov.referenceNo} (PO: ${poNo})`;
+            }
             const qtyVal = Math.abs(mov.qty);
-            const approxVal = qtyVal * item.unitCost;
-
-            const tbody = document.getElementById('slipItemsTableBody');
-            tbody.innerHTML = `
-                <tr>
-                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: 700;">${item.itemKey}</td>
-                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1;">${item.itemName}</td>
-                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: right; font-weight: 700;">${qtyVal}</td>
-                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1;">${item.uom}</td>
-                    <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: right;">₹ ${approxVal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                </tr>
-            `;
-
-            document.getElementById('printableGatePassModal').classList.add('active');
+            const formattedQty = String(qtyVal).padStart(2, '0') + ' ' + (item.uom || 'Unit');
+            document.getElementById('gpItemQty').textContent = formattedQty;
+            if (mov.remarks) {
+                document.getElementById('gpRemarks').textContent = mov.remarks;
+            }
         }
 
         function closeGatePassModal() {
