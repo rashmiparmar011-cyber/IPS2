@@ -45,18 +45,10 @@ const DEFAULT_PURCHASE_DATA = [
                     {
                         batchNo: "B001",
                         recDate: "2026-09-13",
-                        recQty: 5,
+                        recQty: 10,
                         expiryDate: "2027-09-13",
                         invoiceNo: "Inv001",
                         attachment: "inv001_macbook_b1.pdf"
-                    },
-                    {
-                        batchNo: "B002",
-                        recDate: "2026-09-16",
-                        recQty: 5,
-                        expiryDate: "2027-09-13",
-                        invoiceNo: "Inv002",
-                        attachment: "inv002_macbook_b2.pdf"
                     }
                 ],
                 stockMovements: [
@@ -65,26 +57,13 @@ const DEFAULT_PURCHASE_DATA = [
                         date: "2026-09-13",
                         time: "10:30 AM",
                         type: "INWARD",
-                        qty: 5,
-                        balanceAfter: 5,
+                        qty: 10,
+                        balanceAfter: 10,
                         recipient: "IT Main Store",
                         department: "IT Store",
                         referenceNo: "GRN-PO01-B1",
                         location: "IT Store - Rack A-01",
-                        remarks: "Goods inward received under Batch B001 (Invoice Inv001)"
-                    },
-                    {
-                        id: "MOV-1002",
-                        date: "2026-09-16",
-                        time: "14:15 PM",
-                        type: "INWARD",
-                        qty: 5,
-                        balanceAfter: 10,
-                        recipient: "IT Main Store",
-                        department: "IT Store",
-                        referenceNo: "GRN-PO01-B2",
-                        location: "IT Store - Rack A-01",
-                        remarks: "Goods inward received under Batch B002 (Invoice Inv002) - All 10 Accepted"
+                        remarks: "Goods inward received under Batch B001 (Invoice Inv001) - All 10 Accepted"
                     },
                     {
                         id: "MOV-1003",
@@ -518,6 +497,25 @@ class PurchaseDataManager {
                                     else if (li.userAcceptanceStatus === 'Rejected') li.location = 'Quarantine Area - Defect Bay';
                                     else li.location = 'Main Store - General Rack';
                                     needsSave = true;
+                                }
+
+                                // Clean up test batches on Item001 so only clean primary batch B001 (10) remains
+                                if (po.poNo === 'PO01' && li.itemKey === 'Item001') {
+                                    if (!li.batches || li.batches.length > 1 || li.batches.some(b => b.batchNo !== 'B001' || b.recQty !== 10)) {
+                                        li.batches = [
+                                            {
+                                                batchNo: "B001",
+                                                recDate: "2026-09-13",
+                                                recQty: 10,
+                                                expiryDate: "2027-09-13",
+                                                invoiceNo: "Inv001",
+                                                attachment: "inv001_macbook_b1.pdf"
+                                            }
+                                        ];
+                                        li.recQty = 10;
+                                        li.userAcceptedQty = 10;
+                                        needsSave = true;
+                                    }
                                 }
                                 if (!li.stockMovements || li.stockMovements.length === 0) {
                                     const defaultPO = DEFAULT_PURCHASE_DATA.find(p => p.poNo === po.poNo);
