@@ -1842,6 +1842,9 @@
             menu.dataset.itemKey = itemKey;
 
             menu.innerHTML = `
+                <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'issue', '${poNo}', '${itemKey}')">
+                    <i class="fas fa-dolly" style="color: #0284c7;"></i> Issue Stock
+                </a>
                 <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'slip', '${poNo}', '${itemKey}')">
                     <i class="fas fa-file-invoice" style="color: #10b981;"></i> Print Gate Pass
                 </a>
@@ -1849,7 +1852,7 @@
                     <i class="fas fa-history" style="color: #64748b;"></i> Stock Ledger
                 </a>
                 <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'adjust', '${poNo}', '${itemKey}')">
-                    <i class="fas fa-sliders-h" style="color: #0284c7;"></i> Audit / Adjust Stock
+                    <i class="fas fa-sliders-h" style="color: #d97706;"></i> Audit / Adjust Stock
                 </a>
             `;
 
@@ -1860,7 +1863,7 @@
             if (left < 10) left = rect.left;
             let top = rect.bottom + 4;
 
-            const menuHeight = 120;
+            const menuHeight = 160;
             if (top + menuHeight > window.innerHeight) {
                 top = rect.top - menuHeight;
             }
