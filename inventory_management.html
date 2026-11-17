@@ -826,14 +826,6 @@
                     <input type="hidden" id="returnHiddenPoNo">
                     <input type="hidden" id="returnHiddenItemKey">
 
-                    <div class="form-group-vertical" style="margin-bottom: 14px;">
-                        <label for="returnTypeSelect">Return Destination / Mode *</label>
-                        <select id="returnTypeSelect" onchange="onReturnTypeChange()">
-                            <option value="STORE">Return Unused Issued Stock back to Inventory Store</option>
-                            <option value="VENDOR">Return Available Stock to Supplier / Vendor (RTV)</option>
-                        </select>
-                    </div>
-
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
                         <div class="form-group-vertical">
                             <label for="returnQty">Return Quantity *</label>
@@ -1825,11 +1817,8 @@
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
             if (!item) return;
 
-            const hasIssued = item.issuedQty > 0;
-            const hasAvail = item.availableQty > 0;
-
-            if (!hasIssued && !hasAvail) {
-                showToast("No stock units (issued or available) to return", "error");
+            if (item.issuedQty <= 0) {
+                showToast("No issued stock units to return for this item", "warning");
                 return;
             }
 
@@ -1842,16 +1831,17 @@
             document.getElementById('returnMaxQtyBadge').textContent = `${item.issuedQty} ${item.uom}`;
             document.getElementById('returnAvailBadge').textContent = `${item.availableQty} ${item.uom}`;
 
-            const typeSelect = document.getElementById('returnTypeSelect');
-            if (typeSelect) {
-                if (hasIssued) {
-                    typeSelect.value = 'STORE';
-                } else {
-                    typeSelect.value = 'VENDOR';
-                }
-            }
+            const qtyInput = document.getElementById('returnQty');
+            const help = document.getElementById('returnQtyHelp');
+            const max = item.issuedQty;
+            qtyInput.max = max;
+            qtyInput.value = max > 0 ? 1 : 0;
+            help.textContent = `Maximum issued units eligible to return back to store: ${max} ${item.uom}`;
 
-            onReturnTypeChange();
+            const byLabel = document.getElementById('lblReturnBy');
+            if (byLabel) byLabel.textContent = 'Returned By (Person / Dept) *';
+            const btnSubmit = document.getElementById('btnSubmitReturn');
+            if (btnSubmit) btnSubmit.innerHTML = '<i class="fas fa-undo-alt"></i> Confirm Return to Stock';
 
             document.getElementById('returnRefNo').value = `RET-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
             document.getElementById('returnDate').value = new Date().toISOString().split('T')[0];
@@ -1859,32 +1849,6 @@
             document.getElementById('returnRemarks').value = '';
 
             document.getElementById('returnStockModal').classList.add('active');
-        }
-
-        function onReturnTypeChange() {
-            if (!currentReturnItem) return;
-            const typeSelect = document.getElementById('returnTypeSelect');
-            const returnType = typeSelect ? typeSelect.value : 'STORE';
-            const qtyInput = document.getElementById('returnQty');
-            const help = document.getElementById('returnQtyHelp');
-            const byLabel = document.getElementById('lblReturnBy');
-            const btnSubmit = document.getElementById('btnSubmitReturn');
-
-            if (returnType === 'VENDOR') {
-                const max = currentReturnItem.availableQty;
-                qtyInput.max = max;
-                qtyInput.value = max > 0 ? 1 : 0;
-                help.textContent = `Maximum available units eligible to return to vendor: ${max} ${currentReturnItem.uom}`;
-                if (byLabel) byLabel.textContent = 'Returned To (Vendor Rep / Courier) *';
-                if (btnSubmit) btnSubmit.innerHTML = '<i class="fas fa-truck-loading"></i> Confirm Return to Vendor';
-            } else {
-                const max = currentReturnItem.issuedQty;
-                qtyInput.max = max;
-                qtyInput.value = max > 0 ? 1 : 0;
-                help.textContent = `Maximum issued units eligible to return back to store: ${max} ${currentReturnItem.uom}`;
-                if (byLabel) byLabel.textContent = 'Returned By (Person / Dept) *';
-                if (btnSubmit) btnSubmit.innerHTML = '<i class="fas fa-undo-alt"></i> Confirm Return to Stock';
-            }
         }
 
         function closeReturnModal() {
@@ -1901,12 +1865,10 @@
             const slipNo = document.getElementById('returnRefNo').value.trim();
             const date = document.getElementById('returnDate').value;
             const remarks = document.getElementById('returnRemarks').value.trim();
-            const typeSelect = document.getElementById('returnTypeSelect');
-            const returnType = typeSelect ? typeSelect.value : 'STORE';
 
             const res = window.PurchaseData.returnStock(poNo, itemKey, {
                 qty,
-                type: returnType,
+                type: 'STORE',
                 returnedBy,
                 referenceNo: slipNo,
                 date,
