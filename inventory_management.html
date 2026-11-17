@@ -634,7 +634,8 @@
                                 <th>ITEM NAME</th>
                                 <th>PROJECT</th>
                                 <th>STORAGE LOCATION</th>
-                                <th>BATCH DETAILS</th>
+                                <th>BATCH NO.</th>
+                                <th>EXPIRY DATE</th>
                                 <th style="text-align: right;">REC QTY</th>
                                 <th style="text-align: right;">ACCEPTED</th>
                                 <th style="text-align: right;">ISSUED</th>
@@ -1445,7 +1446,7 @@
             if (items.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="16" style="text-align: center; padding: 36px 20px; color: #64748b;">
+                        <td colspan="17" style="text-align: center; padding: 36px 20px; color: #64748b;">
                             <i class="fas fa-boxes" style="font-size: 32px; color: #cbd5e1; margin-bottom: 10px; display: block;"></i>
                             <div style="font-size: 14px; font-weight: 700; color: #1e293b;">No inventory items found matching your filters</div>
                             <div style="font-size: 12px; margin-top: 4px;">Try changing Company to "All Companies" or resetting the search filters.</div>
@@ -1473,12 +1474,18 @@
                     availBadgeClass = 'out-of-stock';
                 }
 
-                // Batch Badges
-                let batchBadgesHtml = '<span style="color: #94a3b8; font-style: italic;">No Batches</span>';
+                // Batch No. & Expiry Date
+                let batchNoHtml = '<span style="color: #94a3b8; font-style: italic;">N/A</span>';
+                let expiryDateHtml = '<span style="color: #94a3b8; font-style: italic;">N/A</span>';
                 if (item.batches && item.batches.length > 0) {
-                    batchBadgesHtml = item.batches.map(b =>
-                        `<span class="badge open" style="font-size: 10px; margin: 1px;" title="Rec Date: ${b.recDate} | Qty: ${b.recQty} | Inv: ${b.invoiceNo}">${b.batchNo} (${b.recQty})</span>`
+                    batchNoHtml = item.batches.map(b =>
+                        `<span class="badge open" style="font-size: 11px; font-weight: 700; margin: 1px;" title="Rec Date: ${b.recDate} | Qty: ${b.recQty} | Inv: ${b.invoiceNo}">${b.batchNo}</span>`
                     ).join(' ');
+                    expiryDateHtml = item.batches.map(b => {
+                        const isExpired = b.expiryDate && b.expiryDate !== 'N/A' && new Date(b.expiryDate) < new Date();
+                        const colorStyle = isExpired ? 'color: #dc2626; font-weight: 700;' : (b.expiryDate && b.expiryDate !== 'N/A' ? 'color: #334155; font-weight: 600;' : 'color: #94a3b8; font-style: italic;');
+                        return `<span style="font-size: 11px; white-space: nowrap; ${colorStyle}">${b.expiryDate || 'N/A'}</span>`;
+                    }).join(', ');
                 }
 
                 tr.innerHTML = `
@@ -1497,7 +1504,8 @@
                             <i class="fas fa-pencil-alt" style="font-size: 9px; color: #94a3b8; margin-left: 2px;"></i>
                         </span>
                     </td>
-                    <td>${batchBadgesHtml}</td>
+                    <td style="white-space: nowrap;">${batchNoHtml}</td>
+                    <td style="white-space: nowrap; font-size: 11px;">${expiryDateHtml}</td>
                     <td style="text-align: right; font-weight: 600;">${item.recQty}</td>
                     <td style="text-align: right; font-weight: 700; color: #166534;">${item.userAcceptedQty}</td>
                     <td style="text-align: right; font-weight: 700; color: #c2410c;">${item.issuedQty}</td>
@@ -2254,12 +2262,14 @@
             const rows = [
                 [
                     "PO No", "Company", "PO Date", "Supplier", "Department", "Project",
-                    "Item Key", "Item Name", "Location", "Received Qty", "Accepted Qty",
+                    "Item Key", "Item Name", "Location", "Batch No", "Expiry Date", "Received Qty", "Accepted Qty",
                     "Issued Qty", "Available Stock", "UOM", "Unit Cost (INR)", "Available Value (INR)", "Status"
                 ]
             ];
 
             items.forEach(i => {
+                const batchNos = (i.batches || []).map(b => b.batchNo).join('; ') || 'N/A';
+                const expiryDates = (i.batches || []).map(b => b.expiryDate || 'N/A').join('; ') || 'N/A';
                 rows.push([
                     i.poNo,
                     `"${i.company || 'GRPL'}"`,
@@ -2270,6 +2280,8 @@
                     i.itemKey,
                     `"${i.itemName}"`,
                     `"${i.location}"`,
+                    `"${batchNos}"`,
+                    `"${expiryDates}"`,
                     i.recQty,
                     i.userAcceptedQty,
                     i.issuedQty,
