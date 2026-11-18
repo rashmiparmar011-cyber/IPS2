@@ -1028,7 +1028,7 @@
     <!-- 3. STOCK ADJUSTMENT MODAL (Audit / Scrap)                 -->
     <!-- ========================================================= -->
     <div class="modal-overlay" id="adjustStockModal">
-        <div class="modal-box" style="max-width: 580px;">
+        <div class="modal-box" style="max-width: 780px;">
             <div class="modal-header">
                 <h3><i class="fas fa-sliders-h"></i> Stock Count Adjustment</h3>
                 <button class="modal-close-btn" onclick="closeAdjustModal()">&times;</button>
@@ -1087,6 +1087,31 @@
                         <label for="adjustRemarks">Justification &amp; Audit Notes *</label>
                         <textarea id="adjustRemarks" rows="2" required
                             placeholder="Mandatory explanation for audit trail (e.g. Cycle count verification, transit damage write-off)..."></textarea>
+                    </div>
+
+                    <!-- Table of Fields Being Filled in this Form (Stock Count Adjustment Entries) -->
+                    <div style="margin-bottom: 14px;">
+                        <div style="font-weight: 700; font-size: 12px; color: #1e293b; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                            <span><i class="fas fa-table" style="color: #d97706;"></i> Stock Adjustment Entries (<span id="adjustFormTableCount">0</span> records)</span>
+                            <span style="font-size: 11px; font-weight: normal; color: #64748b;">Previous audit &amp; count adjustment records for this item</span>
+                        </div>
+                        <div class="table-container" style="max-height: 155px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; margin: 0; background: #ffffff;">
+                            <table class="data-table" style="font-size: 11px; width: 100%; border-collapse: collapse; margin: 0;">
+                                <thead>
+                                    <tr style="background: #f1f5f9; position: sticky; top: 0; z-index: 1;">
+                                        <th style="padding: 6px 8px; white-space: nowrap;">DATE</th>
+                                        <th style="padding: 6px 8px; white-space: nowrap;">ACTION TYPE</th>
+                                        <th style="padding: 6px 8px; text-align: right; white-space: nowrap;">ADJUST UNITS</th>
+                                        <th style="padding: 6px 8px; white-space: nowrap;">AUTHORIZED BY</th>
+                                        <th style="padding: 6px 8px; text-align: right; white-space: nowrap;">BALANCE AFTER</th>
+                                        <th style="padding: 6px 8px;">JUSTIFICATION &amp; AUDIT NOTES</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adjustFormTableBody">
+                                    <!-- Populated dynamically with all adjustment records for this item -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <div class="modal-footer" style="padding: 12px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0;">
@@ -2222,6 +2247,38 @@
             document.getElementById('adjustAuthBy').value = 'ANISH';
             document.getElementById('adjustDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('adjustRemarks').value = '';
+
+            // Populate Stock Adjustment Table with fields from this form
+            const adjustMovements = (item.stockMovements || []).filter(m => m.type === 'ADJUSTMENT');
+            const countEl = document.getElementById('adjustFormTableCount');
+            if (countEl) countEl.textContent = adjustMovements.length;
+
+            const tbody = document.getElementById('adjustFormTableBody');
+            if (tbody) {
+                if (adjustMovements.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 14px;"><i class="fas fa-info-circle"></i> No adjustment entries recorded yet for this item. Fill the form fields above and click Apply Stock Adjustment to record an adjustment.</td></tr>`;
+                } else {
+                    tbody.innerHTML = adjustMovements.slice().reverse().map(m => {
+                        const isDeduct = (Number(m.qty) || 0) < 0;
+                        const actionBadge = isDeduct
+                            ? '<span class="badge rejected" style="font-size: 10px;"><i class="fas fa-minus-circle"></i> Reduce Stock</span>'
+                            : '<span class="badge full" style="font-size: 10px;"><i class="fas fa-plus-circle"></i> Add Stock</span>';
+                        const qtyText = isDeduct
+                            ? `<strong style="color: #dc2626;">${m.qty} ${item.uom}</strong>`
+                            : `<strong style="color: #16a34a;">+${m.qty} ${item.uom}</strong>`;
+                        return `
+                            <tr>
+                                <td style="padding: 6px 8px; white-space: nowrap; font-weight: 600;">${m.date}</td>
+                                <td style="padding: 6px 8px; white-space: nowrap;">${actionBadge}</td>
+                                <td style="padding: 6px 8px; text-align: right; white-space: nowrap;">${qtyText}</td>
+                                <td style="padding: 6px 8px; white-space: nowrap; font-weight: 600; color: #334155;">${m.adjustedBy || m.recipient || 'ANISH'}</td>
+                                <td style="padding: 6px 8px; text-align: right; font-weight: 700; color: #15803d; white-space: nowrap;">${m.balanceAfter} ${item.uom}</td>
+                                <td style="padding: 6px 8px; color: #475569; max-width: 220px;">${m.remarks || '—'}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            }
 
             document.getElementById('adjustStockModal').classList.add('active');
         }
