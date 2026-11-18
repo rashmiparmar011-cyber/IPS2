@@ -730,33 +730,44 @@
     <!-- 1. ISSUE STOCK MODAL (Outward Dispatch)                   -->
     <!-- ========================================================= -->
     <div class="modal-overlay" id="issueStockModal">
-        <div class="modal-box" style="max-width: 680px;">
+        <div class="modal-box" style="max-width: 740px;">
             <div class="modal-header">
                 <h3><i class="fas fa-dolly"></i> Issue Stock from Inventory</h3>
                 <button class="modal-close-btn" onclick="closeIssueModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <!-- Item Summary Card -->
+                <!-- Issue Stock Summary Card -->
                 <div class="summary-card" style="margin-bottom: 16px;">
-                    <div class="summary-card-title"><i class="fas fa-box"></i> Item &amp; Available Stock Details</div>
-                    <div class="summary-grid-4">
+                    <div class="summary-card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span><i class="fas fa-boxes"></i> Issue Stock Summary &amp; Details</span>
+                        <span style="font-size: 11px; font-weight: normal; color: #64748b;">Real-time Stock Ledger Status</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;">
                         <div class="summary-item">
                             <span class="label">PO Number</span>
-                            <span class="value" id="issuePoNo">-</span>
+                            <span class="value" id="issuePoNo" style="font-size: 12px;">-</span>
                         </div>
                         <div class="summary-item">
                             <span class="label">Item Key &amp; Name</span>
-                            <span class="value" id="issueItemName" style="color: #0284c7; font-weight: 700;">-</span>
+                            <span class="value" id="issueItemName" style="color: #0284c7; font-weight: 700; font-size: 12px;">-</span>
                         </div>
                         <div class="summary-item">
-                            <span class="label">Current Location</span>
-                            <span class="value" id="issueLocation">-</span>
+                            <span class="label">Total Accepted</span>
+                            <span class="value" id="issueAcceptedQty" style="font-weight: 700; color: #334155;">-</span>
                         </div>
                         <div class="summary-item">
-                            <span class="label">Available In Stock</span>
-                            <span class="value" id="issueAvailBadge"
-                                style="color: #15803d; font-size: 16px; font-weight: 800;">-</span>
+                            <span class="label">Total Issued</span>
+                            <span class="value" id="issueTotalIssuedBadge" style="color: #ea580c; font-size: 15px; font-weight: 800;">-</span>
                         </div>
+                        <div class="summary-item">
+                            <span class="label">Current Available</span>
+                            <span class="value" id="issueAvailBadge" style="color: #15803d; font-size: 16px; font-weight: 800;">-</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: #64748b; flex-wrap: wrap; gap: 8px;">
+                        <div><i class="fas fa-map-marker-alt" style="color: #0284c7;"></i> <strong>Location:</strong> <span id="issueLocation">-</span></div>
+                        <div><i class="fas fa-barcode" style="color: #64748b;"></i> <strong>Batch:</strong> <span id="issueBatchInfo">-</span></div>
+                        <div><i class="fas fa-tag" style="color: #d97706;"></i> <strong>Unit Cost:</strong> <span id="issueUnitCost">-</span></div>
                     </div>
                 </div>
 
@@ -765,16 +776,28 @@
                     <input type="hidden" id="issueHiddenPoNo">
                     <input type="hidden" id="issueHiddenItemKey">
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px;">
                         <div class="form-group-vertical">
                             <label for="issueQty">Quantity to Issue *</label>
                             <input type="number" id="issueQty" min="1" step="1" required
-                                placeholder="Enter issue quantity...">
-                            <small id="issueQtyHelp">Max allowable: 0 units</small>
+                                placeholder="Enter issue quantity..." oninput="updateIssueCalculation()">
+                            <small id="issueQtyHelp" style="color: #64748b;">Max allowable: 0 units</small>
                         </div>
                         <div class="form-group-vertical">
                             <label for="issueSlipNo">Issue Voucher / Slip No</label>
                             <input type="text" id="issueSlipNo" placeholder="Auto-generated...">
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Stock Impact Preview -->
+                    <div id="issueCalcBox" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 9px 12px; font-size: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <i class="fas fa-calculator" style="color: #16a34a; margin-right: 6px;"></i>
+                            <span style="color: #166534; font-weight: 600;">Stock Impact: </span>
+                            <span id="calcFormula">-</span>
+                        </div>
+                        <div style="font-size: 11px; color: #475569;">
+                            Total issued will become: <strong id="calcNewIssuedTotal">-</strong>
                         </div>
                     </div>
 
@@ -813,6 +836,36 @@
                         <label for="issueRemarks">Purpose / Justification *</label>
                         <textarea id="issueRemarks" rows="2" required
                             placeholder="State reason for issuing (e.g. Employee onboarding workstation allocation, DC core switch upgrade)..."></textarea>
+                    </div>
+
+                    <!-- Collapsible Previous Issue History / Summary -->
+                    <div style="margin-bottom: 14px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
+                        <div style="background: #f8fafc; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;" onclick="toggleIssueHistoryTable()">
+                            <div style="font-size: 12px; font-weight: 700; color: #334155; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-history" style="color: #0284c7;"></i>
+                                <span>Previous Issues Summary (<span id="issueHistoryCount">0</span> records)</span>
+                            </div>
+                            <div style="font-size: 11px; color: #0284c7; font-weight: 600;">
+                                <span id="issueHistoryToggleText">Show Details</span> <i class="fas fa-chevron-down" id="issueHistoryToggleIcon"></i>
+                            </div>
+                        </div>
+                        <div id="issueHistoryContainer" style="display: none; max-height: 130px; overflow-y: auto; padding: 0;">
+                            <table class="data-table" style="font-size: 11px; margin: 0; width: 100%;">
+                                <thead>
+                                    <tr style="background: #f1f5f9;">
+                                        <th style="padding: 6px 8px;">VOUCHER NO</th>
+                                        <th style="padding: 6px 8px;">DATE</th>
+                                        <th style="padding: 6px 8px;">ISSUED TO</th>
+                                        <th style="padding: 6px 8px;">DEPT</th>
+                                        <th style="padding: 6px 8px; text-align: right;">QTY ISSUED</th>
+                                        <th style="padding: 6px 8px;">REMARKS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="issueHistoryTableBody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <div class="modal-footer" style="padding: 12px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0;">
@@ -1744,6 +1797,8 @@
         // =========================================================
         // ISSUE STOCK MODAL LOGIC
         // =========================================================
+        let currentModalIssueItem = null;
+
         function openIssueModal(poNo, itemKey) {
             const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
@@ -1751,16 +1806,29 @@
                 showToast("Item details not found", "error");
                 return;
             }
+            currentModalIssueItem = item;
 
             document.getElementById('issueHiddenPoNo').value = poNo;
             document.getElementById('issueHiddenItemKey').value = itemKey;
             document.getElementById('issuePoNo').textContent = `${poNo} (${item.supplierName})`;
             document.getElementById('issueItemName').textContent = `${item.itemName} (${item.itemKey})`;
-            document.getElementById('issueLocation').textContent = item.location;
+            document.getElementById('issueAcceptedQty').textContent = `${item.userAcceptedQty || item.recQty || 0} ${item.uom}`;
+            document.getElementById('issueTotalIssuedBadge').textContent = `${item.issuedQty || 0} ${item.uom}`;
             document.getElementById('issueAvailBadge').textContent = `${item.availableQty} ${item.uom}`;
+            document.getElementById('issueLocation').textContent = item.location || 'Main Store';
 
+            // Batch info
+            let batchStr = 'N/A';
+            if (item.batches && item.batches.length > 0) {
+                batchStr = item.batches.map(b => b.batchNo + (b.expiryDate && b.expiryDate !== 'N/A' ? ' [Exp: ' + b.expiryDate + ']' : '')).join(', ');
+            }
+            document.getElementById('issueBatchInfo').textContent = batchStr;
+            document.getElementById('issueUnitCost').textContent = `₹ ${Number(item.unitCost || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+
+            // Max allowable
             const qtyInput = document.getElementById('issueQty');
-            qtyInput.value = '1';
+            const initialQty = item.availableQty > 0 ? 1 : 0;
+            qtyInput.value = initialQty;
             qtyInput.max = item.availableQty;
             document.getElementById('issueQtyHelp').textContent = `Maximum allowable issue: ${item.availableQty} ${item.uom}`;
 
@@ -1771,7 +1839,101 @@
             document.getElementById('issueRecipient').value = '';
             document.getElementById('issueRemarks').value = '';
 
+            // Previous Issue History Summary
+            const issueMovements = (item.stockMovements || []).filter(m => m.type === 'ISSUE');
+            document.getElementById('issueHistoryCount').textContent = issueMovements.length;
+            const historyBody = document.getElementById('issueHistoryTableBody');
+            if (issueMovements.length === 0) {
+                historyBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 12px;"><i class="fas fa-info-circle"></i> No previous stock issues recorded for this item (0 ${item.uom} issued so far).</td></tr>`;
+            } else {
+                historyBody.innerHTML = issueMovements.slice().reverse().map(m => `
+                    <tr>
+                        <td style="padding: 6px 8px; font-weight: 700; color: #0284c7;">${m.referenceNo || m.id}</td>
+                        <td style="padding: 6px 8px;">${m.date}</td>
+                        <td style="padding: 6px 8px; font-weight: 600;">${m.recipient || '—'}</td>
+                        <td style="padding: 6px 8px;">${m.department || '—'}</td>
+                        <td style="padding: 6px 8px; text-align: right; font-weight: 700; color: #ea580c;">${Math.abs(m.qty)} ${item.uom}</td>
+                        <td style="padding: 6px 8px; color: #64748b;">${m.remarks || '—'}</td>
+                    </tr>
+                `).join('');
+            }
+
+            // Reset history toggle view to collapsed by default
+            const histContainer = document.getElementById('issueHistoryContainer');
+            if (histContainer) histContainer.style.display = 'none';
+            const histText = document.getElementById('issueHistoryToggleText');
+            if (histText) histText.textContent = 'Show Details';
+            const histIcon = document.getElementById('issueHistoryToggleIcon');
+            if (histIcon) histIcon.className = 'fas fa-chevron-down';
+
+            // Calculate live impact
+            updateIssueCalculation();
+
             document.getElementById('issueStockModal').classList.add('active');
+        }
+
+        function updateIssueCalculation() {
+            if (!currentModalIssueItem) return;
+            const avail = currentModalIssueItem.availableQty || 0;
+            const issuedSoFar = currentModalIssueItem.issuedQty || 0;
+            const uom = currentModalIssueItem.uom || 'Piece';
+            const qtyInput = document.getElementById('issueQty');
+            const qty = Number(qtyInput.value) || 0;
+            const calcBox = document.getElementById('issueCalcBox');
+            const formula = document.getElementById('calcFormula');
+            const newTotal = document.getElementById('calcNewIssuedTotal');
+            const submitBtn = document.getElementById('btnSubmitIssue');
+
+            if (avail <= 0) {
+                calcBox.style.background = '#fef2f2';
+                calcBox.style.borderColor = '#fecaca';
+                formula.innerHTML = `<span style="color: #dc2626; font-weight: 700;"><i class="fas fa-ban"></i> Zero available stock! Cannot issue any units.</span>`;
+                newTotal.textContent = `${issuedSoFar} ${uom}`;
+                if (submitBtn) submitBtn.disabled = true;
+                return;
+            }
+
+            if (qty <= 0) {
+                calcBox.style.background = '#fef2f2';
+                calcBox.style.borderColor = '#fecaca';
+                formula.innerHTML = `<span style="color: #dc2626;">Please enter a valid quantity (minimum 1 ${uom}).</span>`;
+                newTotal.textContent = `${issuedSoFar} ${uom}`;
+                if (submitBtn) submitBtn.disabled = true;
+                return;
+            }
+
+            if (qty > avail) {
+                calcBox.style.background = '#fef2f2';
+                calcBox.style.borderColor = '#fecaca';
+                formula.innerHTML = `<span style="color: #dc2626; font-weight: 700;"><i class="fas fa-exclamation-triangle"></i> Exceeds available stock! Only ${avail} ${uom} available to issue.</span>`;
+                newTotal.textContent = `Exceeded`;
+                if (submitBtn) submitBtn.disabled = true;
+                return;
+            }
+
+            if (submitBtn) submitBtn.disabled = false;
+            const rem = avail - qty;
+            const updatedIssued = issuedSoFar + qty;
+
+            calcBox.style.background = '#f0fdf4';
+            calcBox.style.borderColor = '#bbf7d0';
+            formula.innerHTML = `${avail} Available − <span style="color: #ea580c; font-weight: 700;">${qty}</span> Issuing = <strong style="color: #15803d; font-size: 13px;">${rem} ${uom}</strong> Remaining`;
+            newTotal.textContent = `${updatedIssued} ${uom}`;
+        }
+
+        function toggleIssueHistoryTable() {
+            const container = document.getElementById('issueHistoryContainer');
+            const toggleText = document.getElementById('issueHistoryToggleText');
+            const toggleIcon = document.getElementById('issueHistoryToggleIcon');
+            if (container.style.display === 'none' || !container.style.display) {
+                container.style.display = 'block';
+                toggleText.textContent = 'Hide Details';
+                toggleIcon.className = 'fas fa-chevron-up';
+            } else {
+                container.style.display = 'none';
+                toggleText.textContent = 'Show Details';
+                toggleIcon.className = 'fas fa-chevron-down';
+            }
         }
 
         function closeIssueModal() {
