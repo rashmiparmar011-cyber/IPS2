@@ -876,6 +876,76 @@
     </div>
 
     <!-- ========================================================= -->
+    <!-- 1B. ISSUED STOCK TABLE MODAL (Form Fields Table)          -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="issuedStockTableModal">
+        <div class="modal-box" style="max-width: 980px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-table" style="color: #0d9488;"></i> Issued Stock Entries &amp; Form Details — <span id="issueTableModalHeaderItem"></span></h3>
+                <button class="modal-close-btn" onclick="closeIssuedStockTableModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Summary Card -->
+                <div class="summary-card" style="margin-bottom: 16px;">
+                    <div class="summary-card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span><i class="fas fa-boxes"></i> Item Stock Issue Overview</span>
+                        <span style="font-size: 11px; font-weight: normal; color: #64748b;">Summary of Form Fields Filled on Issue</span>
+                    </div>
+                    <div class="summary-grid-5" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;">
+                        <div class="summary-item">
+                            <span class="label">PO Number &amp; Supplier</span>
+                            <span class="value" id="issueTableModalPoNo" style="font-size: 12px;">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Item Name &amp; Key</span>
+                            <span class="value" id="issueTableModalItemName" style="color: #0284c7; font-weight: 700; font-size: 12px;">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Accepted</span>
+                            <span class="value" id="issueTableModalAcceptedQty" style="font-weight: 700; color: #334155;">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Issued</span>
+                            <span class="value" id="issueTableModalTotalIssued" style="color: #ea580c; font-size: 15px; font-weight: 800;">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Current Available</span>
+                            <span class="value" id="issueTableModalAvail" style="color: #15803d; font-size: 16px; font-weight: 800;">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table of Fields Being Filled in the Form -->
+                <div class="table-container" style="max-height: 420px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff;">
+                    <table class="data-table" id="issuedStockRecordsTable" style="width: 100%; border-collapse: collapse; margin: 0; font-size: 12px;">
+                        <thead>
+                            <tr style="background: #f1f5f9; position: sticky; top: 0; z-index: 1;">
+                                <th style="padding: 8px 10px; white-space: nowrap;">VOUCHER / SLIP NO</th>
+                                <th style="padding: 8px 10px; white-space: nowrap;">ISSUE DATE</th>
+                                <th style="padding: 8px 10px; white-space: nowrap;">ISSUED TO</th>
+                                <th style="padding: 8px 10px; white-space: nowrap;">DEPARTMENT</th>
+                                <th style="padding: 8px 10px; white-space: nowrap;">PROJECT</th>
+                                <th style="padding: 8px 10px; text-align: right; white-space: nowrap;">QTY ISSUED</th>
+                                <th style="padding: 8px 10px;">PURPOSE / JUSTIFICATION</th>
+                                <th style="padding: 8px 10px; text-align: center; white-space: nowrap;">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="issuedStockRecordsTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 12px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <button type="button" class="btn btn-primary" id="btnIssueMoreFromTable" onclick="openIssueFromRecordsModal()">
+                    <i class="fas fa-plus-circle"></i> Issue More Stock
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="closeIssuedStockTableModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
     <!-- 2. RETURN STOCK MODAL (Inward Return)                     -->
     <!-- ========================================================= -->
     <div class="modal-overlay" id="returnStockModal">
@@ -1657,7 +1727,9 @@
                     <td style="white-space: nowrap; font-size: 11px;">${expiryDateHtml}</td>
                     <td style="text-align: right; font-weight: 600;">${item.recQty}</td>
                     <td style="text-align: right; font-weight: 700; color: #166534;">${item.userAcceptedQty}</td>
-                    <td style="text-align: right; font-weight: 700; color: #c2410c;">${item.issuedQty}</td>
+                    <td style="text-align: right; font-weight: 700; color: #c2410c;">
+                        ${item.issuedQty > 0 ? `<a href="javascript:void(0)" onclick="openIssuedStockTableModal('${item.poNo}', '${item.itemKey}')" title="Click to view all filled Issue Form records for ${item.itemName}" style="color: #c2410c; text-decoration: underline; cursor: pointer;">${item.issuedQty}</a>` : '0'}
+                    </td>
                     <td style="text-align: right;">
                         <span class="stock-badge-large ${availBadgeClass}">
                             ${item.availableQty} ${item.uom}
@@ -1985,6 +2057,9 @@
                 <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'issue', '${poNo}', '${itemKey}')">
                     <i class="fas fa-dolly" style="color: #0284c7;"></i> Issue Stock
                 </a>
+                <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'issue_table', '${poNo}', '${itemKey}')">
+                    <i class="fas fa-table" style="color: #0d9488;"></i> Issued Stock Table
+                </a>
                 <a href="javascript:void(0)" class="action-menu-item" onclick="onMenuAction(event, 'ledger', '${poNo}', '${itemKey}')">
                     <i class="fas fa-history" style="color: #64748b;"></i> Stock Ledger
                 </a>
@@ -2000,7 +2075,7 @@
             if (left < 10) left = rect.left;
             let top = rect.bottom + 4;
 
-            const menuHeight = 120;
+            const menuHeight = 160;
             if (top + menuHeight > window.innerHeight) {
                 top = rect.top - menuHeight;
             }
@@ -2017,6 +2092,7 @@
             event.stopPropagation();
             closeActionMenu();
             if (action === 'issue') openIssueModal(poNo, itemKey);
+            else if (action === 'issue_table') openIssuedStockTableModal(poNo, itemKey);
             else if (action === 'return') openReturnModal(poNo, itemKey);
             else if (action === 'ledger') openLedgerModal(poNo, itemKey);
             else if (action === 'adjust') openAdjustModal(poNo, itemKey);
@@ -2198,6 +2274,89 @@
             } else {
                 alert(res.message);
             }
+        }
+
+        // =========================================================
+        // ISSUED STOCK TABLE MODAL (Form Fields Table)
+        // =========================================================
+        let currentRecordTableItem = null;
+
+        function openIssuedStockTableModal(poNo, itemKey) {
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+            if (!item) {
+                showToast("Item details not found", "error");
+                return;
+            }
+            currentRecordTableItem = item;
+
+            document.getElementById('issueTableModalHeaderItem').textContent = `${item.itemName} [${item.itemKey}]`;
+            document.getElementById('issueTableModalPoNo').textContent = `${poNo} (${item.supplierName})`;
+            document.getElementById('issueTableModalItemName').textContent = `${item.itemName} (${item.itemKey})`;
+            document.getElementById('issueTableModalAcceptedQty').textContent = `${item.userAcceptedQty || item.recQty || 0} ${item.uom}`;
+            document.getElementById('issueTableModalTotalIssued').textContent = `${item.issuedQty || 0} ${item.uom}`;
+            document.getElementById('issueTableModalAvail').textContent = `${item.availableQty} ${item.uom}`;
+
+            const issueMovements = (item.stockMovements || []).filter(m => m.type === 'ISSUE');
+            const tbody = document.getElementById('issuedStockRecordsTableBody');
+
+            if (issueMovements.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 28px; color: #64748b;">
+                            <i class="fas fa-info-circle" style="font-size: 20px; color: #94a3b8; display: block; margin-bottom: 8px;"></i>
+                            No stock issue form records recorded yet for this item (0 ${item.uom} issued so far).
+                            <div style="margin-top: 10px;">
+                                <button type="button" class="btn btn-primary btn-sm" onclick="openIssueFromRecordsModal()">
+                                    <i class="fas fa-dolly"></i> Issue Stock Now
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = issueMovements.slice().reverse().map(m => `
+                    <tr>
+                        <td style="padding: 9px 10px; font-weight: 700; color: #0284c7; white-space: nowrap;">
+                            <span class="badge open" style="font-size: 11px;"><i class="fas fa-file-invoice"></i> ${m.referenceNo || m.id}</span>
+                        </td>
+                        <td style="padding: 9px 10px; white-space: nowrap; font-weight: 600;">${m.date}</td>
+                        <td style="padding: 9px 10px; font-weight: 600; color: #1e293b;">
+                            <i class="fas fa-user" style="color: #64748b; margin-right: 4px;"></i> ${m.recipient || '—'}
+                        </td>
+                        <td style="padding: 9px 10px;">
+                            <span class="badge full" style="font-size: 10.5px;">${m.department || '—'}</span>
+                        </td>
+                        <td style="padding: 9px 10px; color: #334155;">${m.project || '—'}</td>
+                        <td style="padding: 9px 10px; text-align: right; font-weight: 800; color: #ea580c; white-space: nowrap;">
+                            ${Math.abs(m.qty)} ${item.uom}
+                        </td>
+                        <td style="padding: 9px 10px; color: #475569; max-width: 240px; font-size: 11.5px;">
+                            ${m.remarks || '—'}
+                        </td>
+                        <td style="padding: 9px 10px; text-align: center; white-space: nowrap;">
+                            <button class="btn btn-sm btn-secondary" onclick="openGatePassFromMovement('${item.poNo}', '${item.itemKey}', '${m.id}')" title="Print Gate Pass / Issue Slip">
+                                <i class="fas fa-print" style="color: #0284c7;"></i> Print Slip
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            document.getElementById('issuedStockTableModal').classList.add('active');
+        }
+
+        function closeIssuedStockTableModal() {
+            document.getElementById('issuedStockTableModal').classList.remove('active');
+            currentRecordTableItem = null;
+        }
+
+        function openIssueFromRecordsModal() {
+            if (!currentRecordTableItem) return;
+            const poNo = currentRecordTableItem.poNo;
+            const itemKey = currentRecordTableItem.itemKey;
+            closeIssuedStockTableModal();
+            openIssueModal(poNo, itemKey);
         }
 
         // =========================================================
