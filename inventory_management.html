@@ -730,7 +730,7 @@
     <!-- 1. ISSUE STOCK MODAL (Outward Dispatch)                   -->
     <!-- ========================================================= -->
     <div class="modal-overlay" id="issueStockModal">
-        <div class="modal-box" style="max-width: 740px;">
+        <div class="modal-box" style="max-width: 820px;">
             <div class="modal-header">
                 <h3><i class="fas fa-dolly"></i> Issue Stock from Inventory</h3>
                 <button class="modal-close-btn" onclick="closeIssueModal()">&times;</button>
@@ -838,31 +838,27 @@
                             placeholder="State reason for issuing (e.g. Employee onboarding workstation allocation, DC core switch upgrade)..."></textarea>
                     </div>
 
-                    <!-- Collapsible Previous Issue History / Summary -->
-                    <div style="margin-bottom: 14px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
-                        <div style="background: #f8fafc; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;" onclick="toggleIssueHistoryTable()">
-                            <div style="font-size: 12px; font-weight: 700; color: #334155; display: flex; align-items: center; gap: 6px;">
-                                <i class="fas fa-history" style="color: #0284c7;"></i>
-                                <span>Previous Issues Summary (<span id="issueHistoryCount">0</span> records)</span>
-                            </div>
-                            <div style="font-size: 11px; color: #0284c7; font-weight: 600;">
-                                <span id="issueHistoryToggleText">Show Details</span> <i class="fas fa-chevron-down" id="issueHistoryToggleIcon"></i>
-                            </div>
+                    <!-- Table of Fields Being Filled in this Form (Issued Stock Entries) -->
+                    <div style="margin-bottom: 14px;">
+                        <div style="font-weight: 700; font-size: 12px; color: #1e293b; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                            <span><i class="fas fa-table" style="color: #0284c7;"></i> Issued Stock Entries (<span id="issueFormTableCount">0</span> records)</span>
+                            <span style="font-size: 11px; font-weight: normal; color: #64748b;">Summary table of all issue form records</span>
                         </div>
-                        <div id="issueHistoryContainer" style="display: none; max-height: 130px; overflow-y: auto; padding: 0;">
-                            <table class="data-table" style="font-size: 11px; margin: 0; width: 100%;">
+                        <div class="table-container" style="max-height: 155px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; margin: 0; background: #ffffff;">
+                            <table class="data-table" style="font-size: 11px; width: 100%; border-collapse: collapse; margin: 0;">
                                 <thead>
-                                    <tr style="background: #f1f5f9;">
-                                        <th style="padding: 6px 8px;">VOUCHER NO</th>
-                                        <th style="padding: 6px 8px;">DATE</th>
-                                        <th style="padding: 6px 8px;">ISSUED TO</th>
-                                        <th style="padding: 6px 8px;">DEPT</th>
-                                        <th style="padding: 6px 8px; text-align: right;">QTY ISSUED</th>
-                                        <th style="padding: 6px 8px;">REMARKS</th>
+                                    <tr style="background: #f1f5f9; position: sticky; top: 0; z-index: 1;">
+                                        <th style="padding: 6px 8px; white-space: nowrap;">VOUCHER / SLIP NO</th>
+                                        <th style="padding: 6px 8px; white-space: nowrap;">ISSUE DATE</th>
+                                        <th style="padding: 6px 8px; white-space: nowrap;">ISSUED TO</th>
+                                        <th style="padding: 6px 8px; white-space: nowrap;">DEPARTMENT</th>
+                                        <th style="padding: 6px 8px; white-space: nowrap;">PROJECT</th>
+                                        <th style="padding: 6px 8px; text-align: right; white-space: nowrap;">QTY ISSUED</th>
+                                        <th style="padding: 6px 8px;">PURPOSE / JUSTIFICATION</th>
                                     </tr>
                                 </thead>
-                                <tbody id="issueHistoryTableBody">
-                                    <!-- Populated dynamically -->
+                                <tbody id="issueFormTableBody">
+                                    <!-- Populated dynamically with all issue records for this item -->
                                 </tbody>
                             </table>
                         </div>
@@ -1839,32 +1835,29 @@
             document.getElementById('issueRecipient').value = '';
             document.getElementById('issueRemarks').value = '';
 
-            // Previous Issue History Summary
+            // Populate Issued Stock Table with fields from this form
             const issueMovements = (item.stockMovements || []).filter(m => m.type === 'ISSUE');
-            document.getElementById('issueHistoryCount').textContent = issueMovements.length;
-            const historyBody = document.getElementById('issueHistoryTableBody');
-            if (issueMovements.length === 0) {
-                historyBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 12px;"><i class="fas fa-info-circle"></i> No previous stock issues recorded for this item (0 ${item.uom} issued so far).</td></tr>`;
-            } else {
-                historyBody.innerHTML = issueMovements.slice().reverse().map(m => `
-                    <tr>
-                        <td style="padding: 6px 8px; font-weight: 700; color: #0284c7;">${m.referenceNo || m.id}</td>
-                        <td style="padding: 6px 8px;">${m.date}</td>
-                        <td style="padding: 6px 8px; font-weight: 600;">${m.recipient || '—'}</td>
-                        <td style="padding: 6px 8px;">${m.department || '—'}</td>
-                        <td style="padding: 6px 8px; text-align: right; font-weight: 700; color: #ea580c;">${Math.abs(m.qty)} ${item.uom}</td>
-                        <td style="padding: 6px 8px; color: #64748b;">${m.remarks || '—'}</td>
-                    </tr>
-                `).join('');
-            }
+            const countEl = document.getElementById('issueFormTableCount');
+            if (countEl) countEl.textContent = issueMovements.length;
 
-            // Reset history toggle view to collapsed by default
-            const histContainer = document.getElementById('issueHistoryContainer');
-            if (histContainer) histContainer.style.display = 'none';
-            const histText = document.getElementById('issueHistoryToggleText');
-            if (histText) histText.textContent = 'Show Details';
-            const histIcon = document.getElementById('issueHistoryToggleIcon');
-            if (histIcon) histIcon.className = 'fas fa-chevron-down';
+            const tbody = document.getElementById('issueFormTableBody');
+            if (tbody) {
+                if (issueMovements.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 14px;"><i class="fas fa-info-circle"></i> No issue entries recorded yet for this item (0 ${item.uom} issued so far). Fill the form fields above and click Confirm &amp; Issue Stock to record the first issue.</td></tr>`;
+                } else {
+                    tbody.innerHTML = issueMovements.slice().reverse().map(m => `
+                        <tr>
+                            <td style="padding: 6px 8px; font-weight: 700; color: #0284c7; white-space: nowrap;">${m.referenceNo || m.id}</td>
+                            <td style="padding: 6px 8px; white-space: nowrap;">${m.date}</td>
+                            <td style="padding: 6px 8px; font-weight: 600;">${m.recipient || '—'}</td>
+                            <td style="padding: 6px 8px;">${m.department || '—'}</td>
+                            <td style="padding: 6px 8px;">${m.project || '—'}</td>
+                            <td style="padding: 6px 8px; text-align: right; font-weight: 700; color: #ea580c; white-space: nowrap;">${Math.abs(m.qty)} ${item.uom}</td>
+                            <td style="padding: 6px 8px; color: #475569; max-width: 200px;">${m.remarks || '—'}</td>
+                        </tr>
+                    `).join('');
+                }
+            }
 
             // Calculate live impact
             updateIssueCalculation();
@@ -1919,21 +1912,6 @@
             calcBox.style.borderColor = '#bbf7d0';
             formula.innerHTML = `${avail} Available − <span style="color: #ea580c; font-weight: 700;">${qty}</span> Issuing = <strong style="color: #15803d; font-size: 13px;">${rem} ${uom}</strong> Remaining`;
             newTotal.textContent = `${updatedIssued} ${uom}`;
-        }
-
-        function toggleIssueHistoryTable() {
-            const container = document.getElementById('issueHistoryContainer');
-            const toggleText = document.getElementById('issueHistoryToggleText');
-            const toggleIcon = document.getElementById('issueHistoryToggleIcon');
-            if (container.style.display === 'none' || !container.style.display) {
-                container.style.display = 'block';
-                toggleText.textContent = 'Hide Details';
-                toggleIcon.className = 'fas fa-chevron-up';
-            } else {
-                container.style.display = 'none';
-                toggleText.textContent = 'Show Details';
-                toggleIcon.className = 'fas fa-chevron-down';
-            }
         }
 
         function closeIssueModal() {
