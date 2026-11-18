@@ -498,6 +498,12 @@ class PurchaseDataManager {
                                     else li.location = 'Main Store - General Rack';
                                     needsSave = true;
                                 }
+                                if (li.coaFile === undefined) {
+                                    if (li.itemKey === 'Item001') li.coaFile = 'COA-B001-QA-Cert.pdf';
+                                    else if (li.itemKey === 'Item004') li.coaFile = 'COA-B005-Compliance.pdf';
+                                    else li.coaFile = '';
+                                    needsSave = true;
+                                }
 
                                 // Clean up test batches on Item001 so only clean primary batch B001 (10) remains
                                 if (po.poNo === 'PO01' && li.itemKey === 'Item001') {
@@ -962,7 +968,8 @@ class PurchaseDataManager {
                     location: li.location || 'Main Warehouse',
                     stockStatus: stockStatus,
                     batches: li.batches || [],
-                    stockMovements: li.stockMovements || []
+                    stockMovements: li.stockMovements || [],
+                    coaFile: li.coaFile || ''
                 });
             });
         });
@@ -1208,6 +1215,19 @@ class PurchaseDataManager {
         if (!li) return { success: false, message: `Item "${itemKey}" not found.` };
 
         li.location = (newLocation || 'Main Store').trim();
+        this.saveData(this.data);
+        return { success: true, item: li };
+    }
+
+    // Update COA file attachment
+    updateItemCOA(poNo, itemKey, fileName) {
+        const po = this.getPO(poNo);
+        if (!po) return { success: false, message: `PO "${poNo}" not found.` };
+
+        const li = po.lineItems.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+        if (!li) return { success: false, message: `Item "${itemKey}" not found.` };
+
+        li.coaFile = (fileName || '').trim();
         this.saveData(this.data);
         return { success: true, item: li };
     }

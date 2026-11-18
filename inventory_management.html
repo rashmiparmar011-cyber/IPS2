@@ -681,6 +681,7 @@
                                 <th>UOM</th>
                                 <th style="text-align: right;">UNIT COST (₹)</th>
                                 <th style="text-align: right;">AVAILABLE VALUE (₹)</th>
+                                <th style="text-align: center; min-width: 130px;">COA</th>
                                 <th style="text-align: center; min-width: 170px;">ACTIONS</th>
                             </tr>
                         </thead>
@@ -1390,6 +1391,72 @@
         </div>
     </div>
 
+    <!-- Hidden File Input for Certificate of Analysis (COA) Upload -->
+    <input type="file" id="globalCoaFileInput" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" style="display: none;" onchange="handleCoaFileSelected(event)">
+
+    <!-- ========================================================= -->
+    <!-- 6. CERTIFICATE OF ANALYSIS (COA) VIEWER MODAL             -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="coaPreviewModal">
+        <div class="modal-box" style="max-width: 650px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-contract" style="color: #0284c7;"></i> Certificate of Analysis (COA) Viewer</h3>
+                <button class="modal-close-btn" onclick="closeCoaModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="coaHiddenPoNo">
+                <input type="hidden" id="coaHiddenItemKey">
+
+                <!-- Metadata Card -->
+                <div class="summary-card" style="margin-bottom: 16px;">
+                    <div class="summary-card-title"><i class="fas fa-certificate" style="color: #16a34a;"></i> COA Compliance Details</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <div class="summary-item">
+                            <span class="label">PO &amp; Supplier</span>
+                            <span class="value" id="coaModalPoNo" style="font-size: 12px;">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Item Name &amp; Code</span>
+                            <span class="value" id="coaModalItemName" style="color: #0284c7; font-weight: 700; font-size: 12px;">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Batch Number</span>
+                            <span class="value" id="coaModalBatchInfo" style="font-weight: 700;">-</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: #64748b;">
+                        <div><i class="fas fa-map-marker-alt" style="color: #0284c7;"></i> <strong>Storage Location:</strong> <span id="coaModalStorage">-</span></div>
+                        <div><span class="badge full" style="font-size: 10px;"><i class="fas fa-check-circle"></i> QA Quality Validated</span></div>
+                    </div>
+                </div>
+
+                <!-- Document Card -->
+                <div style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; background: #f8fafc; text-align: center;">
+                    <div style="display: inline-block; width: 64px; height: 64px; border-radius: 50%; background: #fee2e2; color: #dc2626; line-height: 64px; font-size: 28px; margin-bottom: 12px;">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div style="font-weight: 700; font-size: 15px; color: #1e293b; margin-bottom: 4px;" id="coaModalFileName">
+                        COA_Certificate.pdf
+                    </div>
+                    <div style="font-size: 12px; color: #64748b; margin-bottom: 16px;">
+                        Official Manufacturer / Vendor Quality Testing &amp; Purity Specification Document
+                    </div>
+                    <div style="display: inline-flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="downloadCoaDocument()">
+                            <i class="fas fa-download"></i> Download File
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="reuploadCoaFromModal()">
+                            <i class="fas fa-sync-alt"></i> Replace / Upload New
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 12px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="closeCoaModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Floating Toast Notification -->
     <div id="toastNotification" class="toast-msg">
         <i id="toastIcon" class="fas fa-check-circle" style="font-size: 18px; color: #22c55e;"></i>
@@ -1690,7 +1757,7 @@
             if (items.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="17" style="text-align: center; padding: 36px 20px; color: #64748b;">
+                        <td colspan="18" style="text-align: center; padding: 36px 20px; color: #64748b;">
                             <i class="fas fa-boxes" style="font-size: 32px; color: #cbd5e1; margin-bottom: 10px; display: block;"></i>
                             <div style="font-size: 14px; font-weight: 700; color: #1e293b;">No inventory items found matching your filters</div>
                             <div style="font-size: 12px; margin-top: 4px;">Try changing Company to "All Companies" or resetting the search filters.</div>
@@ -1763,6 +1830,28 @@
                     <td style="font-weight: 600; color: #475569;">${item.uom}</td>
                     <td style="text-align: right; color: #475569;">₹ ${item.unitCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
                     <td style="text-align: right; font-weight: 700; color: #0f172a;">₹ ${item.availableValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td style="text-align: center; white-space: nowrap;">
+                        ${item.coaFile ? `
+                            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+                                <a href="javascript:void(0)" onclick="viewCoaDocument('${item.poNo}', '${item.itemKey}', '${item.coaFile}')" 
+                                    class="badge full" style="font-size: 11px; padding: 4px 8px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #bbf7d0;" 
+                                    title="View / Download COA: ${item.coaFile}">
+                                    <i class="fas fa-file-pdf" style="color: #dc2626;"></i>
+                                    <span style="max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700;">${item.coaFile}</span>
+                                </a>
+                                <button type="button" class="btn-action-icon" onclick="triggerCoaUpload('${item.poNo}', '${item.itemKey}')" 
+                                    style="border: none; background: transparent; cursor: pointer; color: #64748b; padding: 2px;" title="Re-upload / Replace COA">
+                                    <i class="fas fa-redo-alt" style="font-size: 10px;"></i>
+                                </button>
+                            </div>
+                        ` : `
+                            <button type="button" onclick="triggerCoaUpload('${item.poNo}', '${item.itemKey}')" 
+                                style="font-size: 11px; padding: 4px 9px; border: 1px dashed #0284c7; background: #f0f9ff; color: #0284c7; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-weight: 600;" 
+                                title="Upload Certificate of Analysis (COA)">
+                                <i class="fas fa-cloud-upload-alt"></i> Upload COA
+                            </button>
+                        `}
+                    </td>
                     <td style="text-align: center; white-space: nowrap;">
                         <div class="action-btn-group" style="justify-content: center; gap: 6px;">
                             <button type="button" class="action-btn action-btn-return"
@@ -2700,6 +2789,74 @@
         }
 
         // =========================================================
+        // CERTIFICATE OF ANALYSIS (COA) UPLOAD & PREVIEW LOGIC
+        // =========================================================
+        let currentCoaUploadItem = null;
+
+        function triggerCoaUpload(poNo, itemKey) {
+            currentCoaUploadItem = { poNo, itemKey };
+            const input = document.getElementById('globalCoaFileInput');
+            if (input) {
+                input.value = '';
+                input.click();
+            }
+        }
+
+        function handleCoaFileSelected(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file || !currentCoaUploadItem) return;
+
+            const res = window.PurchaseData.updateItemCOA(currentCoaUploadItem.poNo, currentCoaUploadItem.itemKey, file.name);
+            if (res && res.success) {
+                showToast(`COA certificate "${file.name}" uploaded successfully!`, "success");
+                renderInventoryDashboard();
+            } else {
+                showToast("Failed to upload COA file.", "error");
+            }
+            currentCoaUploadItem = null;
+        }
+
+        function viewCoaDocument(poNo, itemKey, fileName) {
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+            if (!item) return;
+
+            document.getElementById('coaModalPoNo').textContent = `${poNo} (${item.supplierName})`;
+            document.getElementById('coaModalItemName').textContent = `${item.itemName} [${item.itemKey}]`;
+            document.getElementById('coaModalFileName').textContent = fileName || 'COA_Certificate.pdf';
+            document.getElementById('coaModalBatchInfo').textContent = (item.batches && item.batches.length > 0) ? item.batches.map(b => b.batchNo).join(', ') : 'N/A';
+            document.getElementById('coaModalStorage').textContent = item.location || 'Main Store';
+            document.getElementById('coaHiddenPoNo').value = poNo;
+            document.getElementById('coaHiddenItemKey').value = itemKey;
+
+            document.getElementById('coaPreviewModal').classList.add('active');
+        }
+
+        function closeCoaModal() {
+            document.getElementById('coaPreviewModal').classList.remove('active');
+        }
+
+        function reuploadCoaFromModal() {
+            const poNo = document.getElementById('coaHiddenPoNo').value;
+            const itemKey = document.getElementById('coaHiddenItemKey').value;
+            closeCoaModal();
+            triggerCoaUpload(poNo, itemKey);
+        }
+
+        function downloadCoaDocument() {
+            const fileName = document.getElementById('coaModalFileName').textContent.trim();
+            showToast(`Downloading ${fileName}...`, "info");
+            const a = document.createElement('a');
+            a.href = '#';
+            a.download = fileName;
+            document.body.appendChild(a);
+            setTimeout(() => {
+                a.remove();
+                showToast(`COA file ${fileName} downloaded successfully!`, "success");
+            }, 600);
+        }
+
+        // =========================================================
         // EXPORT TO CSV
         // =========================================================
         function exportInventoryToCSV() {
@@ -2734,7 +2891,7 @@
                 [
                     "PO No", "Company", "PO Date", "Supplier", "Department", "Project",
                     "Item Key", "Item Name", "Location", "Batch No", "Expiry Date", "Received Qty", "Accepted Qty",
-                    "Issued Qty", "Available Stock", "UOM", "Unit Cost (INR)", "Available Value (INR)", "Status"
+                    "Issued Qty", "Available Stock", "UOM", "Unit Cost (INR)", "Available Value (INR)", "COA File", "Status"
                 ]
             ];
 
@@ -2760,6 +2917,7 @@
                     i.uom,
                     i.unitCost,
                     i.availableValue,
+                    `"${i.coaFile || 'N/A'}"`,
                     i.stockStatus
                 ]);
             });
