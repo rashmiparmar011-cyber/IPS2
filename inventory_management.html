@@ -708,7 +708,6 @@
                                 <th>REFERENCE / SLIP NO</th>
                                 <th>LOCATION</th>
                                 <th>REMARKS / PURPOSE</th>
-                                <th style="text-align: center;">ACTION</th>
                             </tr>
                         </thead>
                         <tbody id="globalLedgerTableBody">
@@ -1910,7 +1909,7 @@
             if (movements.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="13" style="text-align: center; padding: 30px; color: #64748b;">
+                        <td colspan="12" style="text-align: center; padding: 30px; color: #64748b;">
                             <i class="fas fa-history" style="font-size: 28px; color: #cbd5e1; margin-bottom: 8px; display: block;"></i>
                             No stock movement transactions recorded yet.
                         </td>
@@ -1965,11 +1964,6 @@
                     <td><span class="badge open" style="font-size: 10px;">${m.referenceNo || '-'}</span></td>
                     <td style="font-size: 11px; color: #475569;">${m.location || '-'}</td>
                     <td style="font-size: 11px; max-width: 220px;">${m.remarks || '-'}</td>
-                    <td style="text-align: center;">
-                        <button class="btn-action-inv slip" onclick="openGatePassFromMovement('${m.poNo}', '${m.itemKey}', '${m.id}')" title="Print Gate Pass for this issue">
-                            <i class="fas fa-print"></i>
-                        </button>
-                    </td>
                 `;
 
                 tbody.appendChild(tr);
