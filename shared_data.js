@@ -79,6 +79,20 @@ const DEFAULT_PURCHASE_DATA = [
                         location: "IT Store - Rack A-01",
                         remarks: "Issued for Enterprise Systems Upgrade sprint delivery",
                         issuedBy: "ANISH"
+                    },
+                    {
+                        id: "MOV-ADJ-001",
+                        date: "2026-10-14",
+                        time: "15:30 PM",
+                        type: "ADJUSTMENT",
+                        qty: 1,
+                        balanceAfter: 8,
+                        recipient: "ANISH",
+                        department: "Information Technology",
+                        referenceNo: "ADJ-2026-6651",
+                        location: "IT Store - Rack A-01",
+                        remarks: "[Surplus / Physical Audit] Physical stock count surplus — 1 spare unit verified during quarterly audit",
+                        adjustedBy: "ANISH"
                     }
                 ]
             },
@@ -194,6 +208,20 @@ const DEFAULT_PURCHASE_DATA = [
                         location: "Data Center - Bay 04",
                         remarks: "Racked in Server Hall A - Row 4",
                         issuedBy: "ANISH"
+                    },
+                    {
+                        id: "MOV-ADJ-002",
+                        date: "2026-10-08",
+                        time: "10:45 AM",
+                        type: "ADJUSTMENT",
+                        qty: -1,
+                        balanceAfter: 1,
+                        recipient: "ANISH",
+                        department: "Network & Infrastructure",
+                        referenceNo: "ADJ-2026-7732",
+                        location: "Data Center - Bay 04",
+                        remarks: "[Stock Reduction / Scrap] Cycle count physical audit — 1 unit side-panel transit defect written off per SOP-QA-40",
+                        adjustedBy: "ANISH"
                     }
                 ]
             },
@@ -249,6 +277,34 @@ const DEFAULT_PURCHASE_DATA = [
                         location: "Network Lab - Rack N-03",
                         remarks: "Configured for DC aggregation rack",
                         issuedBy: "ANISH"
+                    },
+                    {
+                        id: "MOV-ADJ-003",
+                        date: "2026-10-12",
+                        time: "14:15 PM",
+                        type: "ADJUSTMENT",
+                        qty: 1,
+                        balanceAfter: 4,
+                        recipient: "ANISH",
+                        department: "Network & Infrastructure",
+                        referenceNo: "ADJ-2026-9210",
+                        location: "Network Lab - Rack N-03",
+                        remarks: "[Surplus / Physical Audit] Physical inventory count surplus — 1 standby spare switch verified in lab rack N-03",
+                        adjustedBy: "ANISH"
+                    },
+                    {
+                        id: "MOV-ADJ-004",
+                        date: "2026-10-25",
+                        time: "11:30 AM",
+                        type: "ADJUSTMENT",
+                        qty: -1,
+                        balanceAfter: 3,
+                        recipient: "ANISH",
+                        department: "Network & Infrastructure",
+                        referenceNo: "ADJ-2026-8841",
+                        location: "Network Lab - Rack N-03",
+                        remarks: "[Stock Reduction / Scrap] Periodic cycle audit deduction — 1 defective port unit quarantined for vendor RMA",
+                        adjustedBy: "ANISH"
                     }
                 ]
             }
@@ -551,6 +607,75 @@ class PurchaseDataManager {
                                         }
                                     }
                                     needsSave = true;
+                                }
+
+                                // Ensure stock adjustment seed movements exist
+                                if (li.stockMovements && !li.stockMovements.some(m => m.type === 'ADJUSTMENT')) {
+                                    if (li.itemKey === 'Item004') {
+                                        li.stockMovements.push(
+                                            {
+                                                id: "MOV-ADJ-003",
+                                                date: "2026-10-12",
+                                                time: "14:15 PM",
+                                                type: "ADJUSTMENT",
+                                                qty: 1,
+                                                balanceAfter: 4,
+                                                recipient: "ANISH",
+                                                department: "Network & Infrastructure",
+                                                referenceNo: "ADJ-2026-9210",
+                                                location: "Network Lab - Rack N-03",
+                                                remarks: "[Surplus / Physical Audit] Physical inventory count surplus — 1 standby spare switch verified in lab rack N-03",
+                                                adjustedBy: "ANISH"
+                                            },
+                                            {
+                                                id: "MOV-ADJ-004",
+                                                date: "2026-10-25",
+                                                time: "11:30 AM",
+                                                type: "ADJUSTMENT",
+                                                qty: -1,
+                                                balanceAfter: 3,
+                                                recipient: "ANISH",
+                                                department: "Network & Infrastructure",
+                                                referenceNo: "ADJ-2026-8841",
+                                                location: "Network Lab - Rack N-03",
+                                                remarks: "[Stock Reduction / Scrap] Periodic cycle audit deduction — 1 defective port unit quarantined for vendor RMA",
+                                                adjustedBy: "ANISH"
+                                            }
+                                        );
+                                        needsSave = true;
+                                    } else if (li.itemKey === 'Item003') {
+                                        li.stockMovements.push({
+                                            id: "MOV-ADJ-002",
+                                            date: "2026-10-08",
+                                            time: "10:45 AM",
+                                            type: "ADJUSTMENT",
+                                            qty: -1,
+                                            balanceAfter: 1,
+                                            recipient: "ANISH",
+                                            department: "Network & Infrastructure",
+                                            referenceNo: "ADJ-2026-7732",
+                                            location: "Data Center - Bay 04",
+                                            remarks: "[Stock Reduction / Scrap] Cycle count physical audit — 1 unit side-panel transit defect written off per SOP-QA-40",
+                                            adjustedBy: "ANISH"
+                                        });
+                                        needsSave = true;
+                                    } else if (li.itemKey === 'Item001') {
+                                        li.stockMovements.push({
+                                            id: "MOV-ADJ-001",
+                                            date: "2026-10-14",
+                                            time: "15:30 PM",
+                                            type: "ADJUSTMENT",
+                                            qty: 1,
+                                            balanceAfter: 8,
+                                            recipient: "ANISH",
+                                            department: "Information Technology",
+                                            referenceNo: "ADJ-2026-6651",
+                                            location: "IT Store - Rack A-01",
+                                            remarks: "[Surplus / Physical Audit] Physical stock count surplus — 1 spare unit verified during quarterly audit",
+                                            adjustedBy: "ANISH"
+                                        });
+                                        needsSave = true;
+                                    }
                                 }
                             });
                         }

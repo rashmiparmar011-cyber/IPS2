@@ -2226,6 +2226,12 @@
             document.getElementById('adjustRemarks').value = '';
 
             // Populate Stock Adjustment Table with fields from this form
+            renderAdjustFormTable(item);
+
+            document.getElementById('adjustStockModal').classList.add('active');
+        }
+
+        function renderAdjustFormTable(item) {
             const adjustMovements = (item.stockMovements || []).filter(m => m.type === 'ADJUSTMENT');
             const countEl = document.getElementById('adjustFormTableCount');
             if (countEl) countEl.textContent = adjustMovements.length;
@@ -2256,8 +2262,6 @@
                     }).join('');
                 }
             }
-
-            document.getElementById('adjustStockModal').classList.add('active');
         }
 
         function onAdjustTypeChange() {
@@ -2299,12 +2303,25 @@
             });
 
             if (res.success) {
-                closeAdjustModal();
                 showToast(`Stock adjustment of ${qty} units recorded successfully!`, "success");
                 initSupplierDropdown();
                 initPoDropdown();
                 updatePoBanner();
                 renderInventoryDashboard();
+
+                // Re-render table inside modal immediately to display the newly added adjustment record
+                const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+                const updatedItem = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+                if (updatedItem) {
+                    document.getElementById('adjustAvailBadge').textContent = `${updatedItem.availableQty} ${updatedItem.uom}`;
+                    document.getElementById('adjustRemarks').value = '';
+                    document.getElementById('adjustQty').value = '1';
+                    if (type === 'DEDUCT') {
+                        document.getElementById('adjustQtyHelp').textContent = `Max allowable deduction: ${updatedItem.availableQty} ${updatedItem.uom}`;
+                        document.getElementById('adjustQty').max = updatedItem.availableQty;
+                    }
+                    renderAdjustFormTable(updatedItem);
+                }
             } else {
                 alert(res.message);
             }
