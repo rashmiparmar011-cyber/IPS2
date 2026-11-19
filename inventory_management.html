@@ -671,9 +671,6 @@
                                 <th>ITEM KEY</th>
                                 <th>ITEM NAME</th>
                                 <th>PROJECT</th>
-                                <th>STORAGE LOCATION</th>
-                                <th>BATCH NO.</th>
-                                <th>EXPIRY DATE</th>
                                 <th style="text-align: right;">REC QTY</th>
                                 <th style="text-align: right;">ACCEPTED</th>
                                 <th style="text-align: right;">ISSUED</th>
@@ -1755,7 +1752,7 @@
             if (items.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="18" style="text-align: center; padding: 36px 20px; color: #64748b;">
+                        <td colspan="15" style="text-align: center; padding: 36px 20px; color: #64748b;">
                             <i class="fas fa-boxes" style="font-size: 32px; color: #cbd5e1; margin-bottom: 10px; display: block;"></i>
                             <div style="font-size: 14px; font-weight: 700; color: #1e293b;">No inventory items found matching your filters</div>
                             <div style="font-size: 12px; margin-top: 4px;">Try changing Company to "All Companies" or resetting the search filters.</div>
@@ -1783,20 +1780,6 @@
                     availBadgeClass = 'out-of-stock';
                 }
 
-                // Batch No. & Expiry Date
-                let batchNoHtml = '<span style="color: #94a3b8; font-style: italic;">N/A</span>';
-                let expiryDateHtml = '<span style="color: #94a3b8; font-style: italic;">N/A</span>';
-                if (item.batches && item.batches.length > 0) {
-                    batchNoHtml = item.batches.map(b =>
-                        `<span class="badge open" style="font-size: 11px; font-weight: 700; margin: 1px;" title="Rec Date: ${b.recDate} | Qty: ${b.recQty} | Inv: ${b.invoiceNo}">${b.batchNo}</span>`
-                    ).join(' ');
-                    expiryDateHtml = item.batches.map(b => {
-                        const isExpired = b.expiryDate && b.expiryDate !== 'N/A' && new Date(b.expiryDate) < new Date();
-                        const colorStyle = isExpired ? 'color: #dc2626; font-weight: 700;' : (b.expiryDate && b.expiryDate !== 'N/A' ? 'color: #334155; font-weight: 600;' : 'color: #94a3b8; font-style: italic;');
-                        return `<span style="font-size: 11px; white-space: nowrap; ${colorStyle}">${b.expiryDate || 'N/A'}</span>`;
-                    }).join(', ');
-                }
-
                 tr.innerHTML = `
                     <td style="font-weight: 800; color: #0284c7; white-space: nowrap;">
                         ${item.poNo}
@@ -1806,15 +1789,6 @@
                     <td><span class="badge open" style="font-weight: 700; font-size: 11px;">${item.itemKey}</span></td>
                     <td style="font-weight: 700; color: #0f172a; white-space: nowrap;">${item.itemName}</td>
                     <td style="font-size: 11px; color: #475569; white-space: nowrap;">${item.projectName || item.projectCode || '-'}</td>
-                    <td>
-                        <span class="loc-pill" onclick="openLocationModal('${item.poNo}', '${item.itemKey}', '${item.location}')" title="Click to update storage location">
-                            <i class="fas fa-map-marker-alt" style="color: #0284c7;"></i>
-                            <span>${item.location}</span>
-                            <i class="fas fa-pencil-alt" style="font-size: 9px; color: #94a3b8; margin-left: 2px;"></i>
-                        </span>
-                    </td>
-                    <td style="white-space: nowrap;">${batchNoHtml}</td>
-                    <td style="white-space: nowrap; font-size: 11px;">${expiryDateHtml}</td>
                     <td style="text-align: right; font-weight: 600;">${item.recQty}</td>
                     <td style="text-align: right; font-weight: 700; color: #166534;">${item.userAcceptedQty}</td>
                     <td style="text-align: right; font-weight: 700; color: #c2410c;">
