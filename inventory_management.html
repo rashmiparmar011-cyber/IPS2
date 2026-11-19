@@ -765,7 +765,6 @@
                         </div>
                     </div>
                     <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: #64748b; flex-wrap: wrap; gap: 8px;">
-                        <div><i class="fas fa-map-marker-alt" style="color: #0284c7;"></i> <strong>Location:</strong> <span id="issueLocation">-</span></div>
                         <div><i class="fas fa-barcode" style="color: #64748b;"></i> <strong>Batch:</strong> <span id="issueBatchInfo">-</span></div>
                         <div><i class="fas fa-tag" style="color: #d97706;"></i> <strong>Unit Cost:</strong> <span id="issueUnitCost">-</span></div>
                     </div>
@@ -1991,7 +1990,8 @@
             document.getElementById('issueAcceptedQty').textContent = `${item.userAcceptedQty || item.recQty || 0} ${item.uom}`;
             document.getElementById('issueTotalIssuedBadge').textContent = `${item.issuedQty || 0} ${item.uom}`;
             document.getElementById('issueAvailBadge').textContent = `${item.availableQty} ${item.uom}`;
-            document.getElementById('issueLocation').textContent = item.location || 'Main Store';
+            const locEl = document.getElementById('issueLocation');
+            if (locEl) locEl.textContent = item.location || 'Main Store';
 
             // Batch info
             let batchStr = 'N/A';
