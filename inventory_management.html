@@ -923,7 +923,6 @@
                                 <th style="padding: 8px 10px; white-space: nowrap;">PROJECT</th>
                                 <th style="padding: 8px 10px; text-align: right; white-space: nowrap;">QTY ISSUED</th>
                                 <th style="padding: 8px 10px;">PURPOSE / JUSTIFICATION</th>
-                                <th style="padding: 8px 10px; text-align: center; white-space: nowrap;">ACTION</th>
                             </tr>
                         </thead>
                         <tbody id="issuedStockRecordsTableBody">
@@ -2411,7 +2410,7 @@
             if (issueMovements.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8" style="text-align: center; padding: 28px; color: #64748b;">
+                        <td colspan="7" style="text-align: center; padding: 28px; color: #64748b;">
                             <i class="fas fa-info-circle" style="font-size: 20px; color: #94a3b8; display: block; margin-bottom: 8px;"></i>
                             No stock issue form records recorded yet for this item (0 ${item.uom} issued so far).
                             <div style="margin-top: 10px;">
@@ -2441,11 +2440,6 @@
                         </td>
                         <td style="padding: 9px 10px; color: #475569; max-width: 240px; font-size: 11.5px;">
                             ${m.remarks || '—'}
-                        </td>
-                        <td style="padding: 9px 10px; text-align: center; white-space: nowrap;">
-                            <button class="btn btn-sm btn-secondary" onclick="openGatePassFromMovement('${item.poNo}', '${item.itemKey}', '${m.id}')" title="Print Gate Pass / Issue Slip">
-                                <i class="fas fa-print" style="color: #0284c7;"></i> Print Slip
-                            </button>
                         </td>
                     </tr>
                 `).join('');
