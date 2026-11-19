@@ -1170,7 +1170,6 @@
                                 <th style="text-align: right;">OUTWARD (-)</th>
                                 <th style="text-align: right; background-color: #2c729c;">BALANCE AFTER</th>
                                 <th>RECIPIENT / DEPT</th>
-                                <th>STORAGE LOCATION</th>
                                 <th>REMARKS / PURPOSE</th>
                                 <th>HANDLED BY</th>
                             </tr>
@@ -2495,7 +2494,7 @@
             if (movements.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="10" style="text-align: center; padding: 20px; color: #64748b;">
+                        <td colspan="9" style="text-align: center; padding: 20px; color: #64748b;">
                             No stock movement transactions recorded yet for this item.
                         </td>
                     </tr>
@@ -2533,7 +2532,6 @@
                         <td style="text-align: right;">${outwardVal}</td>
                         <td style="text-align: right; font-weight: 800; color: #15803d;">${m.balanceAfter} ${item.uom}</td>
                         <td>${m.recipient || '-'} <small style="color: #64748b;">(${m.department || ''})</small></td>
-                        <td style="font-size: 11px;">${m.location || item.location}</td>
                         <td style="font-size: 11px; max-width: 220px;">${m.remarks || '-'}</td>
                         <td>${m.issuedBy || m.adjustedBy || m.receivedBy || 'System'}</td>
                     `;
