@@ -772,28 +772,17 @@
                     <input type="hidden" id="issueHiddenPoNo">
                     <input type="hidden" id="issueHiddenItemKey">
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
                         <div class="form-group-vertical">
                             <label for="issueQty">Quantity to Issue *</label>
                             <input type="number" id="issueQty" min="1" step="1" required
                                 placeholder="Enter issue quantity..." oninput="updateIssueCalculation()">
-                            <small id="issueQtyHelp" style="color: #64748b;">Max allowable: 0 units</small>
+                            <small id="issueQtyHelp" style="color: #64748b; margin-top: 4px; display: block;">Max allowable: 0 units</small>
                         </div>
                         <div class="form-group-vertical">
                             <label for="issueSlipNo">Issue Voucher / Slip No</label>
                             <input type="text" id="issueSlipNo" placeholder="Auto-generated...">
-                        </div>
-                    </div>
-
-                    <!-- Dynamic Stock Impact Preview -->
-                    <div id="issueCalcBox" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 9px 12px; font-size: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <i class="fas fa-calculator" style="color: #16a34a; margin-right: 6px;"></i>
-                            <span style="color: #166534; font-weight: 600;">Stock Impact: </span>
-                            <span id="calcFormula">-</span>
-                        </div>
-                        <div style="font-size: 11px; color: #475569;">
-                            Total issued will become: <strong id="calcNewIssuedTotal">-</strong>
+                            <small style="color: #94a3b8; margin-top: 4px; display: block;">Auto-generated sequential slip number</small>
                         </div>
                     </div>
 
@@ -860,7 +849,7 @@
                         </div>
                     </div>
 
-                    <div class="modal-footer" style="padding: 12px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0;">
+                    <div class="modal-footer" style="padding: 14px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
                         <button type="button" class="btn btn-secondary" onclick="closeIssueModal()">Cancel</button>
                         <button type="submit" class="btn btn-primary" id="btnSubmitIssue">
                             <i class="fas fa-check-circle"></i> Confirm &amp; Issue Stock
@@ -1008,7 +997,7 @@
                             placeholder="e.g. Project concluded earlier, excess units returned, employee role change, damaged goods..."></textarea>
                     </div>
 
-                    <div class="modal-footer" style="padding: 12px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0;">
+                    <div class="modal-footer" style="padding: 14px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
                         <button type="button" class="btn btn-secondary" onclick="closeReturnModal()">Cancel</button>
                         <button type="submit" class="btn btn-primary" id="btnSubmitReturn">
                             <i class="fas fa-undo-alt"></i> Confirm Return to Stock
@@ -1109,7 +1098,7 @@
                         </div>
                     </div>
 
-                    <div class="modal-footer" style="padding: 12px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0;">
+                    <div class="modal-footer" style="padding: 14px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
                         <button type="button" class="btn btn-secondary" onclick="closeAdjustModal()">Cancel</button>
                         <button type="submit" class="btn btn-primary" id="btnSubmitAdjust">
                             <i class="fas fa-check-circle"></i> Apply Stock Adjustment
@@ -2014,50 +2003,35 @@
         function updateIssueCalculation() {
             if (!currentModalIssueItem) return;
             const avail = currentModalIssueItem.availableQty || 0;
-            const issuedSoFar = currentModalIssueItem.issuedQty || 0;
             const uom = currentModalIssueItem.uom || 'Piece';
             const qtyInput = document.getElementById('issueQty');
             const qty = Number(qtyInput.value) || 0;
-            const calcBox = document.getElementById('issueCalcBox');
-            const formula = document.getElementById('calcFormula');
-            const newTotal = document.getElementById('calcNewIssuedTotal');
+            const helpEl = document.getElementById('issueQtyHelp');
             const submitBtn = document.getElementById('btnSubmitIssue');
 
             if (avail <= 0) {
-                calcBox.style.background = '#fef2f2';
-                calcBox.style.borderColor = '#fecaca';
-                formula.innerHTML = `<span style="color: #dc2626; font-weight: 700;"><i class="fas fa-ban"></i> Zero available stock! Cannot issue any units.</span>`;
-                newTotal.textContent = `${issuedSoFar} ${uom}`;
+                if (helpEl) helpEl.innerHTML = `<span style="color: #dc2626; font-weight: 700;"><i class="fas fa-ban"></i> Zero available stock! Cannot issue any units.</span>`;
                 if (submitBtn) submitBtn.disabled = true;
                 return;
             }
 
             if (qty <= 0) {
-                calcBox.style.background = '#fef2f2';
-                calcBox.style.borderColor = '#fecaca';
-                formula.innerHTML = `<span style="color: #dc2626;">Please enter a valid quantity (minimum 1 ${uom}).</span>`;
-                newTotal.textContent = `${issuedSoFar} ${uom}`;
+                if (helpEl) helpEl.innerHTML = `<span style="color: #dc2626;">Please enter a valid quantity (minimum 1 ${uom}).</span>`;
                 if (submitBtn) submitBtn.disabled = true;
                 return;
             }
 
             if (qty > avail) {
-                calcBox.style.background = '#fef2f2';
-                calcBox.style.borderColor = '#fecaca';
-                formula.innerHTML = `<span style="color: #dc2626; font-weight: 700;"><i class="fas fa-exclamation-triangle"></i> Exceeds available stock! Only ${avail} ${uom} available to issue.</span>`;
-                newTotal.textContent = `Exceeded`;
+                if (helpEl) helpEl.innerHTML = `<span style="color: #dc2626; font-weight: 700;"><i class="fas fa-exclamation-triangle"></i> Exceeds available stock! Only ${avail} ${uom} available.</span>`;
                 if (submitBtn) submitBtn.disabled = true;
                 return;
             }
 
             if (submitBtn) submitBtn.disabled = false;
             const rem = avail - qty;
-            const updatedIssued = issuedSoFar + qty;
-
-            calcBox.style.background = '#f0fdf4';
-            calcBox.style.borderColor = '#bbf7d0';
-            formula.innerHTML = `${avail} Available − <span style="color: #ea580c; font-weight: 700;">${qty}</span> Issuing = <strong style="color: #15803d; font-size: 13px;">${rem} ${uom}</strong> Remaining`;
-            newTotal.textContent = `${updatedIssued} ${uom}`;
+            if (helpEl) {
+                helpEl.innerHTML = `Maximum allowable issue: <strong>${avail} ${uom}</strong> <span style="color: #166534; font-weight: 600; margin-left: 6px;">(${rem} ${uom} will remain in stock)</span>`;
+            }
         }
 
         function closeIssueModal() {
