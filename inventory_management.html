@@ -817,36 +817,10 @@
                         </div>
                     </div>
 
-                    <div class="form-group-vertical" style="margin-bottom: 14px;">
+                    <div class="form-group-vertical" style="margin-bottom: 6px;">
                         <label for="issueRemarks">Purpose / Justification *</label>
                         <textarea id="issueRemarks" rows="2" required
                             placeholder="State reason for issuing (e.g. Employee onboarding workstation allocation, DC core switch upgrade)..."></textarea>
-                    </div>
-
-                    <!-- Table of Fields Being Filled in this Form (Issued Stock Entries) -->
-                    <div style="margin-bottom: 14px;">
-                        <div style="font-weight: 700; font-size: 12px; color: #1e293b; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-                            <span><i class="fas fa-table" style="color: #0284c7;"></i> Issued Stock Entries (<span id="issueFormTableCount">0</span> records)</span>
-                            <span style="font-size: 11px; font-weight: normal; color: #64748b;">Summary table of all issue form records</span>
-                        </div>
-                        <div class="table-container" style="max-height: 155px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; margin: 0; background: #ffffff;">
-                            <table class="data-table" style="font-size: 11px; width: 100%; border-collapse: collapse; margin: 0;">
-                                <thead>
-                                    <tr style="background: #f1f5f9; position: sticky; top: 0; z-index: 1;">
-                                        <th style="padding: 6px 8px; white-space: nowrap;">VOUCHER / SLIP NO</th>
-                                        <th style="padding: 6px 8px; white-space: nowrap;">ISSUE DATE</th>
-                                        <th style="padding: 6px 8px; white-space: nowrap;">ISSUED TO</th>
-                                        <th style="padding: 6px 8px; white-space: nowrap;">DEPARTMENT</th>
-                                        <th style="padding: 6px 8px; white-space: nowrap;">PROJECT</th>
-                                        <th style="padding: 6px 8px; text-align: right; white-space: nowrap;">QTY ISSUED</th>
-                                        <th style="padding: 6px 8px;">PURPOSE / JUSTIFICATION</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="issueFormTableBody">
-                                    <!-- Populated dynamically with all issue records for this item -->
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
 
                     <div class="modal-footer" style="padding: 14px 0 0 0; background: transparent; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
@@ -1970,30 +1944,6 @@
             document.getElementById('issueRecipient').value = '';
             document.getElementById('issueRemarks').value = '';
 
-            // Populate Issued Stock Table with fields from this form
-            const issueMovements = (item.stockMovements || []).filter(m => m.type === 'ISSUE');
-            const countEl = document.getElementById('issueFormTableCount');
-            if (countEl) countEl.textContent = issueMovements.length;
-
-            const tbody = document.getElementById('issueFormTableBody');
-            if (tbody) {
-                if (issueMovements.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 14px;"><i class="fas fa-info-circle"></i> No issue entries recorded yet for this item (0 ${item.uom} issued so far). Fill the form fields above and click Confirm &amp; Issue Stock to record the first issue.</td></tr>`;
-                } else {
-                    tbody.innerHTML = issueMovements.slice().reverse().map(m => `
-                        <tr>
-                            <td style="padding: 6px 8px; font-weight: 700; color: #0284c7; white-space: nowrap;">${m.referenceNo || m.id}</td>
-                            <td style="padding: 6px 8px; white-space: nowrap;">${m.date}</td>
-                            <td style="padding: 6px 8px; font-weight: 600;">${m.recipient || '—'}</td>
-                            <td style="padding: 6px 8px;">${m.department || '—'}</td>
-                            <td style="padding: 6px 8px;">${m.project || '—'}</td>
-                            <td style="padding: 6px 8px; text-align: right; font-weight: 700; color: #ea580c; white-space: nowrap;">${Math.abs(m.qty)} ${item.uom}</td>
-                            <td style="padding: 6px 8px; color: #475569; max-width: 200px;">${m.remarks || '—'}</td>
-                        </tr>
-                    `).join('');
-                }
-            }
-
             // Calculate live impact
             updateIssueCalculation();
 
@@ -2068,6 +2018,11 @@
                 initPoDropdown();
                 updatePoBanner();
                 renderInventoryDashboard();
+
+                // Redirect to Issued Stock Table modal
+                setTimeout(() => {
+                    openIssuedStockTableModal(poNo, itemKey);
+                }, 300);
             } else {
                 alert(res.message);
             }
