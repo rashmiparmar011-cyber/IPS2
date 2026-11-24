@@ -471,11 +471,10 @@
                 const statusClass = item.userAcceptanceStatus.toLowerCase();
 
                 // Buttons logic:
-                // On Accepted tab only: Accept button omitted
-                // On Rejected tab only: Reject button omitted
-                // On All and Pending tabs: Both buttons available!
-                const showAcceptBtn = (currentAccTab !== 'Accepted');
-                const showRejectBtn = (currentAccTab !== 'Rejected');
+                // Only Pending items have action buttons (Accept / Reject) at desk.
+                // Once an item is Accepted or Rejected, action buttons are removed and only View Details remains.
+                const showAcceptBtn = (item.userAcceptanceStatus === 'Pending');
+                const showRejectBtn = (item.userAcceptanceStatus === 'Pending');
 
                 let actionsHtml = `
                     <div class="action-btn-group" style="justify-content: center;">

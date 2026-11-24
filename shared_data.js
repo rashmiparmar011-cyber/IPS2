@@ -1250,18 +1250,26 @@ class PurchaseDataManager {
                     if (status === 'FOC') {
                         if (!isFocItem) return;
                     } else {
+                        if (isFocItem) return;
                         if (status === 'Low Stock' && stockStatus !== 'Low Stock') return;
                         if (status === 'In Stock' && stockStatus !== 'In Stock') return;
                         if (status === 'Fully Dispatched' && stockStatus !== 'Fully Dispatched') return;
                         if (status === 'Rejected' && stockStatus !== 'Rejected / Defective') return;
                         if (status === 'Pending' && stockStatus !== 'Pending Acceptance') return;
                     }
+                } else if (status === 'All') {
+                    // For standard All Inventory Items tab, exclude FOC so it displays cleanly in the FOC tab
+                    if (isFocItem && options.includeFoc !== true) return;
                 }
 
                 results.push({
                     company: po.company || 'GRPL',
                     poNo: po.poNo,
+                    focEntryNo: po.poNo,
+                    poNumber: po.poNumber || (po.poNo && !po.poNo.startsWith('FOC') ? po.poNo : 'N/A'),
                     poDate: po.poDate,
+                    entryDate: po.entryDate || po.poDate,
+                    receivedDate: po.receivedDate || po.poDate,
                     prNo: po.prNo || 'N/A',
                     supplierName: po.supplierName,
                     supplierCode: po.supplierCode,
@@ -1288,7 +1296,11 @@ class PurchaseDataManager {
                     batches: li.batches || [],
                     stockMovements: li.stockMovements || [],
                     coaFile: li.coaFile || '',
-                    isFOC: isFocItem
+                    isFOC: isFocItem,
+                    purpose: li.purpose || po.purpose || 'Testing',
+                    batchNo: li.batchNo || (li.batches && li.batches[0] ? li.batches[0].batchNo : '-') || '-',
+                    mfgDate: li.mfgDate || (li.batches && li.batches[0] ? li.batches[0].mfgDate : '-') || '-',
+                    expiryDate: li.expiryDate || (li.batches && li.batches[0] ? li.batches[0].expiryDate : '-') || '-'
                 });
             });
         });

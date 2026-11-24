@@ -693,6 +693,32 @@
                     </table>
                 </div>
 
+                <!-- Dedicated FOC Inventory Table View (Exact view matching user screenshot) -->
+                <div id="focInventoryTableView" class="table-container" style="display: none;">
+                    <table class="data-table" id="focInventoryTable">
+                        <thead>
+                            <tr>
+                                <th>FOC ENTRY NO.</th>
+                                <th>PO NUMBER</th>
+                                <th>ENTRY DATE</th>
+                                <th>SUPPLIER</th>
+                                <th>PRODUCT NAME</th>
+                                <th>RECEIVED DATE</th>
+                                <th style="text-align: right;">QTY</th>
+                                <th>UOM</th>
+                                <th>BATCH NO.</th>
+                                <th>MFG DATE</th>
+                                <th>EXPIRY DATE</th>
+                                <th style="text-align: center;">PURPOSE</th>
+                                <th style="text-align: center; min-width: 170px;">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="focInventoryTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
                 <!-- Global Recent Stock Movement Ledger View (Tab) -->
                 <div id="inventoryLedgerView" class="table-container" style="display: none;">
                     <table class="data-table" id="globalLedgerTable">
@@ -1617,7 +1643,7 @@
             banner.style.display = 'flex';
         }
 
-        // Switch main status tabs (All, In Stock, Low Stock, Ledger)
+        // Switch main status tabs (All, In Stock, Low Stock, Ledger, FOC)
         function switchInventoryTab(tabName) {
             currentInvTab = tabName;
             document.querySelectorAll('.status-tab').forEach(t => {
@@ -1626,14 +1652,22 @@
 
             const tableView = document.getElementById('inventoryTableView');
             const ledgerView = document.getElementById('inventoryLedgerView');
+            const focView = document.getElementById('focInventoryTableView');
 
             if (tabName === 'Ledger') {
-                tableView.style.display = 'none';
-                ledgerView.style.display = 'block';
+                if (tableView) tableView.style.display = 'none';
+                if (focView) focView.style.display = 'none';
+                if (ledgerView) ledgerView.style.display = 'block';
                 renderGlobalLedger();
+            } else if (tabName === 'FOC') {
+                if (tableView) tableView.style.display = 'none';
+                if (ledgerView) ledgerView.style.display = 'none';
+                if (focView) focView.style.display = 'block';
+                renderFocInventoryTable();
             } else {
-                tableView.style.display = 'block';
-                ledgerView.style.display = 'none';
+                if (tableView) tableView.style.display = 'block';
+                if (ledgerView) ledgerView.style.display = 'none';
+                if (focView) focView.style.display = 'none';
                 renderInventoryDashboard();
             }
         }
@@ -1642,6 +1676,8 @@
         function applyInventoryFilters() {
             if (currentInvTab === 'Ledger') {
                 renderGlobalLedger();
+            } else if (currentInvTab === 'FOC') {
+                renderFocInventoryTable();
             } else {
                 renderInventoryDashboard();
             }
@@ -1666,6 +1702,11 @@
 
         // Render main dashboard and table
         function renderInventoryDashboard() {
+            if (currentInvTab === 'FOC') {
+                renderFocInventoryTable();
+                return;
+            }
+
             const stockFilter = document.getElementById('filterStockStatus') ? document.getElementById('filterStockStatus').value : 'available';
             const availableOnly = (stockFilter === 'available');
             const search = document.getElementById('filterSearch').value;
@@ -1694,14 +1735,21 @@
                 poNo: currentSelectedPo,
                 supplier: currentSelectedSupplier,
                 company: currentCompany,
-                availableOnly: availableOnly
+                availableOnly: availableOnly,
+                status: 'All'
+            });
+            const focItemsUnfiltered = window.PurchaseData.getInventoryItems({
+                poNo: currentSelectedPo,
+                supplier: currentSelectedSupplier,
+                company: currentCompany,
+                availableOnly: false,
+                status: 'FOC'
             });
             document.getElementById('badgeTabAll').textContent = allItemsUnfiltered.length;
             document.getElementById('badgeTabInStock').textContent = allItemsUnfiltered.filter(i => i.availableQty > 2).length;
             document.getElementById('badgeTabLowStock').textContent = allItemsUnfiltered.filter(i => i.availableQty > 0 && i.availableQty <= 2).length;
-            const focItemsCount = allItemsUnfiltered.filter(i => i.isFOC || (i.poNo && i.poNo.startsWith('FOC'))).length;
             const badgeFocEl = document.getElementById('badgeTabFOC');
-            if (badgeFocEl) badgeFocEl.textContent = focItemsCount;
+            if (badgeFocEl) badgeFocEl.textContent = focItemsUnfiltered.length;
 
             // Recent ledger count
             let totalMovements = 0;
@@ -1811,6 +1859,109 @@
             });
 
             document.getElementById('invPaginationInfo').textContent = `Showing 1 to ${items.length} of ${items.length} inventory records`;
+        }
+
+        // Dedicated renderer for FOC Inventory Table View (Exact view matching Goods-In FOC table)
+        function renderFocInventoryTable() {
+            const tbody = document.getElementById('focInventoryTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const stockFilter = document.getElementById('filterStockStatus') ? document.getElementById('filterStockStatus').value : 'available';
+            const availableOnly = (stockFilter === 'available');
+            const search = document.getElementById('filterSearch') ? document.getElementById('filterSearch').value.trim().toLowerCase() : '';
+            const dept = document.getElementById('filterDept') ? document.getElementById('filterDept').value : 'All';
+
+            const items = window.PurchaseData.getInventoryItems({
+                poNo: currentSelectedPo,
+                supplier: currentSelectedSupplier,
+                company: currentCompany,
+                availableOnly: availableOnly,
+                search: search,
+                department: dept,
+                status: 'FOC'
+            });
+
+            // Update badge counts across tabs
+            const allItemsUnfiltered = window.PurchaseData.getInventoryItems({
+                poNo: currentSelectedPo,
+                supplier: currentSelectedSupplier,
+                company: currentCompany,
+                availableOnly: availableOnly,
+                status: 'All'
+            });
+            const focItemsUnfiltered = window.PurchaseData.getInventoryItems({
+                poNo: currentSelectedPo,
+                supplier: currentSelectedSupplier,
+                company: currentCompany,
+                availableOnly: false,
+                status: 'FOC'
+            });
+            if (document.getElementById('badgeTabAll')) document.getElementById('badgeTabAll').textContent = allItemsUnfiltered.length;
+            if (document.getElementById('badgeTabInStock')) document.getElementById('badgeTabInStock').textContent = allItemsUnfiltered.filter(i => i.availableQty > 2).length;
+            if (document.getElementById('badgeTabLowStock')) document.getElementById('badgeTabLowStock').textContent = allItemsUnfiltered.filter(i => i.availableQty > 0 && i.availableQty <= 2).length;
+            const badgeFocEl = document.getElementById('badgeTabFOC');
+            if (badgeFocEl) badgeFocEl.textContent = focItemsUnfiltered.length;
+
+            const paginationInfo = document.getElementById('invPaginationInfo');
+            if (items.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="13" style="text-align: center; padding: 36px 20px; color: #64748b;">
+                            <i class="fas fa-boxes" style="font-size: 32px; color: #cbd5e1; margin-bottom: 10px; display: block;"></i>
+                            <div style="font-size: 14px; font-weight: 700; color: #1e293b;">No FOC samples found matching your filters</div>
+                            <div style="font-size: 12px; margin-top: 4px;">FOC items entered via Goods-In will appear here automatically with Return &amp; Actions.</div>
+                        </td>
+                    </tr>
+                `;
+                if (paginationInfo) paginationInfo.textContent = 'Showing 0 to 0 of 0 records';
+                return;
+            }
+
+            if (paginationInfo) {
+                paginationInfo.textContent = `Showing 1 to ${items.length} of ${items.length} records`;
+            }
+
+            items.forEach(item => {
+                const tr = document.createElement('tr');
+                const qtyVal = item.availableQty !== undefined ? item.availableQty : item.recQty;
+
+                tr.innerHTML = `
+                    <td><strong style="color: #0f172a;">${item.focEntryNo || item.poNo}</strong></td>
+                    <td style="color: #64748b;">${item.poNumber || 'N/A'}</td>
+                    <td>${item.entryDate || item.poDate || '-'}</td>
+                    <td><span style="font-weight: 600; color: #1e293b;">${item.supplierName}</span></td>
+                    <td>
+                        <div style="font-weight: 700; color: #0f172a; line-height: 1.3;">${item.itemName}</div>
+                        <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${item.itemKey || '-'}</div>
+                    </td>
+                    <td>${item.receivedDate || item.poDate || '-'}</td>
+                    <td style="text-align: right; font-weight: 700; color: #0f172a;">${qtyVal}</td>
+                    <td>${item.uom || 'Piece'}</td>
+                    <td><code>${item.batchNo || '-'}</code></td>
+                    <td>${item.mfgDate || '-'}</td>
+                    <td>${item.expiryDate || '-'}</td>
+                    <td style="text-align: center;">
+                        <span class="badge-foc-purpose">${item.purpose || 'Testing'}</span>
+                    </td>
+                    <td style="text-align: center; white-space: nowrap;">
+                        <div class="action-btn-group" style="justify-content: center; gap: 6px;">
+                            <button type="button" class="action-btn action-btn-return"
+                                onclick="openReturnModal('${item.poNo}', '${item.itemKey}')"
+                                title="Return Stock (Issued Return or Return to Vendor)">
+                                <i class="fas fa-undo-alt"></i> Return
+                            </button>
+                            <button type="button" class="action-btn action-btn-actions"
+                                onclick="toggleActionMenu(event, '${item.poNo}', '${item.itemKey}')"
+                                title="More Actions">
+                                <i class="fas fa-cog"></i> Actions <i class="fas fa-chevron-down" style="font-size: 8px; margin-left: 3px;"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
         }
 
         // Render Global Recent Stock Movements (Ledger Tab)
@@ -2898,15 +3049,21 @@
 
         // Real-time synchronization across modules / windows
         window.addEventListener('ips_inventory_updated', () => {
-            renderInventoryDashboard();
+            if (currentInvTab === 'FOC') renderFocInventoryTable();
+            else if (currentInvTab === 'Ledger') renderGlobalLedger();
+            else renderInventoryDashboard();
         });
         window.addEventListener('ips_data_updated', () => {
-            renderInventoryDashboard();
+            if (currentInvTab === 'FOC') renderFocInventoryTable();
+            else if (currentInvTab === 'Ledger') renderGlobalLedger();
+            else renderInventoryDashboard();
         });
         window.addEventListener('storage', (e) => {
             if (e.key === 'ips_purchase_data') {
                 window.PurchaseData.loadData();
-                renderInventoryDashboard();
+                if (currentInvTab === 'FOC') renderFocInventoryTable();
+                else if (currentInvTab === 'Ledger') renderGlobalLedger();
+                else renderInventoryDashboard();
             }
         });
     </script>
