@@ -979,6 +979,45 @@ body {
     border: 1px solid #d8b4fe;
 }
 
+/* FOC Samples Table & Action Buttons */
+.btn-foc-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.btn-foc-action:hover {
+    opacity: 0.85;
+    transform: scale(1.05);
+}
+
+.btn-foc-view {
+    background: #3b82f6;
+    color: #ffffff;
+}
+
+.btn-foc-print {
+    background: #8b5cf6;
+    color: #ffffff;
+}
+
+.badge-foc-purpose {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #e0f2fe;
+    color: #0284c7;
+    border: 1px solid #bae6fd;
+}
+
 /* Invoices clickable download/view pill */
 .invoice-link-badge {
     display: inline-flex;

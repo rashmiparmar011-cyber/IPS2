@@ -1,4 +1,4 @@
-﻿# DESIGN SPECIFICATION: STOCK & PURCHASE ORDER INVENTORY MANAGEMENT SYSTEM
+# DESIGN SPECIFICATION: STOCK & PURCHASE ORDER INVENTORY MANAGEMENT SYSTEM
 **India Purchase System (IPS) — Specials Division & Clinical Procurement**  
 **Document Identifier:** `DS-IPS-INV-001` (Referenced under `Design specification Order_Confirmation_Validation`)  
 **Parent Quality SOP:** `SOP/SQA/0026` (Computerised System Validation) | **Quality Form:** `F/SQA/0026/001/v5`  

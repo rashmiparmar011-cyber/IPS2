@@ -485,78 +485,159 @@ const DEFAULT_PURCHASE_DATA = [
         ]
     },
     {
-        poNo: "FOC-001",
+        poNo: "FOC-389102",
+        poNumber: "N/A",
         company: "GRPL",
-        poDate: "2026-11-20",
-        prNo: "FOC-PR-01",
+        poDate: "2026-09-25",
+        entryDate: "2026-09-25",
+        receivedDate: "2026-09-25",
+        prNo: "FOC-PR-389",
         requestedBy: "Anish Patel",
-        supplierName: "Vimal Enterprises",
-        supplierCode: "SUP-101",
-        department: "Information Technology",
-        projectCode: "PRJ-FOC-01",
-        projectName: "Vendor Sample Evaluation",
+        supplierName: "Biochem Labs",
+        supplierCode: "SUP-BIO-01",
+        department: "Quality Assurance",
+        projectCode: "PRJ-TEST-01",
+        projectName: "Laboratory Analytical Testing",
         totalCost: 0,
         status: "Complete",
         paymentStatus: "Fully Paid",
         paymentTerm: "Free of Charge (FOC)",
         amountPaid: 0,
-        dueDate: "2026-11-20",
+        dueDate: "2026-09-25",
         isFOC: true,
+        purpose: "Testing",
         lineItems: [
             {
-                itemKey: "Item-FOC-001",
-                itemName: "Ergonomic Vertical Mouse (Vendor Sample)",
-                reqQty: 3,
-                recQty: 3,
-                uom: "Piece",
+                itemKey: "SVPL-01",
+                itemName: "Ascorbic Acid Standard",
+                reqQty: 2,
+                recQty: 2,
+                uom: "Vial",
                 cost: 0,
                 balance: 0,
                 status: "Full",
                 userAcceptanceStatus: "Accepted",
-                userAcceptedQty: 3,
-                acceptanceRemarks: "FOC vendor trial sample inspected and accepted.",
-                location: "IT Store - Rack A-01",
-                issuedQty: 1,
+                userAcceptedQty: 2,
+                acceptanceRemarks: "FOC reference sample received for laboratory assay testing.",
+                location: "QA Lab Storage - Rack 1",
+                issuedQty: 0,
                 isFOC: true,
+                purpose: "Testing",
+                mfgDate: "2026-08-01",
+                expiryDate: "2027-08-01",
+                batchNo: "BX-9801",
                 coaFile: "",
                 batches: [
                     {
-                        batchNo: "FOC-B001",
-                        recDate: "2026-11-20",
-                        recQty: 3,
-                        expiryDate: "N/A",
-                        invoiceNo: "DC-FOC-2026",
+                        batchNo: "BX-9801",
+                        recDate: "2026-09-25",
+                        mfgDate: "2026-08-01",
+                        recQty: 2,
+                        expiryDate: "2027-08-01",
+                        invoiceNo: "DC-BIO-389102",
                         attachment: ""
                     }
                 ],
                 stockMovements: [
                     {
-                        id: "MOV-FOC-001",
-                        date: "2026-11-20",
-                        time: "10:30 AM",
+                        id: "MOV-FOC-389102",
+                        date: "2026-09-25",
+                        time: "09:30 AM",
                         type: "INWARD_FOC",
-                        qty: 3,
-                        balanceAfter: 3,
-                        recipient: "IT Main Store",
-                        department: "Information Technology",
-                        referenceNo: "DC-FOC-2026",
-                        location: "IT Store - Rack A-01",
-                        remarks: "Goods-In Manual Entry: Free Of Charge (FOC) vendor sample received",
+                        qty: 2,
+                        balanceAfter: 2,
+                        recipient: "QA Lab Storage",
+                        department: "Quality Assurance",
+                        referenceNo: "DC-BIO-389102",
+                        location: "QA Lab Storage - Rack 1",
+                        remarks: "Goods-In FOC Sample Receipt: Testing - Ascorbic Acid Standard",
+                        handledBy: "ANISH"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        poNo: "FOC-411209",
+        poNumber: "PO-DUMMY-89",
+        company: "GRPL",
+        poDate: "2026-09-23",
+        entryDate: "2026-09-23",
+        receivedDate: "2026-09-23",
+        prNo: "PR-DEMO-89",
+        requestedBy: "Anish Patel",
+        supplierName: "Apex Hardware Systems",
+        supplierCode: "SUP-APX-89",
+        department: "Health & Safety",
+        projectCode: "PRJ-DEMO-89",
+        projectName: "Safety Equipment Trial",
+        totalCost: 0,
+        status: "Complete",
+        paymentStatus: "Fully Paid",
+        paymentTerm: "Free of Charge (FOC)",
+        amountPaid: 0,
+        dueDate: "2026-09-23",
+        isFOC: true,
+        purpose: "Evaluation",
+        lineItems: [
+            {
+                itemKey: "T-045",
+                itemName: "Safety Goggles (Demo)",
+                reqQty: 5,
+                recQty: 5,
+                uom: "Piece",
+                cost: 0,
+                balance: 0,
+                status: "Full",
+                userAcceptanceStatus: "Accepted",
+                userAcceptedQty: 5,
+                acceptanceRemarks: "FOC demo sample units received for workshop safety trial.",
+                location: "Main Store - Rack A-01",
+                issuedQty: 1,
+                isFOC: true,
+                purpose: "Evaluation",
+                mfgDate: "-",
+                expiryDate: "-",
+                batchNo: "DEMO-01",
+                coaFile: "",
+                batches: [
+                    {
+                        batchNo: "DEMO-01",
+                        recDate: "2026-09-23",
+                        mfgDate: "-",
+                        recQty: 5,
+                        expiryDate: "-",
+                        invoiceNo: "DC-APX-411209",
+                        attachment: ""
+                    }
+                ],
+                stockMovements: [
+                    {
+                        id: "MOV-FOC-411209-1",
+                        date: "2026-09-23",
+                        time: "11:15 AM",
+                        type: "INWARD_FOC",
+                        qty: 5,
+                        balanceAfter: 5,
+                        recipient: "Main Store",
+                        department: "Health & Safety",
+                        referenceNo: "DC-APX-411209",
+                        location: "Main Store - Rack A-01",
+                        remarks: "Goods-In FOC Sample Receipt: Evaluation - Safety Goggles (Demo)",
                         handledBy: "ANISH"
                     },
                     {
-                        id: "MOV-FOC-002",
-                        date: "2026-11-21",
-                        time: "14:15 PM",
+                        id: "MOV-FOC-411209-2",
+                        date: "2026-09-24",
+                        time: "15:40 PM",
                         type: "ISSUE",
                         qty: 1,
-                        balanceAfter: 2,
-                        recipient: "Rahul Sharma (QA Lead)",
-                        department: "Quality Assurance",
-                        project: "Vendor Sample Evaluation",
-                        referenceNo: "ISS-2026-9901",
-                        location: "IT Store - Rack A-01",
-                        remarks: "Issued 1 unit for ergonomic evaluation",
+                        balanceAfter: 4,
+                        recipient: "Sunil Rao (Safety Officer)",
+                        department: "Health & Safety",
+                        referenceNo: "ISS-2026-4112",
+                        location: "Main Store - Rack A-01",
+                        remarks: "Issued 1 unit for workshop safety evaluation trial",
                         issuedBy: "ANISH"
                     }
                 ]
@@ -600,15 +681,21 @@ class PurchaseDataManager {
                         }
                     }
 
-                    // Migrate: ensure FOC-001 sample exists for FOC inventory tab
-                    const hasFoc = parsed.some(p => p.isFOC || p.poNo === 'FOC-001');
-                    if (!hasFoc) {
-                        const focDefault = DEFAULT_PURCHASE_DATA.find(p => p.poNo === 'FOC-001');
-                        if (focDefault) {
-                            parsed.push(JSON.parse(JSON.stringify(focDefault)));
+                    // Migrate: Clean up old FOC-001 and ensure FOC-389102 and FOC-411209 exist for FOC section
+                    const oldFocIndex = parsed.findIndex(p => p.poNo === 'FOC-001');
+                    if (oldFocIndex !== -1) {
+                        parsed.splice(oldFocIndex, 1);
+                        needsSave = true;
+                    }
+
+                    const focDefaults = DEFAULT_PURCHASE_DATA.filter(p => p.isFOC || (p.poNo && p.poNo.startsWith('FOC')));
+                    focDefaults.forEach(def => {
+                        const exists = parsed.some(p => p.poNo === def.poNo);
+                        if (!exists) {
+                            parsed.push(JSON.parse(JSON.stringify(def)));
                             needsSave = true;
                         }
-                    }
+                    });
 
                     // Migrate: Ensure company field exists on all POs
                     parsed.forEach(po => {
@@ -816,7 +903,11 @@ class PurchaseDataManager {
                 const isFocItem = Boolean(isFocPo || li.isFOC);
                 items.push({
                     poNo: po.poNo,
+                    focEntryNo: po.poNo,
+                    poNumber: po.poNumber || (po.poNo && !po.poNo.startsWith('FOC') ? po.poNo : 'N/A'),
                     poDate: po.poDate,
+                    entryDate: po.entryDate || po.poDate,
+                    receivedDate: po.receivedDate || po.poDate,
                     supplierName: po.supplierName,
                     requestedBy: po.requestedBy,
                     totalCost: po.totalCost,
@@ -834,7 +925,12 @@ class PurchaseDataManager {
                     rejectionReason: li.acceptanceRemarks || '',
                     userAcceptedQty: li.userAcceptedQty || 0,
                     batches: li.batches || [],
-                    isFOC: isFocItem
+                    isFOC: isFocItem,
+                    purpose: li.purpose || po.purpose || 'Testing',
+                    mfgDate: li.mfgDate || (li.batches && li.batches[0] ? li.batches[0].mfgDate : '-') || '-',
+                    expiryDate: li.expiryDate || (li.batches && li.batches[0] ? li.batches[0].expiryDate : '-') || '-',
+                    batchNo: li.batchNo || (li.batches && li.batches[0] ? li.batches[0].batchNo : '-') || '-',
+                    company: po.company || 'GRPL'
                 });
             });
         });
@@ -1469,38 +1565,40 @@ class PurchaseDataManager {
     // Add Manual Goods-In Entry for FOC (Free of Charge) item
     addManualFocEntry(focData) {
         const now = new Date();
-        const dateStr = focData.recDate || now.toISOString().split('T')[0];
+        const dateStr = focData.recDate || focData.receivedDate || focData.entryDate || now.toISOString().split('T')[0];
         const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        // Calculate next FOC PO identifier if not provided
-        let focPoNo = (focData.focNo || focData.poNo || '').trim();
+        // Calculate next FOC PO identifier if not provided (e.g. FOC-389102 format)
+        let focPoNo = (focData.focEntryNo || focData.focNo || focData.poNo || '').trim();
         if (!focPoNo) {
-            const focCount = this.data.filter(p => p.isFOC || (p.poNo && p.poNo.startsWith('FOC'))).length + 1;
-            focPoNo = `FOC-${String(focCount).padStart(3, '0')}`;
+            focPoNo = `FOC-${Math.floor(100000 + Math.random() * 900000)}`;
         }
 
-        // Calculate next itemKey
-        let totalItems = 0;
-        this.data.forEach(p => totalItems += (p.lineItems ? p.lineItems.length : 0));
-        const itemKey = (focData.itemKey || '').trim() || `Item-FOC-${String(totalItems + 1).padStart(3, '0')}`;
-
-        const recQty = Number(focData.recQty) || 1;
-        const uom = focData.uom || 'Piece';
-        const batchNo = (focData.batchNo || '').trim() || `FOC-B${Math.floor(100 + Math.random() * 900)}`;
-        const expiryDate = focData.expiryDate || 'N/A';
-        const dcNo = (focData.dcNo || focData.invoiceNo || '').trim() || `DC-${Math.floor(1000 + Math.random() * 9000)}`;
-        const location = (focData.location || '').trim() || 'Main Store - General Rack';
-        const department = focData.department || 'General Store';
+        const poNumber = (focData.poNumber || 'N/A').trim();
+        const purpose = focData.purpose || 'Testing';
+        const mfgDate = focData.mfgDate || '-';
+        const expiryDate = focData.expiryDate || '-';
+        const batchNo = (focData.batchNo || '').trim() || `BX-${Math.floor(1000 + Math.random() * 9000)}`;
+        const dcNo = (focData.dcNo || focData.invoiceNo || '').trim() || `DC-FOC-${Math.floor(1000 + Math.random() * 9000)}`;
+        const location = (focData.location || '').trim() || 'QA Lab Storage - Rack 1';
+        const department = focData.department || 'Quality Assurance';
         const supplierName = (focData.supplierName || '').trim() || 'Vendor FOC';
-        const itemName = (focData.itemName || '').trim() || 'FOC Sample Material';
-        const remarks = (focData.remarks || '').trim() || 'Free of Charge (FOC) sample received at Goods-In dock';
-        const projectName = (focData.projectName || '').trim() || 'FOC Sample Evaluation';
+        const itemName = (focData.itemName || focData.productName || '').trim() || 'FOC Sample Material';
+        const itemKey = (focData.itemKey || focData.productCode || '').trim() || `FOC-ITM-${Math.floor(100 + Math.random() * 900)}`;
+        const recQty = Number(focData.recQty || focData.qty) || 1;
+        const uom = focData.uom || 'Piece';
+        const remarks = (focData.remarks || '').trim() || `Free of Charge (FOC) sample received for ${purpose}`;
+        const projectName = (focData.projectName || '').trim() || `${purpose} Sample Evaluation`;
         const company = focData.company || 'GRPL';
 
         const newPo = {
             poNo: focPoNo,
+            focEntryNo: focPoNo,
+            poNumber: poNumber,
             company: company,
             poDate: dateStr,
+            entryDate: dateStr,
+            receivedDate: dateStr,
             prNo: `FOC-${dcNo}`,
             requestedBy: focData.receivedBy || 'ANISH',
             supplierName: supplierName,
@@ -1515,6 +1613,7 @@ class PurchaseDataManager {
             amountPaid: 0,
             dueDate: dateStr,
             isFOC: true,
+            purpose: purpose,
             lineItems: [
                 {
                     itemKey: itemKey,
@@ -1531,11 +1630,16 @@ class PurchaseDataManager {
                     location: location,
                     issuedQty: 0,
                     isFOC: true,
+                    purpose: purpose,
+                    mfgDate: mfgDate,
+                    expiryDate: expiryDate,
+                    batchNo: batchNo,
                     coaFile: focData.coaFile || '',
                     batches: [
                         {
                             batchNo: batchNo,
                             recDate: dateStr,
+                            mfgDate: mfgDate,
                             recQty: recQty,
                             expiryDate: expiryDate,
                             invoiceNo: dcNo,
@@ -1554,7 +1658,7 @@ class PurchaseDataManager {
                             department: department,
                             referenceNo: dcNo,
                             location: location,
-                            remarks: `Goods-In Manual Entry (FOC): ${remarks}`,
+                            remarks: `Goods-In FOC Sample Receipt: ${purpose} - ${itemName}`,
                             handledBy: focData.receivedBy || 'ANISH'
                         }
                     ]
