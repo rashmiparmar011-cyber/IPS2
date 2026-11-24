@@ -655,7 +655,7 @@
                         </button>
                         <button type="button" class="status-tab tab-foc" data-tab="FOC"
                             onclick="switchInventoryTab('FOC')">
-                            <i class="fas fa-gift"></i> FOC <span class="tab-badge"
+                            <i class="fas fa-boxes"></i> FOC Samples <span class="tab-badge"
                                 id="badgeTabFOC">0</span>
                         </button>
                     </div>
@@ -1821,8 +1821,8 @@
                         </span>
                     </td>
                     <td style="font-weight: 600; color: #475569;">${item.uom}</td>
-                    <td style="text-align: right; color: ${isFoc ? '#7e22ce; font-weight: 700' : '#475569'};">${isFoc ? '₹ 0.00 <span style="font-size: 10px; font-weight: 700; color: #7e22ce;">(FOC)</span>' : `₹ ${item.unitCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}</td>
-                    <td style="text-align: right; font-weight: 700; color: ${isFoc ? '#7e22ce' : '#0f172a'};">${isFoc ? '₹ 0.00 <span style="font-size: 10px; font-weight: 700; color: #7e22ce;">(FOC)</span>' : `₹ ${item.availableValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}</td>
+                    <td style="text-align: right; color: ${isFoc ? '#0284c7; font-weight: 700' : '#475569'};">${isFoc ? '₹ 0.00 <span style="font-size: 10px; font-weight: 700; color: #0284c7;">(FOC)</span>' : `₹ ${item.unitCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}</td>
+                    <td style="text-align: right; font-weight: 700; color: ${isFoc ? '#0284c7' : '#0f172a'};">${isFoc ? '₹ 0.00 <span style="font-size: 10px; font-weight: 700; color: #0284c7;">(FOC)</span>' : `₹ ${item.availableValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}</td>
                     <td style="text-align: center; white-space: nowrap;">
                         ${item.coaFile ? `
                             <a href="javascript:void(0)" onclick="downloadCoaFile('${item.poNo}', '${item.itemKey}', '${item.coaFile}')" 

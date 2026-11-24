@@ -846,8 +846,12 @@ body {
 }
 
 .status-tab.active.tab-foc {
-    color: #7e22ce;
-    border-color: #d8b4fe;
+    color: #0284c7;
+    border-color: #7dd3fc;
+}
+
+.status-tab.tab-foc i {
+    color: #0ea5e9;
 }
 
 .status-tab.active.tab-pending {
@@ -902,7 +906,7 @@ body {
 }
 
 .status-tab.active.tab-foc .tab-badge {
-    background: #7e22ce;
+    background: #0284c7;
     color: #fff;
 }
 
@@ -974,9 +978,9 @@ body {
 }
 
 .badge.foc {
-    background: #f3e8ff;
-    color: #7e22ce;
-    border: 1px solid #d8b4fe;
+    background: #e0f2fe;
+    color: #0284c7;
+    border: 1px solid #bae6fd;
 }
 
 /* FOC Samples Table & Action Buttons */
