@@ -531,44 +531,26 @@
         </div>
     </div>
 
-    <!-- RECORD FOC SAMPLE / MANUAL ENTRY MODAL -->
+    <!-- RECORD FOC SAMPLE / MANUAL ENTRY MODAL (Exact design matching user specification) -->
     <div class="modal-overlay" id="focManualModal">
-        <div class="modal-box" style="max-width: 820px;">
-            <div class="modal-header" style="background: #0f4c81; color: #fff;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="background: rgba(255, 255, 255, 0.2); width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
-                        <i class="fas fa-boxes"></i>
-                    </div>
-                    <div>
-                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #fff;">Record Goods-In FOC Sample</h3>
-                        <p style="margin: 2px 0 0 0; font-size: 12px; color: #e2e8f0;">Direct warehouse receipt for Free of Charge (FOC) vendor samples, trials &amp; evaluation items</p>
-                    </div>
-                </div>
-                <button class="modal-close-btn" style="color: #fff;" onclick="closeFocManualModal()">&times;</button>
+        <div class="modal-box" style="max-width: 820px; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #2b82b5, #3598dc); color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-gift"></i> Record FOC Sample
+                </h3>
+                <button class="modal-close-btn" style="color: #fff; opacity: 0.9; font-size: 20px; background: none; border: none; cursor: pointer;" onclick="closeFocManualModal()">&times;</button>
             </div>
-            <div class="modal-body" style="padding: 20px 24px;">
+            <div class="modal-body" style="padding: 22px 24px; background: #fff;">
                 <form id="focManualForm" onsubmit="submitFocManualEntry(event)">
-                    <!-- Banner Info -->
-                    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px;">
-                        <i class="fas fa-check-circle" style="color: #16a34a; font-size: 16px; margin-top: 2px;"></i>
-                        <div style="font-size: 12px; color: #166534; line-height: 1.5;">
-                            <strong>Automatic Stock Synchronization:</strong> Saving this entry records the inward movement under Free of Charge (₹ 0.00 valuation), immediately displays it in the <strong>Goods-In &gt; FOC Samples table</strong>, and synchronizes into the <strong>Inventory &gt; FOC tab</strong> with complete Return and Actions functionality.
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px;">
+                    <!-- Row 1: PO Number, Supplier, Received By -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 14px;">
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">COMPANY *</label>
-                            <select id="focCompany" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" required>
-                                <option value="GRPL">GRPL - Gandhar Refinery</option>
-                                <option value="BLPL">BLPL - Biolight Speciality</option>
-                                <option value="GHPL">GHPL - Gandhar Healthcare</option>
-                                <option value="LSPL">LSPL - Lotus Speciality</option>
-                            </select>
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">PO Number</label>
+                            <input type="text" id="focPoNumber" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;" placeholder="PO Number (Optional)">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">SUPPLIER NAME *</label>
-                            <input type="text" id="focSupplierName" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. Biochem Labs" list="focSupplierList" required>
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Supplier</label>
+                            <input type="text" id="focSupplierName" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;" placeholder="Supplier Name" list="focSupplierList" required>
                             <datalist id="focSupplierList">
                                 <option value="Biochem Labs">
                                 <option value="Apex Hardware Systems">
@@ -579,73 +561,66 @@
                             </datalist>
                         </div>
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">PO NUMBER (OPTIONAL)</label>
-                            <input type="text" id="focPoNumber" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. PO-DUMMY-89 (or blank for N/A)">
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Received By</label>
+                            <input type="text" id="focReceivedBy" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;" placeholder="Receiver Name" value="ANISH">
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <!-- Row 2: Product Code, Product Name, Quantity -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 14px;">
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">PRODUCT / MATERIAL NAME *</label>
-                            <input type="text" id="focItemName" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. Ascorbic Acid Standard" required>
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Product Code</label>
+                            <input type="text" id="focItemKey" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;" placeholder="Code">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">ITEM CODE / ID *</label>
-                            <input type="text" id="focItemKey" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. SVPL-01" required>
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Product Name</label>
+                            <input type="text" id="focItemName" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;" placeholder="Name" required>
                         </div>
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">PURPOSE *</label>
-                            <select id="focPurpose" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" required>
-                                <option value="Testing" selected>Testing</option>
-                                <option value="Evaluation">Evaluation</option>
-                                <option value="R&D">R&D</option>
-                                <option value="Demo">Demo</option>
-                                <option value="Trial">Trial</option>
-                                <option value="Quality Control">Quality Control</option>
-                            </select>
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Quantity</label>
+                            <input type="number" id="focRecQty" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;" min="1" value="1" required>
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <!-- Row 3: UOM, Batch/Lot Number, Entry Date -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 14px;">
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">RECEIVED QTY *</label>
-                            <input type="number" id="focRecQty" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" min="1" value="1" required>
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">UOM</label>
+                            <input type="text" id="focUom" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;" placeholder="e.g. Piece, Vial" list="focUomList" value="Piece">
+                            <datalist id="focUomList">
+                                <option value="Piece">
+                                <option value="Vial">
+                                <option value="Box">
+                                <option value="Set">
+                                <option value="Kg">
+                                <option value="Ltr">
+                                <option value="Pack">
+                                <option value="Bottle">
+                            </datalist>
                         </div>
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">UOM *</label>
-                            <select id="focUom" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" required>
-                                <option value="Vial">Vial</option>
-                                <option value="Piece" selected>Piece</option>
-                                <option value="Box">Box</option>
-                                <option value="Set">Set</option>
-                                <option value="Kg">Kg</option>
-                                <option value="Ltr">Ltr</option>
-                                <option value="Pack">Pack</option>
-                                <option value="Bottle">Bottle</option>
-                            </select>
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Batch/Lot Number</label>
+                            <input type="text" id="focBatchNo" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;" placeholder="Batch No" required>
                         </div>
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">BATCH NO. *</label>
-                            <input type="text" id="focBatchNo" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. BX-9801" required>
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">DELIVERY CHALLAN / DC NO</label>
-                            <input type="text" id="focDcNo" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. DC-FOC-2026">
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Entry Date</label>
+                            <input type="date" id="focEntryDate" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;">
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 14px; margin-bottom: 14px;">
+                    <!-- Row 4: Manufacturing Date, Expiry Date, Storage Location -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 14px;">
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">MFG DATE</label>
-                            <input type="date" id="focMfgDate" class="form-control" style="width: 100%; height: 34px; font-size: 12px;">
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Manufacturing Date</label>
+                            <input type="date" id="focMfgDate" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;" placeholder="dd/mm/yyyy">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">EXPIRY DATE</label>
-                            <input type="date" id="focExpiryDate" class="form-control" style="width: 100%; height: 34px; font-size: 12px;">
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Expiry Date</label>
+                            <input type="date" id="focExpiryDate" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;" placeholder="dd/mm/yyyy">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">STORAGE LOCATION *</label>
-                            <input type="text" id="focLocation" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. QA Lab Storage - Rack 1" list="focLocationList" required>
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Storage Location</label>
+                            <input type="text" id="focLocation" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;" placeholder="Location" list="focLocationList">
                             <datalist id="focLocationList">
                                 <option value="QA Lab Storage - Rack 1">
                                 <option value="R&D Store - Bay 3">
@@ -656,37 +631,46 @@
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px;">
+                    <!-- Row 5: Sample Purpose -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 14px;">
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">DEPARTMENT *</label>
-                            <select id="focDepartment" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" required>
-                                <option value="Quality Assurance" selected>Quality Assurance</option>
-                                <option value="Research & Development">Research & Development</option>
-                                <option value="Information Technology">Information Technology</option>
-                                <option value="Production">Production</option>
-                                <option value="Operations">Operations</option>
-                                <option value="Administration">Administration</option>
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Sample Purpose</label>
+                            <select id="focPurpose" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px;">
+                                <option value="Evaluation" selected>Evaluation</option>
+                                <option value="Testing">Testing</option>
+                                <option value="R&D">R&D</option>
+                                <option value="Demo">Demo</option>
+                                <option value="Trial">Trial</option>
+                                <option value="Quality Control">Quality Control</option>
                             </select>
                         </div>
+                    </div>
+
+                    <!-- Row 6: Reason for Sample -->
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Reason for Sample</label>
+                        <textarea id="focRemarks" class="form-control" rows="2" style="width: 100%; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 8px 10px; resize: vertical;" placeholder="Provide detailed reason..."></textarea>
+                    </div>
+
+                    <!-- Row 7: PO Attachment, Invoice/Challan Attachment -->
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px;">
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">RECEIVED DATE</label>
-                            <input type="date" id="focRecDate" class="form-control" style="width: 100%; height: 34px; font-size: 12px;">
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">PO Attachment</label>
+                            <input type="file" id="focPoAttachment" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 5px 8px; background: #fff;">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">RECEIVED BY *</label>
-                            <input type="text" id="focReceivedBy" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" value="ANISH" required>
+                            <label style="display: block; font-size: 12px; font-weight: 500; color: #334155; margin-bottom: 6px;">Invoice/Challan Attachment</label>
+                            <input type="file" id="focInvoiceAttachment" class="form-control" style="width: 100%; height: 36px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 5px 8px; background: #fff;">
                         </div>
                     </div>
 
-                    <div style="margin-bottom: 16px;">
-                        <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">REMARKS / SAMPLE DESCRIPTION</label>
-                        <textarea id="focRemarks" class="form-control" rows="2" style="width: 100%; font-size: 12px; resize: vertical;" placeholder="Vendor complimentary sample received for laboratory testing and evaluation."></textarea>
-                    </div>
-
-                    <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                        <button type="button" class="btn btn-secondary" onclick="closeFocManualModal()">Cancel</button>
-                        <button type="submit" class="btn" style="background: #0f4c81; color: #fff; font-weight: 700; border: none; padding: 8px 18px; border-radius: 4px;">
-                            <i class="fas fa-check-circle"></i> Save Goods-In &amp; Route to Inventory FOC
+                    <!-- Footer: Save FOC Entry, Cancel (order matching user design) -->
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; padding-top: 8px;">
+                        <button type="submit" class="btn" style="background: #1f6497; color: #fff; font-weight: 600; font-size: 13px; border: none; padding: 8px 22px; border-radius: 4px; cursor: pointer;">
+                            Save FOC Entry
+                        </button>
+                        <button type="button" class="btn" onclick="closeFocManualModal()" style="background: #475569; color: #fff; font-weight: 600; font-size: 13px; border: none; padding: 8px 22px; border-radius: 4px; cursor: pointer;">
+                            Cancel
                         </button>
                     </div>
                 </form>
@@ -1673,22 +1657,9 @@
             const form = document.getElementById('focManualForm');
             if (form) form.reset();
 
-            const dcInput = document.getElementById('focDcNo');
-            if (dcInput) dcInput.value = `DC-FOC-${Math.floor(1000 + Math.random() * 9000)}`;
-
-            const batchInput = document.getElementById('focBatchNo');
-            if (batchInput) batchInput.value = `BX-${Math.floor(1000 + Math.random() * 9000)}`;
-
-            const recDateInput = document.getElementById('focRecDate');
-            if (recDateInput) {
-                recDateInput.value = new Date().toISOString().split('T')[0];
-            }
-
-            const expiryInput = document.getElementById('focExpiryDate');
-            if (expiryInput) {
-                const nextYear = new Date();
-                nextYear.setFullYear(nextYear.getFullYear() + 2);
-                expiryInput.value = nextYear.toISOString().split('T')[0];
+            const entryDateInput = document.getElementById('focEntryDate');
+            if (entryDateInput) {
+                entryDateInput.value = new Date().toISOString().split('T')[0];
             }
 
             modal.classList.add('active');
@@ -1696,42 +1667,44 @@
 
         function closeFocManualModal() {
             const modal = document.getElementById('focManualModal');
-            if (modal) modal.classList.remove('active');
+            if (!modal) return;
+            modal.classList.remove('active');
         }
 
         function submitFocManualEntry(e) {
             e.preventDefault();
-            const company = document.getElementById('focCompany') ? document.getElementById('focCompany').value : 'GRPL';
-            const supplierName = document.getElementById('focSupplierName').value.trim();
-            const poNumber = document.getElementById('focPoNumber') ? document.getElementById('focPoNumber').value.trim() : 'N/A';
-            const dcNo = document.getElementById('focDcNo') ? document.getElementById('focDcNo').value.trim() : '';
-            const itemName = document.getElementById('focItemName').value.trim();
-            const itemKey = document.getElementById('focItemKey') ? document.getElementById('focItemKey').value.trim() : '';
-            const purpose = document.getElementById('focPurpose') ? document.getElementById('focPurpose').value : 'Testing';
+            const supplierName = (document.getElementById('focSupplierName').value || '').trim();
+            const poNumber = (document.getElementById('focPoNumber') ? document.getElementById('focPoNumber').value.trim() : '') || 'N/A';
+            const receivedBy = (document.getElementById('focReceivedBy') ? document.getElementById('focReceivedBy').value.trim() : '') || 'ANISH';
+            const itemKey = (document.getElementById('focItemKey') ? document.getElementById('focItemKey').value.trim() : '') || `FOC-${Math.floor(100 + Math.random() * 900)}`;
+            const itemName = (document.getElementById('focItemName').value || '').trim();
             const recQty = Number(document.getElementById('focRecQty').value) || 1;
-            const uom = document.getElementById('focUom').value;
-            const batchNo = document.getElementById('focBatchNo').value.trim();
-            const mfgDate = document.getElementById('focMfgDate') ? document.getElementById('focMfgDate').value || '-' : '-';
-            const expiryDate = document.getElementById('focExpiryDate') ? document.getElementById('focExpiryDate').value || '-' : '-';
-            const location = document.getElementById('focLocation').value.trim();
-            const department = document.getElementById('focDepartment').value;
-            const recDate = document.getElementById('focRecDate') ? document.getElementById('focRecDate').value : new Date().toISOString().split('T')[0];
-            const receivedBy = document.getElementById('focReceivedBy').value.trim() || 'ANISH';
-            const remarks = document.getElementById('focRemarks').value.trim() || `Free of Charge vendor evaluation sample for ${purpose}.`;
+            const uom = (document.getElementById('focUom').value || 'Piece').trim();
+            const batchNo = (document.getElementById('focBatchNo').value || '').trim() || `BX-${Math.floor(1000 + Math.random() * 9000)}`;
+            const entryDate = (document.getElementById('focEntryDate') && document.getElementById('focEntryDate').value) ? document.getElementById('focEntryDate').value : new Date().toISOString().split('T')[0];
+            const mfgDate = (document.getElementById('focMfgDate') && document.getElementById('focMfgDate').value) ? document.getElementById('focMfgDate').value : '-';
+            const expiryDate = (document.getElementById('focExpiryDate') && document.getElementById('focExpiryDate').value) ? document.getElementById('focExpiryDate').value : '-';
+            const location = (document.getElementById('focLocation') ? document.getElementById('focLocation').value.trim() : '') || 'Main Store';
+            const purpose = (document.getElementById('focPurpose') ? document.getElementById('focPurpose').value : 'Evaluation');
+            const remarks = (document.getElementById('focRemarks') ? document.getElementById('focRemarks').value.trim() : '') || `FOC sample for ${purpose}`;
 
-            if (!supplierName || !itemName || !location || !batchNo) {
-                alert('Please fill all mandatory required fields.');
+            // Attachments
+            const poFile = document.getElementById('focPoAttachment') && document.getElementById('focPoAttachment').files[0] ? document.getElementById('focPoAttachment').files[0].name : '';
+            const invFile = document.getElementById('focInvoiceAttachment') && document.getElementById('focInvoiceAttachment').files[0] ? document.getElementById('focInvoiceAttachment').files[0].name : '';
+            const attachment = invFile || poFile || '';
+
+            if (!supplierName || !itemName) {
+                alert('Please enter Supplier and Product Name.');
                 return;
             }
 
             const result = window.PurchaseData.addManualFocEntry({
-                company,
+                company: 'GRPL',
                 supplierName,
-                poNumber: poNumber || 'N/A',
-                dcNo,
+                poNumber,
                 itemName,
                 productName: itemName,
-                itemKey: itemKey || `FOC-${Math.floor(100 + Math.random() * 900)}`,
+                itemKey,
                 productCode: itemKey,
                 purpose,
                 recQty,
@@ -1741,16 +1714,18 @@
                 mfgDate,
                 expiryDate,
                 location,
-                department,
-                recDate,
-                receivedDate: recDate,
+                department: 'Quality Assurance',
+                entryDate,
+                recDate: entryDate,
+                receivedDate: entryDate,
                 receivedBy,
-                remarks
+                remarks,
+                attachment
             });
 
             if (result && result.success) {
                 closeFocManualModal();
-                alert(`Manual FOC Sample successfully recorded under ${result.po.poNo}!\n\nThis material is immediately displayed in the Goods-In FOC Samples table and routed to the Inventory > FOC Tab with full Return & Actions capabilities.`);
+                alert(`FOC Sample successfully recorded under ${result.po.poNo}!\n\nMaterial is now displayed in the Goods-In FOC Samples table and synchronized to Inventory > FOC tab with full Return & Actions capabilities.`);
                 switchGoodsInTab('FOC');
             } else {
                 alert((result && result.message) || 'Error saving FOC entry.');
