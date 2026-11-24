@@ -653,8 +653,16 @@
                             <i class="fas fa-history"></i> Recent Stock Ledger <span class="tab-badge"
                                 id="badgeTabLedger">0</span>
                         </button>
+                        <button type="button" class="status-tab tab-foc" data-tab="FOC"
+                            onclick="switchInventoryTab('FOC')">
+                            <i class="fas fa-gift"></i> FOC <span class="tab-badge"
+                                id="badgeTabFOC">0</span>
+                        </button>
                     </div>
                     <div style="display: flex; gap: 8px;">
+                        <button class="btn" style="background: #7e22ce; color: #fff; border: 1px solid #6b21a8; font-weight: 600; padding: 6px 14px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;" onclick="openFocManualModal()">
+                            <i class="fas fa-plus-circle"></i> + Manual Entry (FOC)
+                        </button>
                         <button class="btn btn-export" onclick="exportInventoryToCSV()"><i
                                 class="fas fa-file-csv"></i> Export CSV</button>
                     </div>
@@ -1412,6 +1420,138 @@
         </div>
     </div>
 
+    <!-- MANUAL ENTRY (FOC) MODAL -->
+    <div class="modal-overlay" id="focManualModal">
+        <div class="modal-box" style="max-width: 780px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #6b21a8 0%, #7e22ce 100%); color: #fff;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="background: rgba(255, 255, 255, 0.2); width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #fff;">Manual Goods-In Entry: Free Of Charge (FOC)</h3>
+                        <p style="margin: 2px 0 0 0; font-size: 12px; color: #f3e8ff;">Direct warehouse receipt for non-PO vendor samples, trials &amp; complimentary materials</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" style="color: #fff;" onclick="closeFocManualModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 20px 24px;">
+                <form id="focManualForm" onsubmit="submitFocManualEntry(event)">
+                    <!-- Banner Info -->
+                    <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px;">
+                        <i class="fas fa-info-circle" style="color: #7e22ce; font-size: 16px; margin-top: 2px;"></i>
+                        <div style="font-size: 12px; color: #581c87; line-height: 1.5;">
+                            <strong>Automatic Stock Synchronization:</strong> Saving this entry records the inward movement under Free of Charge (₹ 0.00 valuation), immediately displays it in the <strong>Goods-In tab</strong>, and routes it into the <strong>Inventory &gt; FOC tab</strong> with the exact same Return and Actions functionality.
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">COMPANY *</label>
+                            <select id="focCompany" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" required>
+                                <option value="GRPL">GRPL - Gandhar Refinery</option>
+                                <option value="BLPL">BLPL - Biolight Speciality</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">SUPPLIER NAME *</label>
+                            <input type="text" id="focSupplierName" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. Vimal Enterprises" list="focSupplierList" required>
+                            <datalist id="focSupplierList">
+                                <option value="Vimal Enterprises">
+                                <option value="Rashmi Tech Corp">
+                                <option value="Tech Distributors">
+                                <option value="Omron Industrial">
+                            </datalist>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">DELIVERY CHALLAN / DC NO *</label>
+                            <input type="text" id="focDcNo" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. DC-FOC-2026" required>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">MATERIAL / ITEM NAME *</label>
+                            <input type="text" id="focItemName" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. Ergonomic Vertical Mouse (Vendor Sample)" required>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">RECEIVED QUANTITY *</label>
+                            <input type="number" id="focRecQty" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" min="1" value="1" required>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">UNIT OF MEASURE (UOM) *</label>
+                            <select id="focUom" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" required>
+                                <option value="Piece" selected>Piece</option>
+                                <option value="Box">Box</option>
+                                <option value="Set">Set</option>
+                                <option value="Kg">Kg</option>
+                                <option value="Ltr">Ltr</option>
+                                <option value="Meter">Meter</option>
+                                <option value="Roll">Roll</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">BATCH / LOT NUMBER</label>
+                            <input type="text" id="focBatchNo" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. FOC-B002">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">EXPIRY DATE</label>
+                            <input type="date" id="focExpiryDate" class="form-control" style="width: 100%; height: 34px; font-size: 12px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">STORAGE LOCATION *</label>
+                            <input type="text" id="focLocation" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. IT Store - Rack A-01" list="focLocationList" required>
+                            <datalist id="focLocationList">
+                                <option value="IT Store - Rack A-01">
+                                <option value="IT Store - Rack B-02">
+                                <option value="Main Warehouse - Section C">
+                                <option value="QA Lab Storage - Rack 1">
+                                <option value="General Store - Shelf 4">
+                            </datalist>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">DEPARTMENT *</label>
+                            <select id="focDepartment" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" required>
+                                <option value="Information Technology">Information Technology</option>
+                                <option value="Quality Assurance">Quality Assurance</option>
+                                <option value="Production">Production</option>
+                                <option value="Operations">Operations</option>
+                                <option value="Administration">Administration</option>
+                                <option value="Maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">PROJECT / PURPOSE</label>
+                            <input type="text" id="focProject" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" placeholder="e.g. Vendor Sample Evaluation">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">RECEIVED BY *</label>
+                            <input type="text" id="focReceivedBy" class="form-control" style="width: 100%; height: 34px; font-size: 12px;" value="ANISH" required>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">INSPECTION REMARKS / NOTES</label>
+                        <textarea id="focRemarks" class="form-control" rows="2" style="width: 100%; font-size: 12px; resize: vertical;" placeholder="Free of Charge (FOC) vendor evaluation sample received and accepted at Goods-In dock."></textarea>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeFocManualModal()">Cancel</button>
+                        <button type="submit" class="btn" style="background: #7e22ce; color: #fff; border: 1px solid #6b21a8; font-weight: 700;">
+                            <i class="fas fa-check-circle"></i> Save Goods-In &amp; Route to Inventory FOC
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Floating Toast Notification -->
     <div id="toastNotification" class="toast-msg">
         <i id="toastIcon" class="fas fa-check-circle" style="font-size: 18px; color: #22c55e;"></i>
@@ -1692,6 +1832,9 @@
             document.getElementById('badgeTabAll').textContent = allItemsUnfiltered.length;
             document.getElementById('badgeTabInStock').textContent = allItemsUnfiltered.filter(i => i.availableQty > 2).length;
             document.getElementById('badgeTabLowStock').textContent = allItemsUnfiltered.filter(i => i.availableQty > 0 && i.availableQty <= 2).length;
+            const focItemsCount = allItemsUnfiltered.filter(i => i.isFOC || (i.poNo && i.poNo.startsWith('FOC'))).length;
+            const badgeFocEl = document.getElementById('badgeTabFOC');
+            if (badgeFocEl) badgeFocEl.textContent = focItemsCount;
 
             // Recent ledger count
             let totalMovements = 0;
@@ -1740,9 +1883,12 @@
                     availBadgeClass = 'out-of-stock';
                 }
 
+                const isFoc = Boolean(item.isFOC || (item.poNo && item.poNo.startsWith('FOC')));
+                const focBadge = isFoc ? `<span class="badge foc" style="font-size: 10px; margin-left: 5px; vertical-align: middle;">FOC</span>` : '';
+
                 tr.innerHTML = `
                     <td style="font-weight: 800; color: #0284c7; white-space: nowrap;">
-                        ${item.poNo}
+                        ${item.poNo} ${focBadge}
                     </td>
                     <td style="white-space: nowrap; color: #475569; font-size: 11px;">${item.poDate}</td>
                     <td style="font-weight: 600; color: #334155; white-space: nowrap;">${item.supplierName}</td>
@@ -1760,8 +1906,8 @@
                         </span>
                     </td>
                     <td style="font-weight: 600; color: #475569;">${item.uom}</td>
-                    <td style="text-align: right; color: #475569;">₹ ${item.unitCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                    <td style="text-align: right; font-weight: 700; color: #0f172a;">₹ ${item.availableValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td style="text-align: right; color: ${isFoc ? '#7e22ce; font-weight: 700' : '#475569'};">${isFoc ? '₹ 0.00 <span style="font-size: 10px; font-weight: 700; color: #7e22ce;">(FOC)</span>' : `₹ ${item.unitCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}</td>
+                    <td style="text-align: right; font-weight: 700; color: ${isFoc ? '#7e22ce' : '#0f172a'};">${isFoc ? '₹ 0.00 <span style="font-size: 10px; font-weight: 700; color: #7e22ce;">(FOC)</span>' : `₹ ${item.availableValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}</td>
                     <td style="text-align: center; white-space: nowrap;">
                         ${item.coaFile ? `
                             <a href="javascript:void(0)" onclick="downloadCoaFile('${item.poNo}', '${item.itemKey}', '${item.coaFile}')" 
@@ -2882,6 +3028,97 @@
                 toast.classList.remove('show');
             }, 3200);
         }
+
+        // =========================================================
+        // MANUAL GOODS-IN (FOC) MODAL WORKFLOW
+        // =========================================================
+        function openFocManualModal() {
+            const modal = document.getElementById('focManualModal');
+            if (!modal) return;
+            const form = document.getElementById('focManualForm');
+            if (form) form.reset();
+
+            const dcInput = document.getElementById('focDcNo');
+            if (dcInput) dcInput.value = `DC-FOC-${Math.floor(1000 + Math.random() * 9000)}`;
+
+            const batchInput = document.getElementById('focBatchNo');
+            if (batchInput) batchInput.value = `FOC-B${Math.floor(100 + Math.random() * 900)}`;
+
+            const expiryInput = document.getElementById('focExpiryDate');
+            if (expiryInput) {
+                const nextYear = new Date();
+                nextYear.setFullYear(nextYear.getFullYear() + 2);
+                expiryInput.value = nextYear.toISOString().split('T')[0];
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeFocManualModal() {
+            const modal = document.getElementById('focManualModal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function submitFocManualEntry(e) {
+            e.preventDefault();
+            const company = document.getElementById('focCompany').value;
+            const supplierName = document.getElementById('focSupplierName').value.trim();
+            const dcNo = document.getElementById('focDcNo').value.trim();
+            const itemName = document.getElementById('focItemName').value.trim();
+            const recQty = Number(document.getElementById('focRecQty').value) || 1;
+            const uom = document.getElementById('focUom').value;
+            const batchNo = document.getElementById('focBatchNo').value.trim();
+            const expiryDate = document.getElementById('focExpiryDate').value || 'N/A';
+            const location = document.getElementById('focLocation').value.trim();
+            const department = document.getElementById('focDepartment').value;
+            const projectName = document.getElementById('focProject').value.trim() || 'Vendor Sample Evaluation';
+            const receivedBy = document.getElementById('focReceivedBy').value.trim() || 'ANISH';
+            const remarks = document.getElementById('focRemarks').value.trim() || 'Free of Charge vendor evaluation sample received and accepted.';
+
+            if (!supplierName || !dcNo || !itemName || !location) {
+                showToast('Please fill all mandatory required fields.', 'warning');
+                return;
+            }
+
+            const result = window.PurchaseData.addManualFocEntry({
+                company,
+                supplierName,
+                dcNo,
+                itemName,
+                recQty,
+                uom,
+                batchNo,
+                expiryDate,
+                location,
+                department,
+                projectName,
+                receivedBy,
+                remarks
+            });
+
+            if (result && result.success) {
+                closeFocManualModal();
+                showToast(`Manual FOC Entry recorded under ${result.po.poNo} and added to Inventory!`, 'success');
+                // Automatically switch to FOC tab to showcase the newly created item
+                switchInventoryTab('FOC');
+            } else {
+                showToast((result && result.message) || 'Error saving FOC entry.', 'error');
+            }
+        }
+
+        // Real-time synchronization across modules / windows
+        window.addEventListener('ips_inventory_updated', () => {
+            renderInventoryDashboard();
+        });
+        window.addEventListener('ips_data_updated', () => {
+            renderInventoryDashboard();
+        });
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'ips_purchase_data') {
+                window.PurchaseData.loadData();
+                renderInventoryDashboard();
+            }
+        });
     </script>
 </body>
 

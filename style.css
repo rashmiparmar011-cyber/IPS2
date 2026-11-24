@@ -845,6 +845,11 @@ body {
     border-color: #fca5a5;
 }
 
+.status-tab.active.tab-foc {
+    color: #7e22ce;
+    border-color: #d8b4fe;
+}
+
 .status-tab.active.tab-pending {
     color: #b45309;
     border-color: #fde68a;
@@ -893,6 +898,11 @@ body {
 
 .status-tab.active.tab-rejected .tab-badge {
     background: #dc2626;
+    color: #fff;
+}
+
+.status-tab.active.tab-foc .tab-badge {
+    background: #7e22ce;
     color: #fff;
 }
 
@@ -961,6 +971,12 @@ body {
     background: #f1f5f9;
     color: #475569;
     border: 1px solid #cbd5e1;
+}
+
+.badge.foc {
+    background: #f3e8ff;
+    color: #7e22ce;
+    border: 1px solid #d8b4fe;
 }
 
 /* Invoices clickable download/view pill */

@@ -483,6 +483,85 @@ const DEFAULT_PURCHASE_DATA = [
                 ]
             }
         ]
+    },
+    {
+        poNo: "FOC-001",
+        company: "GRPL",
+        poDate: "2026-11-20",
+        prNo: "FOC-PR-01",
+        requestedBy: "Anish Patel",
+        supplierName: "Vimal Enterprises",
+        supplierCode: "SUP-101",
+        department: "Information Technology",
+        projectCode: "PRJ-FOC-01",
+        projectName: "Vendor Sample Evaluation",
+        totalCost: 0,
+        status: "Complete",
+        paymentStatus: "Fully Paid",
+        paymentTerm: "Free of Charge (FOC)",
+        amountPaid: 0,
+        dueDate: "2026-11-20",
+        isFOC: true,
+        lineItems: [
+            {
+                itemKey: "Item-FOC-001",
+                itemName: "Ergonomic Vertical Mouse (Vendor Sample)",
+                reqQty: 3,
+                recQty: 3,
+                uom: "Piece",
+                cost: 0,
+                balance: 0,
+                status: "Full",
+                userAcceptanceStatus: "Accepted",
+                userAcceptedQty: 3,
+                acceptanceRemarks: "FOC vendor trial sample inspected and accepted.",
+                location: "IT Store - Rack A-01",
+                issuedQty: 1,
+                isFOC: true,
+                coaFile: "",
+                batches: [
+                    {
+                        batchNo: "FOC-B001",
+                        recDate: "2026-11-20",
+                        recQty: 3,
+                        expiryDate: "N/A",
+                        invoiceNo: "DC-FOC-2026",
+                        attachment: ""
+                    }
+                ],
+                stockMovements: [
+                    {
+                        id: "MOV-FOC-001",
+                        date: "2026-11-20",
+                        time: "10:30 AM",
+                        type: "INWARD_FOC",
+                        qty: 3,
+                        balanceAfter: 3,
+                        recipient: "IT Main Store",
+                        department: "Information Technology",
+                        referenceNo: "DC-FOC-2026",
+                        location: "IT Store - Rack A-01",
+                        remarks: "Goods-In Manual Entry: Free Of Charge (FOC) vendor sample received",
+                        handledBy: "ANISH"
+                    },
+                    {
+                        id: "MOV-FOC-002",
+                        date: "2026-11-21",
+                        time: "14:15 PM",
+                        type: "ISSUE",
+                        qty: 1,
+                        balanceAfter: 2,
+                        recipient: "Rahul Sharma (QA Lead)",
+                        department: "Quality Assurance",
+                        project: "Vendor Sample Evaluation",
+                        referenceNo: "ISS-2026-9901",
+                        location: "IT Store - Rack A-01",
+                        remarks: "Issued 1 unit for ergonomic evaluation",
+                        issuedBy: "ANISH"
+                    }
+                ]
+            }
+        ]
     }
 ];
 
@@ -517,6 +596,16 @@ class PurchaseDataManager {
                         const po5Default = DEFAULT_PURCHASE_DATA.find(p => p.poNo === 'PO05');
                         if (po5Default) {
                             parsed.push(JSON.parse(JSON.stringify(po5Default)));
+                            needsSave = true;
+                        }
+                    }
+
+                    // Migrate: ensure FOC-001 sample exists for FOC inventory tab
+                    const hasFoc = parsed.some(p => p.isFOC || p.poNo === 'FOC-001');
+                    if (!hasFoc) {
+                        const focDefault = DEFAULT_PURCHASE_DATA.find(p => p.poNo === 'FOC-001');
+                        if (focDefault) {
+                            parsed.push(JSON.parse(JSON.stringify(focDefault)));
                             needsSave = true;
                         }
                     }
@@ -722,7 +811,9 @@ class PurchaseDataManager {
     getGoodsInLineItems() {
         const items = [];
         this.data.forEach(po => {
+            const isFocPo = Boolean(po.isFOC || (po.poNo && po.poNo.startsWith('FOC')));
             po.lineItems.forEach(li => {
+                const isFocItem = Boolean(isFocPo || li.isFOC);
                 items.push({
                     poNo: po.poNo,
                     poDate: po.poDate,
@@ -742,7 +833,8 @@ class PurchaseDataManager {
                     acceptanceRemarks: li.acceptanceRemarks || '',
                     rejectionReason: li.acceptanceRemarks || '',
                     userAcceptedQty: li.userAcceptedQty || 0,
-                    batches: li.batches || []
+                    batches: li.batches || [],
+                    isFOC: isFocItem
                 });
             });
         });
@@ -1005,6 +1097,7 @@ class PurchaseDataManager {
             if (!po.lineItems || !Array.isArray(po.lineItems)) return;
 
             po.lineItems.forEach(li => {
+                const isFocItem = Boolean(po.isFOC || li.isFOC || (po.poNo && po.poNo.startsWith('FOC')));
                 const recQty = Number(li.recQty) || 0;
                 let acceptedQty = 0;
                 if (li.userAcceptanceStatus === 'Accepted') {
@@ -1033,8 +1126,8 @@ class PurchaseDataManager {
                     stockStatus = 'In Stock';
                 }
 
-                // If availableOnly is true, skip items with no available stock
-                if (availableOnly && availableQty <= 0) {
+                // If availableOnly is true, skip items with no available stock (unless viewing FOC tab)
+                if (availableOnly && availableQty <= 0 && status !== 'FOC') {
                     return;
                 }
 
@@ -1056,13 +1149,17 @@ class PurchaseDataManager {
                     if (po.department !== department) return;
                 }
 
-                // Stock status filter
+                // Stock status filter (including new FOC tab filter)
                 if (status && status !== 'All') {
-                    if (status === 'Low Stock' && stockStatus !== 'Low Stock') return;
-                    if (status === 'In Stock' && stockStatus !== 'In Stock') return;
-                    if (status === 'Fully Dispatched' && stockStatus !== 'Fully Dispatched') return;
-                    if (status === 'Rejected' && stockStatus !== 'Rejected / Defective') return;
-                    if (status === 'Pending' && stockStatus !== 'Pending Acceptance') return;
+                    if (status === 'FOC') {
+                        if (!isFocItem) return;
+                    } else {
+                        if (status === 'Low Stock' && stockStatus !== 'Low Stock') return;
+                        if (status === 'In Stock' && stockStatus !== 'In Stock') return;
+                        if (status === 'Fully Dispatched' && stockStatus !== 'Fully Dispatched') return;
+                        if (status === 'Rejected' && stockStatus !== 'Rejected / Defective') return;
+                        if (status === 'Pending' && stockStatus !== 'Pending Acceptance') return;
+                    }
                 }
 
                 results.push({
@@ -1094,7 +1191,8 @@ class PurchaseDataManager {
                     stockStatus: stockStatus,
                     batches: li.batches || [],
                     stockMovements: li.stockMovements || [],
-                    coaFile: li.coaFile || ''
+                    coaFile: li.coaFile || '',
+                    isFOC: isFocItem
                 });
             });
         });
@@ -1366,6 +1464,114 @@ class PurchaseDataManager {
         if (!li) return [];
 
         return li.stockMovements || [];
+    }
+
+    // Add Manual Goods-In Entry for FOC (Free of Charge) item
+    addManualFocEntry(focData) {
+        const now = new Date();
+        const dateStr = focData.recDate || now.toISOString().split('T')[0];
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        // Calculate next FOC PO identifier if not provided
+        let focPoNo = (focData.focNo || focData.poNo || '').trim();
+        if (!focPoNo) {
+            const focCount = this.data.filter(p => p.isFOC || (p.poNo && p.poNo.startsWith('FOC'))).length + 1;
+            focPoNo = `FOC-${String(focCount).padStart(3, '0')}`;
+        }
+
+        // Calculate next itemKey
+        let totalItems = 0;
+        this.data.forEach(p => totalItems += (p.lineItems ? p.lineItems.length : 0));
+        const itemKey = (focData.itemKey || '').trim() || `Item-FOC-${String(totalItems + 1).padStart(3, '0')}`;
+
+        const recQty = Number(focData.recQty) || 1;
+        const uom = focData.uom || 'Piece';
+        const batchNo = (focData.batchNo || '').trim() || `FOC-B${Math.floor(100 + Math.random() * 900)}`;
+        const expiryDate = focData.expiryDate || 'N/A';
+        const dcNo = (focData.dcNo || focData.invoiceNo || '').trim() || `DC-${Math.floor(1000 + Math.random() * 9000)}`;
+        const location = (focData.location || '').trim() || 'Main Store - General Rack';
+        const department = focData.department || 'General Store';
+        const supplierName = (focData.supplierName || '').trim() || 'Vendor FOC';
+        const itemName = (focData.itemName || '').trim() || 'FOC Sample Material';
+        const remarks = (focData.remarks || '').trim() || 'Free of Charge (FOC) sample received at Goods-In dock';
+        const projectName = (focData.projectName || '').trim() || 'FOC Sample Evaluation';
+        const company = focData.company || 'GRPL';
+
+        const newPo = {
+            poNo: focPoNo,
+            company: company,
+            poDate: dateStr,
+            prNo: `FOC-${dcNo}`,
+            requestedBy: focData.receivedBy || 'ANISH',
+            supplierName: supplierName,
+            supplierCode: focData.supplierCode || 'SUP-FOC',
+            department: department,
+            projectCode: 'PRJ-FOC',
+            projectName: projectName,
+            totalCost: 0,
+            status: 'Complete',
+            paymentStatus: 'Fully Paid',
+            paymentTerm: 'Free of Charge (FOC)',
+            amountPaid: 0,
+            dueDate: dateStr,
+            isFOC: true,
+            lineItems: [
+                {
+                    itemKey: itemKey,
+                    itemName: itemName,
+                    reqQty: recQty,
+                    recQty: recQty,
+                    uom: uom,
+                    cost: 0,
+                    balance: 0,
+                    status: 'Full',
+                    userAcceptanceStatus: 'Accepted',
+                    userAcceptedQty: recQty,
+                    acceptanceRemarks: remarks,
+                    location: location,
+                    issuedQty: 0,
+                    isFOC: true,
+                    coaFile: focData.coaFile || '',
+                    batches: [
+                        {
+                            batchNo: batchNo,
+                            recDate: dateStr,
+                            recQty: recQty,
+                            expiryDate: expiryDate,
+                            invoiceNo: dcNo,
+                            attachment: ''
+                        }
+                    ],
+                    stockMovements: [
+                        {
+                            id: `MOV-FOC-${Date.now().toString().slice(-6)}`,
+                            date: dateStr,
+                            time: timeStr,
+                            type: 'INWARD_FOC',
+                            qty: recQty,
+                            balanceAfter: recQty,
+                            recipient: location,
+                            department: department,
+                            referenceNo: dcNo,
+                            location: location,
+                            remarks: `Goods-In Manual Entry (FOC): ${remarks}`,
+                            handledBy: focData.receivedBy || 'ANISH'
+                        }
+                    ]
+                }
+            ]
+        };
+
+        this.data.unshift(newPo);
+        this.saveData(this.data);
+
+        // Dispatch storage/update events for real-time reactivity
+        try {
+            window.dispatchEvent(new CustomEvent('ips_data_updated', { detail: { poNo: focPoNo, itemKey } }));
+            window.dispatchEvent(new CustomEvent('ips_inventory_updated', { detail: { poNo: focPoNo, itemKey } }));
+        } catch (e) {}
+
+        return { success: true, po: newPo, item: newPo.lineItems[0] };
     }
 }
 

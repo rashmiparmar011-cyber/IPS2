@@ -33,6 +33,7 @@
 | **2.2** | 2.1 | 19-Nov-2026 | Rashmi Parmar<br>IT Business Analyst | Eliminated redundant intra-modal summary tables and extraneous print actions to establish clean visual hierarchy across issue vouchers. |
 | **2.3** | 2.2 | 19-Nov-2026 | Rashmi Parmar<br>IT Business Analyst | Added three critical pharmaceutical inventory tracking columns to the master inventory dashboard: `Storage Location` (with inline rack edit), `Batch Number`, and `Expiry Date`. |
 | **2.4** | 2.3 | 23-Nov-2026 | Rashmi Parmar<br>IT Business Analyst | Formal release of comprehensive Design Specification (DS) aligned with GAMP 5, 21 CFR Part 11, and corporate standard documentation templates. |
+| **2.5** | 2.4 | 24-Nov-2026 | Rashmi Parmar<br>IT Business Analyst | Implemented Free of Charge (FOC) manual Goods-In receiving workflow and dedicated Inventory FOC status tab (placed adjacent to Recent Stock Ledger) with identical Return and Actions column capabilities. |
 
 ---
 
@@ -361,6 +362,60 @@ In previous iterations, clicking the COA icon triggered an intermediate preview 
 
 ---
 
+### 5.8 Screen 8: Free of Charge (FOC) Manual Entry & Inventory Management Subsystem
+
+![Figure 8: FOC Tab Location on Inventory Master Toolbar](docs_images/fig8_foc_tab_location.png)
+*Figure 8: New FOC Tab Designated Placement Adjacent to Recent Stock Ledger on Master Inventory Toolbar*
+
+#### 5.8.1 Operational Need & Non-PO Receiving Justification
+In pharmaceutical and healthcare procurement operations, warehouse receiving frequently encounters materials arriving without standard commercial Purchase Orders (POs):
+- **Vendor Evaluation Samples:** R&D and QA testing trial products (e.g. Ergonomic hardware, sensors, specialty reagents).
+- **Complimentary / FOC Shipments:** Promotional samples, complimentary warranty replacements, and trial consumables provided free of charge by approved suppliers.
+
+Under traditional systems, non-PO materials risked undocumented receipt or false financial liability creation. The FOC subsystem introduces a controlled, GxP-compliant manual entry workflow at the Goods-In dock (`stock_management.html`) that seamlessly routes items into the inventory control center (`inventory_management.html`).
+
+#### 5.8.2 Manual Goods-In Entry Modal (`#focManualModal`)
+Both `stock_management.html` and `inventory_management.html` provide a prominent purple action button:  
+`<button class="btn" style="background: #7e22ce; color: #fff;"><i class="fas fa-plus-circle"></i> + Manual Entry (FOC)</button>`.
+
+Clicking this button opens the dedicated `#focManualModal`, capturing the following auditable fields:
+
+| Field Name | Type / Control | Mandatory | Operational Description & Validation Rules |
+| :--- | :--- | :---: | :--- |
+| **Company \*** | Dropdown | **Yes** | Operating corporate legal entity (`GRPL` or `BLPL`). |
+| **Supplier Name \*** | Text + Datalist | **Yes** | Vendor or donor providing the sample (e.g. `Vimal Enterprises`, `Omron Industrial`). |
+| **Delivery Challan (DC) No \*** | Text Input | **Yes** | Supplier delivery challan or consignment note reference (e.g. `DC-FOC-2026`). |
+| **Material / Item Name \*** | Text Input | **Yes** | Exact technical description of sample material (e.g. `Ergonomic Vertical Mouse (Vendor Sample)`). |
+| **Received Quantity \*** | Number Input | **Yes** | Physical count received at warehouse dock. Must be $\ge 1$. |
+| **Unit of Measure (UOM) \*** | Dropdown | **Yes** | Standard physical unit (*Piece*, *Box*, *Set*, *Kg*, *Ltr*, *Meter*, *Roll*). |
+| **Batch / Lot Number** | Text Input | No | Manufacturer lot code (defaults to auto-generated `FOC-B###`). |
+| **Expiry Date** | Date Picker | No | Material expiration date where applicable (defaults to +2 years or `N/A`). |
+| **Storage Location \*** | Text + Datalist | **Yes** | Target warehouse shelf, rack, or QA holding area (e.g. `IT Store - Rack A-01`). |
+| **Department \*** | Dropdown | **Yes** | Allocated custodian department (*Information Technology*, *Quality Assurance*, *Production*, *Operations*). |
+| **Project / Purpose** | Text Input | No | Evaluation study reference (e.g. `Vendor Sample Evaluation`). |
+| **Received By \*** | Text Input | **Yes** | Warehouse receiving officer (defaults to authenticated session `ANISH`). |
+| **Inspection Remarks** | Textarea | No | Qualitative acceptance observations and physical inspection notes. |
+
+#### 5.8.3 Zero-Valuation Accounting & Stock Valuation Integrity
+Because FOC items are supplied without vendor invoices, standard financial accruals must not be triggered:
+- **Unit Cost:** Recorded as `₹ 0.00 (FOC)`.
+- **Available Value:** Computed as $\text{Available Stock} \times \text{Unit Cost} = ₹ 0.00\text{ (FOC)}$.
+- **Financial Protection:** Prevents false Accounts Payable (AP) liability creation or inventory over-valuation, while maintaining 100% accurate physical inventory units.
+
+#### 5.8.4 FOC Inventory Tab & Identical Action Column Capabilities
+As illustrated in Figure 8, the Inventory Master status bar includes the new **FOC tab** positioned immediately adjacent to `Recent Stock Ledger`:
+- **Badge Count:** Displays live count of all active FOC items (e.g. `FOC (1)`).
+- **Tab Filtering:** Clicking `FOC` filters the table exclusively to Free of Charge records.
+- **PO Identifier:** Displays distinct purple `FOC` pill badge next to the identifier (e.g., `FOC-001 [FOC]`).
+- **Complete Feature Parity in Actions Column:** Crucially, FOC records feature the **exact same `Return` and `Actions` column**:
+  - **Return Button:** Opens the Return Stock modal, allowing storekeepers to return issued trial units back to stock or process vendor returns.
+  - **Actions Menu > Issue Stock:** Dispatches trial material to staff/departments with real-time stock impact checks and mandatory justification notes.
+  - **Actions Menu > Issued Stock Table:** Launches historical issue voucher table with printable slips.
+  - **Actions Menu > Stock Ledger:** Displays full chronological audit trail with storage locations and transaction references.
+  - **Actions Menu > Audit / Adjust Stock:** Enables cycle count adjustments and GxP reconciliations.
+
+---
+
 ## 6. Data Integrity & 21 CFR Part 11 / EU Annex 11 Compliance Matrix
 
 | ALCOA+ Principle | System Implementation in Inventory Module | Regulatory Compliance Guarantee |
@@ -392,6 +447,8 @@ In previous iterations, clicking the COA icon triggered an intermediate preview 
 | **View Stock Movement Ledger** | Full | Blocked | Full | Full | Full |
 | **Export Stock Ledger to CSV** | Full | Blocked | Full | Full | Full |
 | **Download / View COA Documents** | Full | Full | Full | Full | Full |
+| **Create Manual FOC Goods Receipt** | Full | Blocked | Full | Full | Blocked |
+| **View FOC Inventory Tab & Act** | Full | Read-Only | Full | Full | Read-Only |
 
 ---
 
@@ -402,20 +459,21 @@ The module is constructed as an ultra-high performance Single-Page Application (
 
 ### 8.2 State Persistence & Event Bus
 Data synchronization between `inventory_management.html` and other modules is mediated by `shared_data.js` via custom DOM events:
-- **Global Event Dispatch:** When an issuance or adjustment commits, the script writes the updated array back to `localStorage` and dispatches a `window.dispatchEvent(new CustomEvent('ips_inventory_updated'))`.
-- **Cross-Tab Synchronization:** Any open tabs or parallel browser windows listening to this event immediately re-render their data grids, preventing stale inventory views.
+- **Global Event Dispatch:** When an issuance, adjustment, or manual FOC entry commits, the script writes the updated array back to `localStorage` and dispatches `window.dispatchEvent(new CustomEvent('ips_inventory_updated'))` and `ips_data_updated`.
+- **Cross-Tab Synchronization:** Any open tabs or parallel browser windows listening to these events immediately re-render their data grids, preventing stale inventory views.
 
 ### 8.3 Error Handling & Edge Case Mitigations
 - **Non-Numeric Input Protection:** Entering characters, negative values, or zero into quantity inputs is intercepted by regex validation and blocked.
 - **Concurrency Conflict Protection:** If an operator opens multiple issue modals simultaneously, client-side re-verification checks available balance immediately before write-lock, preventing concurrency over-issuance.
 - **Null-Safe Property Access:** Storage of missing batch or expiry fields defaults safely to `'N/A'` without breaking table column alignments.
+- **FOC Zero-Valuation Safeguard:** Strict zero cost calculation ensures FOC items never impact accounting balances or distort weighted-average inventory valuation.
 
 ---
 
 ## 9. Quality Assurance, Verification & Validation (IQ/OQ/PQ)
 
 ### 9.1 Installation Qualification (IQ)
-IQ confirms that all code assets (`inventory_management.html`, `shared_data.js`, `style.css`) reside in the designated deployment directories, version hashes match release notes, and required assets are accessible.
+IQ confirms that all code assets (`inventory_management.html`, `stock_management.html`, `shared_data.js`, `style.css`) reside in the designated deployment directories, version hashes match release notes, and required assets are accessible.
 
 ### 9.2 Operational Qualification (OQ) Test Scripts
 
@@ -428,6 +486,7 @@ IQ confirms that all code assets (`inventory_management.html`, `shared_data.js`,
 | **OQ-INV-005** | Stock Count Adjustment Audit | 1. Adjust Item002 by -1 (Damaged).<br>2. Enter mandatory notes.<br>3. Submit. | Available stock decrements; ledger and adjustment tables record entry. | **PASS** |
 | **OQ-INV-006** | Direct COA File Download | 1. Click COA badge for Item001. | Browser immediately prompts file download without intermediate modal. | **PASS** |
 | **OQ-INV-007** | CSV Export Integrity | 1. Click 'Export CSV'.<br>2. Open downloaded file in Excel. | All 18 columns match active grid data; headers and formatting intact. | **PASS** |
+| **OQ-INV-008** | Manual FOC Receipt & Routing | 1. Open Goods-In or Inventory modal.<br>2. Fill DC No, Supplier, Item, Qty.<br>3. Click Save.<br>4. Switch to FOC Tab. | New FOC item appears in FOC tab; zero cost/value rendered; Return and Actions operational. | **PASS** |
 
 ---
 
@@ -442,8 +501,8 @@ Application backups are conducted daily, preserving both the code base in GitHub
 
 | Field Name | Data Type | Length | UI Screen | Validation & Business Constraints |
 | :--- | :--- | :---: | :--- | :--- |
-| `poNumber` | String | 10 | Dashboard, Modals | Alphanumeric purchase order reference (e.g., `PO01`). Mandatory. |
-| `itemKey` | String | 10 | Dashboard, Modals | Unique primary key badge (e.g., `Item001`). Immutable. |
+| `poNumber` | String | 10 | Dashboard, Modals | Alphanumeric purchase order reference (e.g., `PO01`, `FOC-001`). Mandatory. |
+| `itemKey` | String | 10 | Dashboard, Modals | Unique primary key badge (e.g., `Item001`, `Item-FOC-001`). Immutable. |
 | `itemName` | String | 100 | Dashboard, Modals | Descriptive commercial item name. Mandatory. |
 | `project` | String | 100 | Dashboard, Modals | Cost allocation project name. Optional. |
 | `storageLocation` | String | 50 | Dashboard, Modals | **NEW:** Physical warehouse rack/shelf/bin coordinate. Editable. |
@@ -454,8 +513,10 @@ Application backups are conducted daily, preserving both the code base in GitHub
 | `issuedQty` | Integer | 6 | Dashboard, Modals | Cumulative units issued out to departments. |
 | `availableStock` | Integer | 6 | Dashboard, Modals | Current active units: `acceptedQty - issuedQty + adjustments`. |
 | `uom` | String | 15 | Dashboard, Modals | Unit of measurement (*Piece*, *Box*, *Pack*). |
-| `unitCost` | Decimal | 10,2 | Dashboard, Modals | Unit price in INR (`₹`). Positive decimal. |
-| `availableValue` | Decimal | 12,2 | Dashboard | Computed: `availableStock * unitCost`. |
+| `unitCost` | Decimal | 10,2 | Dashboard, Modals | Unit price in INR (`₹`). Positive decimal, or `0.00` for FOC items. |
+| `availableValue` | Decimal | 12,2 | Dashboard | Computed: `availableStock * unitCost` (`₹ 0.00` for FOC). |
+| `isFOC` | Boolean | 1 | Goods-In, Inventory | **NEW:** Flag indicating Free of Charge non-PO material. Governs FOC tab display. |
+| `focDcNo` | String | 30 | FOC Modal, Goods-In | **NEW:** Delivery Challan reference for non-PO consignment receipts. |
 | `coaStatus` | String | 20 | Dashboard | Status of certificate of analysis (*Attached* / *Missing*). |
 | `voucherNo` | String | 20 | Issue / Ledger | Sequential slip reference (e.g. `ISS-2026-3704`). Unique. |
 | `issuedTo` | String | 60 | Issue Modal | Recipient employee name. Mandatory. |
