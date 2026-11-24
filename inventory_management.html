@@ -632,32 +632,48 @@
 
                 <!-- Status Tabs & Export Toolbar -->
                 <div class="status-tabs-container">
-                    <div class="status-tabs-group" role="tablist">
-                        <button type="button" class="status-tab tab-all active" data-tab="All"
-                            onclick="switchInventoryTab('All')">
-                            <i class="fas fa-layer-group"></i> All Inventory Items <span class="tab-badge"
-                                id="badgeTabAll">0</span>
-                        </button>
-                        <button type="button" class="status-tab tab-complete" data-tab="In Stock"
-                            onclick="switchInventoryTab('In Stock')">
-                            <i class="fas fa-check-circle"></i> In Stock <span class="tab-badge"
-                                id="badgeTabInStock">0</span>
-                        </button>
-                        <button type="button" class="status-tab tab-partial" data-tab="Low Stock"
-                            onclick="switchInventoryTab('Low Stock')">
-                            <i class="fas fa-exclamation-triangle"></i> Low Stock (&le; 2) <span class="tab-badge"
-                                id="badgeTabLowStock">0</span>
-                        </button>
-                        <button type="button" class="status-tab tab-new" data-tab="Ledger"
-                            onclick="switchInventoryTab('Ledger')">
-                            <i class="fas fa-history"></i> Recent Stock Ledger <span class="tab-badge"
-                                id="badgeTabLedger">0</span>
-                        </button>
-                        <button type="button" class="status-tab tab-foc" data-tab="FOC"
-                            onclick="switchInventoryTab('FOC')">
-                            <i class="fas fa-boxes"></i> FOC Samples <span class="tab-badge"
-                                id="badgeTabFOC">0</span>
-                        </button>
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <div class="status-tabs-group" role="tablist">
+                            <button type="button" class="status-tab tab-all active" data-tab="All"
+                                onclick="switchInventoryTab('All')">
+                                <i class="fas fa-layer-group"></i> All Inventory Items <span class="tab-badge"
+                                    id="badgeTabAll">0</span>
+                            </button>
+                            <button type="button" class="status-tab tab-complete" data-tab="In Stock"
+                                onclick="switchInventoryTab('In Stock')">
+                                <i class="fas fa-check-circle"></i> In Stock <span class="tab-badge"
+                                    id="badgeTabInStock">0</span>
+                            </button>
+                            <button type="button" class="status-tab tab-partial" data-tab="Low Stock"
+                                onclick="switchInventoryTab('Low Stock')">
+                                <i class="fas fa-exclamation-triangle"></i> Low Stock (&le; 2) <span class="tab-badge"
+                                    id="badgeTabLowStock">0</span>
+                            </button>
+                            <button type="button" class="status-tab tab-new" data-tab="Ledger"
+                                onclick="switchInventoryTab('Ledger')">
+                                <i class="fas fa-history"></i> Recent Stock Ledger <span class="tab-badge"
+                                    id="badgeTabLedger">0</span>
+                            </button>
+                            <button type="button" class="status-tab tab-foc" data-tab="FOC"
+                                onclick="switchInventoryTab('FOC')">
+                                <i class="fas fa-boxes"></i> FOC Samples <span class="tab-badge"
+                                    id="badgeTabFOC">0</span>
+                            </button>
+                        </div>
+
+                        <!-- Monthly Filter for FOC Samples (only visible when FOC tab selected) -->
+                        <div id="focMonthFilterSection" style="display: none; align-items: center; gap: 6px;">
+                            <div style="display: inline-flex; align-items: center; gap: 8px; background: #ffffff; padding: 3px 10px; border-radius: 6px; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05); height: 32px;">
+                                <i class="fas fa-calendar-alt" style="color: #0284c7; font-size: 13px;"></i>
+                                <label for="filterFocMonth" style="font-size: 11px; font-weight: 700; color: #475569; margin: 0; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap;">Monthly Filter:</label>
+                                <select id="filterFocMonth" onchange="renderFocInventoryTable()" style="border: 1px solid #cbd5e1; border-radius: 4px; background: #f8fafc; font-size: 12px; font-weight: 600; color: #0f172a; outline: none; cursor: pointer; padding: 2px 8px; height: 26px;">
+                                    <option value="All">All Months</option>
+                                </select>
+                                <button type="button" onclick="resetFocMonthFilter()" title="Clear Month Filter" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 12px; padding: 0 2px; display: inline-flex; align-items: center;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#94a3b8'">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div style="display: flex; gap: 8px;">
                         <button class="btn btn-export" onclick="exportInventoryToCSV()"><i
@@ -1653,6 +1669,12 @@
             const tableView = document.getElementById('inventoryTableView');
             const ledgerView = document.getElementById('inventoryLedgerView');
             const focView = document.getElementById('focInventoryTableView');
+            const focMonthSection = document.getElementById('focMonthFilterSection');
+
+            // Monthly filter is strictly visible ONLY when FOC tab is selected
+            if (focMonthSection) {
+                focMonthSection.style.display = (tabName === 'FOC') ? 'inline-flex' : 'none';
+            }
 
             if (tabName === 'Ledger') {
                 if (tableView) tableView.style.display = 'none';
@@ -1663,6 +1685,7 @@
                 if (tableView) tableView.style.display = 'none';
                 if (ledgerView) ledgerView.style.display = 'none';
                 if (focView) focView.style.display = 'block';
+                populateFocMonthFilter();
                 renderFocInventoryTable();
             } else {
                 if (tableView) tableView.style.display = 'block';
@@ -1670,6 +1693,66 @@
                 if (focView) focView.style.display = 'none';
                 renderInventoryDashboard();
             }
+        }
+
+        // Format Year-Month (e.g. "2026-09" -> "September 2026")
+        function formatMonthDisplay(ymString) {
+            if (!ymString || ymString === 'All') return 'All Months';
+            const parts = ymString.split('-');
+            if (parts.length < 2) return ymString;
+            const year = parseInt(parts[0], 10);
+            const monthIdx = parseInt(parts[1], 10) - 1;
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            return `${monthNames[monthIdx] || parts[1]} ${year}`;
+        }
+
+        // Dynamically populate month options based on FOC entries and calendar
+        function populateFocMonthFilter() {
+            const select = document.getElementById('filterFocMonth');
+            if (!select) return;
+            const currentVal = select.value || 'All';
+
+            const focItems = window.PurchaseData ? window.PurchaseData.getInventoryItems({ status: 'FOC', availableOnly: false }) : [];
+            const monthSet = new Set();
+
+            focItems.forEach(item => {
+                const rawDate = item.entryDate || item.receivedDate || item.poDate;
+                if (rawDate && typeof rawDate === 'string') {
+                    const ym = rawDate.substring(0, 7);
+                    if (/^\d{4}-\d{2}$/.test(ym)) {
+                        monthSet.add(ym);
+                    }
+                }
+            });
+
+            // Also include recent 6 calendar months
+            const now = new Date();
+            for (let i = 0; i < 6; i++) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                monthSet.add(`${y}-${m}`);
+            }
+
+            const sortedMonths = Array.from(monthSet).sort().reverse();
+
+            select.innerHTML = '<option value="All">All Months</option>';
+            sortedMonths.forEach(ym => {
+                const opt = document.createElement('option');
+                opt.value = ym;
+                opt.textContent = formatMonthDisplay(ym);
+                if (ym === currentVal) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        // Reset FOC month filter back to All Months
+        function resetFocMonthFilter() {
+            const select = document.getElementById('filterFocMonth');
+            if (select) {
+                select.value = 'All';
+            }
+            renderFocInventoryTable();
         }
 
         // Apply filters handler
@@ -1696,6 +1779,9 @@
             document.getElementById('filterSearch').value = '';
             document.getElementById('filterStockStatus').value = 'available';
             document.getElementById('filterDept').value = 'All';
+            if (document.getElementById('filterFocMonth')) {
+                document.getElementById('filterFocMonth').value = 'All';
+            }
             updatePoBanner();
             switchInventoryTab('All');
         }
@@ -1720,7 +1806,7 @@
             }
 
             // Fetch filtered inventory items (filtered by selected Company, Supplier, and PO)
-            const items = window.PurchaseData.getInventoryItems({
+            let items = window.PurchaseData.getInventoryItems({
                 poNo: currentSelectedPo,
                 supplier: currentSelectedSupplier,
                 company: currentCompany,
@@ -1729,6 +1815,17 @@
                 department: dept,
                 status: statusParam
             });
+
+            // If on FOC tab, respect selected monthly filter
+            if (currentInvTab === 'FOC') {
+                const selectedMonth = document.getElementById('filterFocMonth') ? document.getElementById('filterFocMonth').value : 'All';
+                if (selectedMonth && selectedMonth !== 'All') {
+                    items = items.filter(item => {
+                        const itemDate = item.entryDate || item.receivedDate || item.poDate || '';
+                        return itemDate.startsWith(selectedMonth);
+                    });
+                }
+            }
 
             // Update Tab Badges
             const allItemsUnfiltered = window.PurchaseData.getInventoryItems({
@@ -1871,8 +1968,9 @@
             const availableOnly = (stockFilter === 'available');
             const search = document.getElementById('filterSearch') ? document.getElementById('filterSearch').value.trim().toLowerCase() : '';
             const dept = document.getElementById('filterDept') ? document.getElementById('filterDept').value : 'All';
+            const selectedMonth = document.getElementById('filterFocMonth') ? document.getElementById('filterFocMonth').value : 'All';
 
-            const items = window.PurchaseData.getInventoryItems({
+            let items = window.PurchaseData.getInventoryItems({
                 poNo: currentSelectedPo,
                 supplier: currentSelectedSupplier,
                 company: currentCompany,
@@ -1881,6 +1979,14 @@
                 department: dept,
                 status: 'FOC'
             });
+
+            // Filter by month if selected
+            if (selectedMonth && selectedMonth !== 'All') {
+                items = items.filter(item => {
+                    const itemDate = item.entryDate || item.receivedDate || item.poDate || '';
+                    return itemDate.startsWith(selectedMonth);
+                });
+            }
 
             // Update badge counts across tabs
             const allItemsUnfiltered = window.PurchaseData.getInventoryItems({
@@ -1905,12 +2011,13 @@
 
             const paginationInfo = document.getElementById('invPaginationInfo');
             if (items.length === 0) {
+                const monthLabel = selectedMonth !== 'All' ? formatMonthDisplay(selectedMonth) : 'selected filters';
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="13" style="text-align: center; padding: 36px 20px; color: #64748b;">
                             <i class="fas fa-boxes" style="font-size: 32px; color: #cbd5e1; margin-bottom: 10px; display: block;"></i>
-                            <div style="font-size: 14px; font-weight: 700; color: #1e293b;">No FOC samples found matching your filters</div>
-                            <div style="font-size: 12px; margin-top: 4px;">FOC items entered via Goods-In will appear here automatically with Return &amp; Actions.</div>
+                            <div style="font-size: 14px; font-weight: 700; color: #1e293b;">No FOC samples found for ${monthLabel}</div>
+                            <div style="font-size: 12px; margin-top: 4px;">Try selecting "All Months" or clearing the month filter.</div>
                         </td>
                     </tr>
                 `;
@@ -2959,7 +3066,7 @@
                 statusParam = 'Low Stock';
             }
 
-            const items = window.PurchaseData.getInventoryItems({
+            let items = window.PurchaseData.getInventoryItems({
                 poNo: currentSelectedPo,
                 supplier: currentSelectedSupplier,
                 company: currentCompany,
@@ -2968,6 +3075,17 @@
                 department: dept,
                 status: statusParam
             });
+
+            // If on FOC tab, respect selected monthly filter
+            if (currentInvTab === 'FOC') {
+                const selectedMonth = document.getElementById('filterFocMonth') ? document.getElementById('filterFocMonth').value : 'All';
+                if (selectedMonth && selectedMonth !== 'All') {
+                    items = items.filter(item => {
+                        const itemDate = item.entryDate || item.receivedDate || item.poDate || '';
+                        return itemDate.startsWith(selectedMonth);
+                    });
+                }
+            }
 
             if (items.length === 0) {
                 alert("No items to export.");
