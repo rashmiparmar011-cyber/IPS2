@@ -2174,7 +2174,7 @@
         let currentModalIssueItem = null;
 
         function openIssueModal(poNo, itemKey) {
-            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
             if (!item) {
                 showToast("Item details not found", "error");
@@ -2313,7 +2313,7 @@
             }
             closeActionMenu();
 
-            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
             if (!item) return;
 
@@ -2371,7 +2371,7 @@
             else if (action === 'adjust') openAdjustModal(poNo, itemKey);
             else if (action === 'slip') openGatePassModal(poNo, itemKey);
             else if (action === 'location') {
-                const item = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false }).find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
+                const item = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true }).find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
                 openLocationModal(poNo, itemKey, item ? item.location : '');
             }
         }
@@ -2398,7 +2398,7 @@
         let currentReturnItem = null;
 
         function openReturnModal(poNo, itemKey) {
-            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
             if (!item) return;
 
@@ -2477,7 +2477,7 @@
         // STOCK ADJUSTMENT MODAL LOGIC
         // =========================================================
         function openAdjustModal(poNo, itemKey) {
-            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
             if (!item) return;
 
@@ -2539,7 +2539,7 @@
             const type = document.getElementById('adjustType').value;
             const poNo = document.getElementById('adjustHiddenPoNo').value;
             const itemKey = document.getElementById('adjustHiddenItemKey').value;
-            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
 
             if (type === 'DEDUCT' && item) {
@@ -2581,7 +2581,7 @@
                 renderInventoryDashboard();
 
                 // Re-render table inside modal immediately to display the newly added adjustment record
-                const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+                const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true });
                 const updatedItem = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
                 if (updatedItem) {
                     document.getElementById('adjustAvailBadge').textContent = `${updatedItem.availableQty} ${updatedItem.uom}`;
@@ -2604,7 +2604,7 @@
         let currentRecordTableItem = null;
 
         function openIssuedStockTableModal(poNo, itemKey) {
-            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
             if (!item) {
                 showToast("Item details not found", "error");
@@ -2680,7 +2680,7 @@
         // STOCK MOVEMENT LEDGER MODAL ("Stock Card")
         // =========================================================
         function openLedgerModal(poNo, itemKey) {
-            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
             if (!item) return;
 
@@ -2792,7 +2792,7 @@
         // EDIT LOCATION MODAL
         // =========================================================
         function openLocationModal(poNo, itemKey, currentLocation) {
-            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
             if (!item) return;
 
@@ -2828,7 +2828,7 @@
         // PRINT NON-RETURNABLE GATE PASS (B&S GROUP)
         // =========================================================
         function openGatePassModal(poNo, itemKey) {
-            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
             if (!item) return;
 
@@ -2933,7 +2933,7 @@
 
         function openGatePassFromMovement(poNo, itemKey, movementId) {
             openGatePassModal(poNo, itemKey);
-            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false });
+            const items = window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true });
             const item = items.find(i => i.itemKey.toLowerCase() === itemKey.toLowerCase());
             if (!item) return;
 
@@ -2991,7 +2991,7 @@
             showToast(`Downloading Certificate of Analysis: ${safeFileName}...`, "info");
             
             const items = (window.PurchaseData && window.PurchaseData.getInventoryItems) ? 
-                window.PurchaseData.getInventoryItems({ poNo, availableOnly: false }) : [];
+                window.PurchaseData.getInventoryItems({ poNo, availableOnly: false, includeFoc: true }) : [];
             const item = items.find(i => (i.itemKey || '').toLowerCase() === (itemKey || '').toLowerCase()) || {};
             
             const fileHeader = `========================================================================\r\n` +

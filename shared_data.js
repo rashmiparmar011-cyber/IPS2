@@ -1258,8 +1258,9 @@ class PurchaseDataManager {
                         if (status === 'Pending' && stockStatus !== 'Pending Acceptance') return;
                     }
                 } else if (status === 'All') {
-                    // For standard All Inventory Items tab, exclude FOC so it displays cleanly in the FOC tab
-                    if (isFocItem && options.includeFoc !== true) return;
+                    // For standard All Inventory Items tab, exclude FOC so it displays cleanly in the FOC tab,
+                    // unless querying a specific PO directly or includeFoc is true
+                    if (isFocItem && options.includeFoc !== true && (!poNo || poNo === 'All')) return;
                 }
 
                 results.push({
